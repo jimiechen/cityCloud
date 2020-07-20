@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flame/components/component.dart';
 import 'package:flame/components/composed_component.dart';
 import 'package:flame/components/mixins/has_game_ref.dart';
@@ -9,6 +11,7 @@ import 'package:flame/sprite.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
+import 'callback_pre_render_layer.dart';
 import 'model/tile_info.dart';
 import 'package:ordered_set/ordered_set.dart';
 import 'package:ordered_set/comparing.dart';
@@ -17,6 +20,9 @@ enum HorizontalOrigentation {
   Left,
   Right,
 }
+
+const double MoveSpeed = 5; //移动速度
+
 const double FootSpacing = 2; //两脚之间距离
 const double FootSpeed = 10; //抬脚速度
 const double FootPutUpHeight = 2; //脚抬起的高度
@@ -33,8 +39,8 @@ const double BodyWidth = 20; //身体宽度
 const double BodyHeight = 18; //身体高度
 const double BodyOffset = 2; //以为身体有屁股，所以要设置偏移
 
-const double HeadHeight = 30; //头高
-const double HeadWidth = 30; //头宽
+const double HeadHeight = 18; //头高
+const double HeadWidth = 18; //头宽
 
 const double EyeHeight = 6.45; //眼睛宽度
 const double EyeWidth = 15; //眼睛高度
@@ -155,16 +161,14 @@ class BodySprite extends SpriteComponent implements PersonComponent {
   final HorizontalOrigentation origentation;
   double _footHeight;
   BodySprite(
-      {@required double personX,
-      @required double personY,
-      double bodyWidth = BodyWidth,
+      {double bodyWidth = BodyWidth,
       double bodyHeight = BodyHeight,
       double footHeight = FootHeight,
       this.origentation}) {
-    assert(personX != null && personY != null && bodyWidth != null && bodyHeight != null && footHeight != null);
+    assert(bodyWidth != null && bodyHeight != null && footHeight != null);
     _footHeight = footHeight;
-    x = personX - bodyWidth / 2;
-    y = personY - height - footHeight + 8;
+    x = -bodyWidth / 2 + BodyOffset;
+    y = -bodyHeight - footHeight + 1;
     width = bodyWidth;
     height = bodyHeight;
 
@@ -187,40 +191,37 @@ class BodySprite extends SpriteComponent implements PersonComponent {
   }
 }
 
-class HeadSprite extends PositionComponent with HasGameRef implements PersonComponent  {
-  OrderedSet<Component> components =
-      OrderedSet(Comparing.on((c) => c.priority()));
+class HeadSprite extends PositionComponent with HasGameRef implements PersonComponent {
+  OrderedSet<Component> components = OrderedSet(Comparing.on((c) => c.priority()));
   final HorizontalOrigentation origentation;
   final double footAndBodyHeight;
 
   SpriteComponent hairComponent;
-  SpriteComponent eyeComponent;
   SpriteComponent noseComponent;
 
   double _timeCount = 0;
   SequenceEffect _eyeEffect;
 
   HeadSprite(
-      {@required double personX,
-      @required double personY,
-      double headWidth = HeadWidth,
+      {double headWidth = HeadWidth,
       double headHeight = HeadHeight,
       this.footAndBodyHeight = FootHeight + BodyHeight,
       this.origentation}) {
-    assert(personX != null && personY != null && headWidth != null && headHeight != null);
-    x = personX - headWidth / 2;
-    y = personY - footAndBodyHeight - headHeight;
+    assert(headWidth != null && headHeight != null);
     width = headWidth;
     height = headHeight;
 
     Sprite.loadSprite('people-hair-2.png').then((value) {
-      hairComponent = SpriteComponent.fromSprite(width, height, value);
+      hairComponent = SpriteComponent.fromSprite(30, 30, value);
+      hairComponent.x = -14;
+      hairComponent.y = -footAndBodyHeight - 23;
       add(hairComponent);
     });
-    Sprite.loadSprite('people-eyes-1005.png').then((value) {
-      eyeComponent = SpriteComponent.fromSprite(EyeWidth, EyeHeight, value);
-      add(eyeComponent);
-    });
+  }
+
+  @override
+  bool loaded() {
+    return components.length == 1;
   }
 
   void add(Component c) {
@@ -231,38 +232,9 @@ class HeadSprite extends PositionComponent with HasGameRef implements PersonComp
   }
 
   @override
-  void update(double t) {
-    super.update(t);
-    _timeCount += t;
-    if (_timeCount > 10 && _eyeEffect == null) {
-      _timeCount = 0;
-      SequenceEffect effect = SequenceEffect(
-          effects: [
-            ScaleEffect(
-              curve: Curves.linear,
-              size: Size(EyeWidth, 1),
-              speed: 15,
-            ),
-            ScaleEffect(
-              curve: Curves.linear,
-              size: Size(EyeWidth, EyeHeight),
-              speed: 15,
-            ),
-          ],
-          onComplete: () {
-            _eyeEffect = null;
-            eyeComponent.clearEffects();
-          });
-
-      eyeComponent.addEffect(effect);
-      _eyeEffect = effect;
-    }
-  }
-
-  @override
   void render(Canvas canvas) {
     Paint paint = Paint()..color = Colors.yellow;
-    canvas.drawCircle(Offset(x + width / 2 - 1, y + height / 2), 9, paint);
+    canvas.drawCircle(Offset(0, -footAndBodyHeight - 7), 9, paint);
     canvas.save();
     components.forEach((comp) => _renderComponent(canvas, comp));
     canvas.restore();
@@ -283,8 +255,6 @@ class HeadSprite extends PositionComponent with HasGameRef implements PersonComp
     y = personY - footAndBodyHeight - height * 0.7;
     hairComponent.x = x;
     hairComponent.y = y;
-    eyeComponent.x = x + (width - EyeWidth) / 2;
-    eyeComponent.y = y + (height - eyeComponent.height) / 2;
   }
 }
 
@@ -292,68 +262,98 @@ abstract class PersonComponent {
   void updatePosition({@required double personX, @required double personY});
 }
 
-class PersonSprite extends PositionComponent with HasGameRef {
-  OrderedSet<Component> components =
-      OrderedSet(Comparing.on((c) => c.priority()));
-  ///运动的起始点和终点
-  PathNode beginPathNode;
-  PathNode endPathNode;
+class PersonSprite extends PositionComponent {
+  ///动态的部分，如手脚一直在动的就放在_dynamicComponents中
+  OrderedSet<Component> _dynamicComponents = OrderedSet(Comparing.on((c) => c.priority()));
 
-  ///移动比例，也就是从beginPathNode到endPathNode移动了多少
-  int movePercent;
+  ///静态的部分，如身体和头这些随人物整体移动，没有自身动画的就放在_quietComponents中，然后渲染到_quietLayer中缓存
+  OrderedSet<Component> _quietComponents = OrderedSet(Comparing.on((c) => c.priority()));
+
+  ///用于判断是否所有_quietComponents都已经loaded
+  bool _isQuietcomponentsAllLoaded = false;
+  CallbackLayer _quietLayer;
+
+  ///小人面朝向
+  HorizontalOrigentation _faceOrigentation;
+
+  ///小人各部位的sprite
+  FootSprite _leftFootSprite;
+  FootSprite _rightFootSprite;
+  HandSprite _leftHandSprite;
+  HandSprite _rightHandSprite;
+  BodySprite _bodySprite;
+  HeadSprite _headSprite;
+  SpriteComponent _eyeSprite;
+
+  ///移动effect
+  MoveEffect _moveEffect;
+
+  ///运动的终点
+  PathNode _endPathNode;
 
   ///跳的时候存储的信息
   JumpInfo jumpInfo;
 
-  double get xScale {
-    double tmpX = endPathNode.position.x - center.x;
-    double tmpY = endPathNode.position.y - center.y;
-    return tmpX / sqrt(tmpX * tmpX + tmpY * tmpY);
+  PersonSprite({@required Position initialPosition, @required PathNode endPathNode})
+      : assert(initialPosition != null && endPathNode != null) {
+    _endPathNode = endPathNode;
+    x = initialPosition.x;
+    y = initialPosition.y;
+    resetMoveEffect();
+    _leftFootSprite = FootSprite(personY: y, personX: x, origentation: HorizontalOrigentation.Left);
+    _rightFootSprite = FootSprite(personY: y, personX: x, origentation: HorizontalOrigentation.Right);
+    _bodySprite = BodySprite(origentation: HorizontalOrigentation.Left);
+    _leftHandSprite = HandSprite(personY: y, personX: x, origentation: HorizontalOrigentation.Left);
+    _rightHandSprite = HandSprite(personY: y, personX: x, origentation: HorizontalOrigentation.Right);
+    _headSprite = HeadSprite(origentation: HorizontalOrigentation.Right);
+    _eyeSprite = SpriteComponent.rectangle(EyeWidth, EyeHeight, 'people-eyes-1005.png');
+    _eyeSprite.x = -EyeWidth / 2;
+    _eyeSprite.y = -BodyHeight - FootHeight - 11;
+
+    _dynamicComponents.add(_leftFootSprite);
+    _dynamicComponents.add(_rightFootSprite);
+    _dynamicComponents.add(_leftHandSprite);
+    _dynamicComponents.add(_rightHandSprite);
+
+    _quietComponents.add(_bodySprite);
+    _quietComponents.add(_headSprite);
+    _quietComponents.add(_eyeSprite);
+
+    _quietLayer = CallbackLayer(drawLayerCallback: (canvas) {
+      canvas.save();
+      _quietComponents?.forEach((value) {
+        if (value.loaded()) {
+          value.render(canvas);
+          canvas.restore();
+        }
+      });
+    });
   }
 
-  double get yScale {
-    double tmpX = endPathNode.position.x - center.x;
-    double tmpY = endPathNode.position.y - center.y;
-    return tmpY / sqrt(tmpX * tmpX + tmpY * tmpY);
-  }
-
-  set center(Position position) {
-    x = position.x - width / 2;
-    y = position.y - height / 2;
-  }
-
-  Position get center {
-    return Position(x + width / 2, y + height / 2);
-  }
-
-  PersonSprite(double width, double height) {
-    add(FootSprite(personY: 200, personX: 150, origentation: HorizontalOrigentation.Left));
-    add(FootSprite(personY: 200, personX: 150, origentation: HorizontalOrigentation.Right));
-    add(BodySprite(personY: 200, personX: 150, origentation: HorizontalOrigentation.Left));
-    add(HandSprite(personY: 200, personX: 150, origentation: HorizontalOrigentation.Left));
-    add(HandSprite(personY: 200, personX: 150, origentation: HorizontalOrigentation.Right));
-    add(HeadSprite(personY: 200, personX: 150, origentation: HorizontalOrigentation.Right));
-  }
-
-  void add(Component c) {
-    if (gameRef is BaseGame) {
-      (gameRef as BaseGame).preAdd(c);
+  void resetMoveEffect() {
+    _moveEffect = MoveEffect(destination: _endPathNode.position, curve: Curves.linear, speed: MoveSpeed);
+    addEffect(_moveEffect);
+    if (_moveEffect.endPosition.x > x) {
+      _faceOrigentation = HorizontalOrigentation.Right;
+    } else if (_moveEffect.endPosition.x < x) {
+      _faceOrigentation = HorizontalOrigentation.Left;
+    } else {
+      _faceOrigentation = HorizontalOrigentation.values[Random().nextInt(1)];
     }
-    components.add(c);
   }
 
   void jumpto({@required PathNode targetEndNode, @required Position targetCenter}) {
-    if (jumpInfo == null) {
-      endPathNode = targetEndNode;
-      jumpInfo = JumpInfo(
-          originPosition: toPosition(),
-          originSize: Size(width, height),
-          targetCenterPosition: targetCenter,
-          targetEndPathNode: targetEndNode);
-      jumpInfo.upEffects?.forEach((element) {
-        addEffect(element);
-      });
-    }
+    // if (jumpInfo == null) {
+    //   endPathNode = targetEndNode;
+    //   jumpInfo = JumpInfo(
+    //       originPosition: toPosition(),
+    //       originSize: Size(width, height),
+    //       targetCenterPosition: targetCenter,
+    //       targetEndPathNode: targetEndNode);
+    //   jumpInfo.upEffects?.forEach((element) {
+    //     addEffect(element);
+    //   });
+    // }
   }
 
   void _updateJumpStatus(double dt) {
@@ -372,7 +372,7 @@ class PersonSprite extends PositionComponent with HasGameRef {
       clearEffects();
       width = jumpInfo.originSize.width;
       height = jumpInfo.originSize.height;
-      center = jumpInfo.targetCenterPosition;
+      // center = jumpInfo.targetCenterPosition;
       jumpInfo.jumpStatus = JumpStatus.Finish;
       jumpInfo = null;
     }
@@ -383,37 +383,63 @@ class PersonSprite extends PositionComponent with HasGameRef {
 
   @override
   void update(double dt) {
-    // super.update(dt);
+    super.update(dt);
 
     if (jumpInfo != null) {
       _updateJumpStatus(dt);
     } else {
-      double moveLength = dt * 5;
-      x += moveLength * xScale;
-      y += moveLength * yScale;
-
-      Position endPosition = endPathNode.position;
-      Position centerPosition = center;
-      if ((endPosition.x - centerPosition.x).abs() < 1 && (endPosition.y - centerPosition.y).abs() < 1) {
-        // print('change');
-        // print(centerPosition);
-        // print(endPathNode.position);
-        endPathNode = endPathNode.randomLinkedNode;
-        // print(endPathNode.position);
+      if (_moveEffect?.isMax() == true) {
+        removeEffect(_moveEffect);
+        _endPathNode = _endPathNode.randomLinkedNode;
+        if (_endPathNode != null) {
+          resetMoveEffect();
+        }
       }
 
-      components.forEach((c) {
+      _dynamicComponents.forEach((c) {
         (c as PersonComponent).updatePosition(personX: x, personY: y);
         c.update(dt);
       });
-      components.removeWhere((c) => c.destroy());
+      _dynamicComponents.removeWhere((c) => c.destroy());
+    }
+    if (!_isQuietcomponentsAllLoaded) {
+      _isQuietcomponentsAllLoaded = true;
+      Timer.run(() {
+        _quietComponents?.firstWhere((value) {
+          if (!value.loaded()) {
+            _isQuietcomponentsAllLoaded = false;
+            return true;
+          }
+          return false;
+        }, orElse: () => null);
+        if (_isQuietcomponentsAllLoaded) {
+          _quietLayer.reRender();
+        }
+      });
     }
   }
 
   @override
   void render(Canvas canvas) {
     canvas.save();
-    components.forEach((comp) => _renderComponent(canvas, comp));
+    if (_faceOrigentation == HorizontalOrigentation.Right) {
+      ///小人往右
+      canvas.translate(x, y);
+      canvas.scale(-1.0, 1.0);
+      _quietLayer?.render(
+        canvas,
+      );
+    } else {
+      _quietLayer?.render(
+        canvas,
+        x: x,
+        y: y,
+      );
+    }
+
+    canvas.restore();
+    canvas.save();
+    _dynamicComponents.forEach((comp) => _renderComponent(canvas, comp));
     canvas.restore();
   }
 

@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:cityCloud/ui/game/dash_path.dart';
 import 'package:flame/position.dart';
 import 'package:flutter/material.dart';
 
@@ -168,31 +167,6 @@ class TileInfo {
         break;
     }
     return null;
-  }
-
-  void drawPath(Canvas canvas) {
-    ///用四大角画出人物可以运动的路径
-    Paint paint = Paint()
-      ..color = Colors.white
-      ..strokeCap = StrokeCap.butt
-      ..style = PaintingStyle.stroke;
-    canvas.drawPath(_getRRectPath(), paint);
-  }
-
-  Path _getRRectPath() {
-    Path path = Path()
-      ..addRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromLTWH(
-            topLeftNode.position.x,
-            topLeftNode.position.y,
-            pathWidth,
-            pathHeight,
-          ),
-          Radius.circular(AngleRadius),
-        ),
-      );
-    return dashPath(path, dashArray: CircularIntervalList(DashPattern));
   }
 }
 

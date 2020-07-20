@@ -23,8 +23,20 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  #本地化支持
+  flutter_localizations:
+    sdk: flutter
   #flutter 游戏框架
   flame: ^0.24.0
+  #下拉刷新，上拉加载更多
+  pull_to_refresh: ^1.6.0
+  #toast
+  oktoast: ^2.3.2
+  #网络请求
+  dio: ^3.0.9
+  #状态管理
+  bloc: ^5.0.1
+  flutter_bloc: ^5.0.1 
 
 
   # The following adds the Cupertino Icons font to your application.

@@ -1,8 +1,7 @@
 import 'dart:ui';
 
-import 'package:cityCloud/ui/game/dash_path.dart';
-import 'package:cityCloud/ui/game/model/tile_info.dart';
-import 'package:cityCloud/ui/game/model/tile_location.dart';
+import 'package:cityCloud/main/game/model/tile_info.dart';
+import 'package:cityCloud/main/game/model/tile_location.dart';
 import 'package:flame/components/component.dart';
 import 'package:flame/position.dart';
 import 'package:flutter/material.dart';
@@ -88,31 +87,6 @@ class TileComponent extends SpriteComponent {
         _tileInfo.linkPathNode(node: toLinkTileInfo.bottomLeftNode, orientation: borderOrientation);
         break;
     }
-  }
-
-  void drawPath(Canvas canvas) {
-    ///用四大角画出人物可以运动的路径
-    Paint paint = Paint()
-      ..color = Colors.white
-      ..strokeCap = StrokeCap.butt
-      ..style = PaintingStyle.stroke;
-    canvas.drawPath(_getRRectPath(), paint);
-  }
-
-  Path _getRRectPath() {
-    Path path = Path()
-      ..addRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromLTWH(
-            x + PathPadding,
-            y + PathPadding,
-            width - 2 * PathPadding,
-            height - 2 * PathPadding,
-          ),
-          Radius.circular(AngleRadius),
-        ),
-      );
-    return dashPath(path, dashArray: CircularIntervalList(DashPattern));
   }
 
   @override
