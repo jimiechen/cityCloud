@@ -337,7 +337,7 @@ class PersonSprite extends PositionComponent {
       _faceOrigentation = HorizontalOrigentation.Right;
     } else if (_moveEffect.endPosition.x < x) {
       _faceOrigentation = HorizontalOrigentation.Left;
-    } else {
+    } else if(_faceOrigentation == null){
       _faceOrigentation = HorizontalOrigentation.values[Random().nextInt(1)];
     }
   }
@@ -382,9 +382,14 @@ class PersonSprite extends PositionComponent {
   }
 
   @override
+  int priority() {
+    return y.toInt();
+  }
+
+  @override
   void update(double dt) {
     super.update(dt);
-
+    
     if (jumpInfo != null) {
       _updateJumpStatus(dt);
     } else {
