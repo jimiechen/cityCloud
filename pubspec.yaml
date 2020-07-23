@@ -35,8 +35,8 @@ dependencies:
   #网络请求
   dio: ^3.0.9
   #状态管理
-  bloc: ^5.0.1
-  flutter_bloc: ^5.0.1 
+  bloc: ^6.0.1
+  flutter_bloc: ^6.0.1 
 
 
   # The following adds the Cupertino Icons font to your application.

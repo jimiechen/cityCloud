@@ -1,3 +1,5 @@
+import 'package:cityCloud/expanded/cubit/global_cubit.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'custom_game.dart';
@@ -15,6 +17,31 @@ class _GamePageState extends State<GamePage> {
     super.initState();
     // _box2dComponent = MyBox2D();
     _box2dGame = CustomGame();
+    GlobalCubit().listen((cubitState) {
+      if (cubitState is GlobalTapOnPersionSpriteRemider) {
+        ///点击了小人头部提示
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return CupertinoAlertDialog(
+              title: Text('点击了小人头上的提示'),
+              actions: <Widget>[
+                CupertinoDialogAction(
+                  child: Text(
+                    '确定',
+                    style: TextStyle(decoration: TextDecoration.none, fontSize: 16),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }
+    });
   }
 
   @override
