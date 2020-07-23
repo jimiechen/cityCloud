@@ -2,22 +2,20 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-class TranslateAnimation {
-  final Offset start;
-  final Offset end;
+class DoubleAnimation {
   final double speed;
   final Curve curve;
-  final ValueChanged<Offset> change;
+  final double start;
+  final double end;
+  final ValueChanged<double> change;
   final VoidCallback complete;
 
-  double _xDistance;
-  double _yDistance;
   double travelTime;
   double currentTime = 0.0;
-
+  double _distance;
   bool _finish = false;
 
-  TranslateAnimation({
+  DoubleAnimation({
     @required this.start,
     @required this.end,
     @required this.speed,
@@ -25,20 +23,18 @@ class TranslateAnimation {
     this.change,
     this.complete,
   }) {
-    _xDistance = end.dx - start.dx;
-    _yDistance = end.dy - start.dy;
-    final totalDistance = sqrt(pow(_xDistance, 2) + pow(_yDistance, 2));
-    travelTime = (totalDistance / speed).abs();
+    _distance = end - start;
+    travelTime = (_distance / speed).abs();
   }
 
   void dispose() => _finish = true;
-
+  
   void update(double dt) {
     if (_finish) return;
     currentTime += dt;
     double percentage = min(1.0, max(0.0, currentTime / travelTime));
     final double c = curve?.transform(percentage) ?? 1.0;
-    change?.call(start + Offset(_xDistance * c, _yDistance * c));
+    change?.call(start + _distance * c);
     if (percentage >= 1) complete?.call();
   }
 }
