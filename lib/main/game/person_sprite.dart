@@ -250,6 +250,9 @@ class PersonSprite extends PositionComponent {
   ///头顶提示sprite
   RemiderSprite _remiderSprite;
 
+  ///隐藏提示定时器
+  Timer _hideRemiderTimer;
+
   ///移动effect
   MoveEffect _moveEffect;
 
@@ -345,7 +348,7 @@ class PersonSprite extends PositionComponent {
     }
   }
 
-  void showTips() {
+  void showRemider() {
     if (_remiderSprite == null) {
       Sprite.loadSprite(
         'icon_mail.png',
@@ -354,6 +357,14 @@ class PersonSprite extends PositionComponent {
         _remiderSprite.x = -10;
         _remiderSprite.y = -FootHeight - BodyHeight - HeadHeight - 20;
         _dynamicComponents.add(_remiderSprite);
+        _hideRemiderTimer?.cancel();
+        _hideRemiderTimer = Timer(Duration(seconds: 5), () {
+          _hideRemiderTimer?.cancel();
+          if (_dynamicComponents.contains(_remiderSprite)) {
+            _dynamicComponents.remove(_remiderSprite);
+          }
+          _remiderSprite = null;
+        });
       });
     }
   }
@@ -366,20 +377,22 @@ class PersonSprite extends PositionComponent {
   /**
    * 四个Tapable相关方法只处理头部弹出的提示的点击
    */
-  void onTapDown(TapDownDetails details) {
+  void onTapDown() {
     GlobalCubit().add(GlobalTapOnPersionSpriteRemider());
   }
 
-  void handleTapDown(int pointerId, TapDownDetails details) {
-     if (checkTapOverlap(details.localPosition)) {
-      onTapDown(details);
+  void handleTapDown(Offset o) {
+    if (checkTapOverlap(o)) {
+      onTapDown();
     }
   }
 
-  bool checkTapOverlap(Offset o) => toRect().contains(o);
+  bool checkTapOverlap(Offset o) {
+    return toRect().contains(o);
+  }
 
   @override
-  Rect toRect() => Rect.fromLTWH(x-10, y-FootHeight - BodyHeight - HeadHeight - 20, 20, 20);
+  Rect toRect() => Rect.fromLTWH(x - 10, y - FootHeight - BodyHeight - HeadHeight - 20, 20, 20);
 
   @override
   void update(double dt) {

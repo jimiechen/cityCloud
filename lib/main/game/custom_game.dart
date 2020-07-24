@@ -72,6 +72,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
           TileComponent tileComponent = TileComponent(tileMapLocation: TileMapLocation(x, y));
           tileComponent.sprite = value;
           addTileComponent(tileComponent);
+          addPersonSpriteToTileComponent(tileComponent: tileComponent);
         }
       }
       _mapLayer = CallbackLayer(drawLayerCallback: (canvas) {
@@ -208,8 +209,6 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     if (rightTileComponent != null) {
       tileComponent.linkWithTileComponent(tileComponent: rightTileComponent, borderOrientation: BorderOrientation.Right);
     }
-    // add(tileComponent);
-    addPersonSpriteToTileComponent(tileComponent: tileComponent);
   }
 
   Future<void> addPersonSprite({@required PathNode beginNode, @required PathNode endNode, @required int movePercent}) async {
@@ -238,9 +237,9 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     });
   }
 
-  void showTips() {
+  void showRemider() {
     List<PersonSprite> personSprite = List<PersonSprite>.from(components.where((element) => element is PersonSprite));
-    personSprite[Random().nextInt(personSprite.length)].showTips();
+    personSprite[Random().nextInt(personSprite.length)].showRemider();
   }
 
   @override
@@ -250,7 +249,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     if (timeCont > 5) {
       timeCont = 0;
       // jump();
-      showTips();
+      showRemider();
     }
     _translateAnimation?.update(t);
     _scaleAnimation?.update(t);
@@ -276,8 +275,8 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   @override
   void onTapDown(TapDownDetails details) {
     super.onTapDown(details);
-    components.where((element) => element is PersonSprite).forEach((element) { 
-      (element as PersonSprite).handleTapDown(null,details);
+    components.where((element) => element is PersonSprite).forEach((element) {
+      (element as PersonSprite).handleTapDown(fromGame(details.localPosition));
     });
   }
 
