@@ -77,6 +77,10 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
           addTileComponent(tileComponent);
         }
       }
+      Future.delayed(Duration(seconds: 2), () {
+        ///添加十个小人
+        List.generate(10, (index) => randomAddPerson());
+      });
       _mapLayer = CallbackPreRenderedLayer(drawLayerCallback: (canvas) {
         _tileComponentLocationMap?.forEach((key, value) {
           value.render(canvas);
@@ -245,6 +249,11 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     });
   }
 
+  void jumpInplace() {
+    List<PersonSprite> personSprite = List<PersonSprite>.from(components.where((element) => element is PersonSprite));
+    personSprite.randomItem?.jumpInPlace();
+  }
+
   void showRemider() {
     List<PersonSprite> personSprite = List<PersonSprite>.from(components.where((element) => element is PersonSprite));
     personSprite.randomItem?.showRemider();
@@ -252,7 +261,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
 
   double showRemiderTimeCount = 0;
   double jumpTimeCount = 0;
-
+  double jumpInPlaceTimeCount = 0;
   @override
   void update(double t) {
     super.update(t);
@@ -267,6 +276,12 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     if (jumpTimeCount > 7) {
       jumpTimeCount = 0;
       jump();
+    }
+
+    jumpInPlaceTimeCount += t;
+    if (jumpInPlaceTimeCount > (components.length > 15 ? 3 : 7)) {
+      jumpInPlaceTimeCount = 0;
+      jumpInplace();
     }
 
     _translateAnimation?.update(t);

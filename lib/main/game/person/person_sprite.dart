@@ -10,12 +10,12 @@ import 'package:cityCloud/main/game/person/part_of_person/remider.dart';
 import 'package:cityCloud/main/game/person/person_const_data.dart';
 import 'package:cityCloud/main/game/person/person_effect/enter_effect.dart';
 import 'package:cityCloud/main/game/person/person_effect/go_out_effect.dart';
+import 'package:cityCloud/main/game/person/person_effect/jump_in_place_effect.dart';
 import 'package:flame/components/component.dart';
 
 import 'package:flame/effects/effects.dart';
 import 'package:flame/position.dart';
 import 'package:flutter/material.dart';
-import 'dart:math';
 
 import '../callback_pre_render_layer.dart';
 import '../model/tile_info.dart';
@@ -58,7 +58,12 @@ class PersonSprite extends PositionComponent {
 
   ///入场效果
   EnterEffect _enterEffect;
+
+  ///从游戏中消失效果
   GoOutEffect _goOutEffect;
+
+  ///原地跳效果
+  JumpInPlaceEffect _jumpInPlaceEffect;
 
   PersonSprite({@required Position initialPosition, @required PathNode endPathNode}) : assert(initialPosition != null && endPathNode != null) {
     _endPathNode = endPathNode;
@@ -105,32 +110,58 @@ class PersonSprite extends PositionComponent {
     }
   }
 
+  ///原地跳
+  void jumpInPlace() {
+    if (_goOutEffect == null && _enterEffect == null && _jumpInPlaceEffect == null) {
+      removeEffect(_moveEffect);
+      _jumpInPlaceEffect = JumpInPlaceEffect(
+          personPosition: toPosition(),
+          onComplete: () {
+            _jumpInPlaceEffect = null;
+            resetMoveEffect();
+          });
+    }
+  }
+
+  ///从一个位置跳到另一个位置
   void jumpto({@required PathNode targetEndNode, @required Position targetCenter}) {
-    goOut(() {
-      Timer.run(() {
-        enter(targetEndNode: targetEndNode, targetPosition: targetCenter);
+    if (_goOutEffect == null && _enterEffect == null && _jumpInPlaceEffect == null) {
+      goOut(() {
+        Timer.run(() {
+          enter(targetEndNode: targetEndNode, targetPosition: targetCenter);
+        });
       });
-    });
+    }
   }
 
   ///小人进入游戏界面
   void enter({@required PathNode targetEndNode, @required Position targetPosition}) {
     assert(targetEndNode != null && targetPosition != null);
-    _endPathNode = targetEndNode;
-    x = targetPosition.x;
-    y = targetPosition.y;
-    _enterEffect = EnterEffect(
-        personPosition: toPosition(),
-        onComplete: () {
-          x = targetPosition.x;
-          y = targetPosition.y;
-          resetMoveEffect();
-        });
+    if (_goOutEffect == null && _enterEffect == null && _jumpInPlaceEffect == null) {
+      _endPathNode = targetEndNode;
+      x = targetPosition.x;
+      y = targetPosition.y;
+      _enterEffect = EnterEffect(
+          personPosition: toPosition(),
+          onComplete: () {
+            _enterEffect = null;
+            x = targetPosition.x;
+            y = targetPosition.y;
+            resetMoveEffect();
+          });
+    }
   }
 
   ///小人从游戏界面消失
   void goOut(VoidCallback onComplete) {
-    _goOutEffect = GoOutEffect(personPosition: toPosition(), onComplete: onComplete);
+    if (_goOutEffect == null && _enterEffect == null && _jumpInPlaceEffect == null) {
+      _goOutEffect = GoOutEffect(
+          personPosition: toPosition(),
+          onComplete: () {
+            _goOutEffect = null;
+            onComplete?.call();
+          });
+    }
   }
 
   ///显示头顶提示
@@ -186,6 +217,7 @@ class PersonSprite extends PositionComponent {
       _goOutEffect?.update(dt);
     } else {
       super.update(dt);
+      _jumpInPlaceEffect?.update(dt);
       if (_moveEffect?.isMax() == true) {
         removeEffect(_moveEffect);
         _endPathNode = _endPathNode.randomLinkedNode;
@@ -219,13 +251,17 @@ class PersonSprite extends PositionComponent {
 
   @override
   void render(Canvas canvas) {
+    ///画脚下阴影
+    canvas.drawOval(
+      Rect.fromCenter(center: Offset(x, y), width: ShadowWidth, height: ShadowHeight),
+      Paint()..color = Colors.grey.withOpacity(0.5),
+    );
     canvas.save();
     _enterEffect?.setEffectToCanvas(canvas);
     _goOutEffect?.setEffectToCanvas(canvas);
+    _jumpInPlaceEffect?.setEffectToCanvas(canvas);
     _render(canvas);
     canvas.restore();
-    if (_enterEffect?.hasFinished == true) _enterEffect = null;
-    if (_goOutEffect?.hasFinished == true) _goOutEffect = null;
   }
 
   void _render(Canvas canvas) {
@@ -240,12 +276,6 @@ class PersonSprite extends PositionComponent {
       canvas,
     );
     canvas.restore();
-
-    ///画脚下阴影
-    canvas.drawOval(
-      Rect.fromCenter(center: Offset(x, y), width: ShadowWidth, height: ShadowHeight),
-      Paint()..color = Colors.grey.withOpacity(0.5),
-    );
 
     ///手脚
     canvas.save();
