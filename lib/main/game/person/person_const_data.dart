@@ -3,27 +3,36 @@ enum HorizontalOrigentation {
   Right,
 }
 
+const double _scale = 0.5;
+
 const double MoveSpeed = 5; //移动速度
 
-const double FootSpacing = 2; //两脚之间距离
-const double FootSpeed = 10; //抬脚速度
+const double FootSpacing = 2 * _scale; //两脚之间距离
+const double FootSpeed = 10 * _scale; //抬脚速度
 const double FootPutUpHeight = 2; //脚抬起的高度
-const double FootHeight = 8; //脚的高度
-const double FootWidth = 2; //脚的宽度
+const double FootHeight = 8 * _scale; //脚的高度
+const double FootWidth = 2 * _scale; //脚的宽度
 
-const double HandHeight = 18; //手臂的高度
-const double HandWidth = 2; //手臂的宽度
-const double HandSpacing = 8; //手臂的间隔
+const double HandHeight = 18 * _scale; //手臂的高度
+const double HandWidth = 2 * _scale; //手臂的宽度
+const double HandSpacing = 8 * _scale; //手臂的间隔
 const double HandRotateSpeed = 1; //手臂旋转速度
 const double HandRotateRadians = 0.5; //手臂旋转的弧度
 
-const double BodyWidth = 20; //身体宽度
-const double BodyHeight = 18; //身体高度
-const double BodyOffset = 2; //以为身体有屁股，所以要设置偏移
+const double BodyWidth = 20 * _scale; //身体宽度
+const double BodyHeight = 18 * _scale; //身体高度
+const double BodyOffset = 2 * _scale; //以为身体有屁股，所以要设置偏移
 
-const double HeadHeight = 18; //头高
-const double HeadWidth = 18; //头宽
+const double HeadHeight = 26 * _scale; //头高
+const double HeadWidth = 26 * _scale; //头宽
 
-const double EyeHeight = 6.45; //眼睛宽度
-const double EyeWidth = 15; //眼睛高度
-const double EyeSpeed = 10; //眼睛高度
+const double EyeHeight = 12 * _scale; //眼睛宽度
+const double EyeWidth = 26 * _scale; //眼睛高度
+const double EyeCloseSpeed = 15 * _scale; //眨眼睛速度
+const double EyeCloseTimeInterval = 6 * _scale; //眨眼睛时间间隔
+
+const double HairWidth = 50 * _scale; //头发宽度
+const double HairHeight = 50 * _scale; //头发高度
+
+const double ShadowWidth = 16 * _scale; //影子宽
+const double ShadowHeight = 8 * _scale; //影子高

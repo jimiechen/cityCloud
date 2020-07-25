@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:cityCloud/dart_class/extension/Iterable_extension.dart';
 import 'package:flame/position.dart';
 import 'package:flutter/material.dart';
 
@@ -188,7 +189,7 @@ class PathNode {
     if (list.isEmpty) {
       return null;
     } else {
-      return list[Random().nextInt(list.length)];
+      return list.randomItem;
     }
   }
 

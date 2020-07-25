@@ -24,17 +24,18 @@ class HeadSprite extends PositionComponent {
     height = headHeight;
     ///此xy是头的中心点
     x = 0;
-    y = -footAndBodyHeight - 7;
+    y = -footAndBodyHeight - headHeight/2 + 1;
 
-    hairComponent = SpriteComponent.square(30, 'people-hair-2.png');
-    hairComponent.x = -14;
-    hairComponent.y = -16;
+    hairComponent = SpriteComponent.rectangle(HairWidth,HairHeight, 'people-hair-2.png');
+    hairComponent.x = -HairWidth/2;
+    hairComponent.y = -HairHeight/2;
 
     eyeSprite = EyeSprite(Position(x,y));
 
     _layer = CallbackDynamicLayer(drawLayerCallback: (canvas) {
       Paint paint = Paint()..color = Colors.yellow;
-      canvas.drawCircle(Offset(0, 0), 9, paint);
+      // canvas.drawCircle(Offset(0, 0), 9, paint);
+      canvas.drawOval(Rect.fromCenter(center:Offset(0, 0),width: width,height:height), paint);
       canvas.save();
       hairComponent.render(canvas);
       canvas.restore();
@@ -93,14 +94,14 @@ class EyeSprite extends SpriteComponent {
   void setEffect() {
     if (_eyeEffect != null) return;
     final Rect originRect = Rect.fromLTWH(x, y, width, height);
-    double travelTime = height / EyeSpeed;
+    double travelTime = height / EyeCloseSpeed;
     _eyeEffect = CombinedEffect(
         isAlternating: true,
         effects: <PositionComponentEffect>[
           ScaleEffect(
             curve: Curves.linear,
             size: Size(EyeWidth, 0),
-            speed: EyeSpeed,
+            speed: EyeCloseSpeed,
           ),
           MoveEffect(
             curve: Curves.linear,
@@ -123,7 +124,7 @@ class EyeSprite extends SpriteComponent {
   void update(double t) {
     super.update(t);
     _timeCount += t;
-    if (_timeCount > 5 && _eyeEffect == null) {
+    if (_timeCount > EyeCloseTimeInterval && _eyeEffect == null) {
       _timeCount = 0;
       setEffect();
     }

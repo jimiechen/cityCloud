@@ -1,4 +1,6 @@
 import 'package:cityCloud/expanded/cubit/global_cubit.dart';
+import 'package:cityCloud/main/empty_page.dart';
+import 'package:cityCloud/router/router.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -44,8 +46,40 @@ class _GamePageState extends State<GamePage> {
     });
   }
 
+  Widget get addButton => Positioned(
+        left: 30,
+        bottom: 30,
+        child: FlatButton(
+          color: Colors.red,
+          onPressed: () {
+            _box2dGame.randomAddPerson();
+          },
+          child: Text('添加小人'),
+        ),
+      );
+
+  Widget get nextPageButton => Positioned(
+        right: 30,
+        bottom: 30,
+        child: FlatButton(
+          color: Colors.red,
+          onPressed: () {
+            Navigator.push(context, Router.routeForPage(page: EmptyPage()));
+          },
+          child: Text('跳到空白页'),
+        ),
+      );
+
   @override
   Widget build(BuildContext context) {
-    return _box2dGame.widget;
+    return Scaffold(
+      body: Stack(
+        children: [
+          _box2dGame.widget,
+          addButton,
+          nextPageButton,
+        ],
+      ),
+    );
   }
 }

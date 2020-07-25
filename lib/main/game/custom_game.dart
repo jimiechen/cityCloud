@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:cityCloud/dart_class/extension/Iterable_extension.dart';
 import 'package:cityCloud/main/game/model/tile_location.dart';
 import 'package:cityCloud/main/game/person/person_sprite.dart';
 import 'package:cityCloud/main/game/tile_component.dart';
@@ -57,6 +58,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
 
   ///地图component不添加到CustomGame，而是在_mapLayer中绘制出完整的地图缓存使用，以免每次都绘制一次浪费性能
   final Map<TileMapLocation, TileComponent> _tileComponentLocationMap = {};
+
   ///地图背景layer
   CallbackPreRenderedLayer _mapLayer;
   @override
@@ -73,7 +75,6 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
           TileComponent tileComponent = TileComponent(tileMapLocation: TileMapLocation(x, y));
           tileComponent.sprite = value;
           addTileComponent(tileComponent);
-          addPersonSpriteToTileComponent(tileComponent: tileComponent);
         }
       }
       _mapLayer = CallbackPreRenderedLayer(drawLayerCallback: (canvas) {
@@ -212,11 +213,20 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     }
   }
 
+  ///随机添加小人
+  void randomAddPerson() {
+    TileComponent tile = _tileComponentLocationMap?.values?.randomItem;
+    if (tile != null) {
+      addPersonSpriteToTileComponent(tileComponent: tile);
+    }
+  }
+
   Future<void> addPersonSprite({@required PathNode beginNode, @required PathNode endNode, @required int movePercent}) async {
     PersonSprite personSprite =
         PersonSprite(endPathNode: endNode, initialPosition: positionAmong(beginPosition: beginNode.position, endPosition: endNode.position, movePercent: movePercent));
 
     add(personSprite);
+    personSprite.enter(targetEndNode: endNode, targetPosition: positionAmong(beginPosition: beginNode.position, endPosition: endNode.position, movePercent: movePercent));
   }
 
   void addPersonSpriteToTileComponent({@required TileComponent tileComponent}) {
@@ -226,32 +236,39 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     });
   }
 
-  double timeCont = 0;
-
   void jump() {
-    List<TileComponent> tiles = List<TileComponent>.from(components.where((element) => element is TileComponent));
     List<PersonSprite> personSprite = List<PersonSprite>.from(components.where((element) => element is PersonSprite));
-    tiles[Random().nextInt(tiles.length)].randomPath(({beginNode, endNode}) {
+    _tileComponentLocationMap.values?.randomItem?.randomPath(({beginNode, endNode}) {
       int movePercent = Random().nextInt(100);
       Position target = positionAmong(beginPosition: beginNode.position, endPosition: endNode.position, movePercent: movePercent);
-      personSprite[Random().nextInt(personSprite.length)].jumpto(targetEndNode: endNode, targetCenter: target);
+      personSprite.randomItem?.jumpto(targetEndNode: endNode, targetCenter: target);
     });
   }
 
   void showRemider() {
     List<PersonSprite> personSprite = List<PersonSprite>.from(components.where((element) => element is PersonSprite));
-    personSprite[Random().nextInt(personSprite.length)].showRemider();
+    personSprite.randomItem?.showRemider();
   }
+
+  double showRemiderTimeCount = 0;
+  double jumpTimeCount = 0;
 
   @override
   void update(double t) {
     super.update(t);
-    timeCont += t;
-    if (timeCont > 5) {
-      timeCont = 0;
+    showRemiderTimeCount += t;
+    if (showRemiderTimeCount > 5) {
+      showRemiderTimeCount = 0;
       // jump();
       showRemider();
     }
+
+    jumpTimeCount += t;
+    if (jumpTimeCount > 7) {
+      jumpTimeCount = 0;
+      jump();
+    }
+
     _translateAnimation?.update(t);
     _scaleAnimation?.update(t);
   }
@@ -263,8 +280,8 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
       canvas.translate(_translateAfterScale.dx, _translateAfterScale.dy);
     }
 
-    // canvas.scale(2, 2);
     // canvas.translate(60, 60);
+    // canvas.scale(2, 2);
     _mapLayer?.render(canvas);
     canvas.save();
     components.toList()

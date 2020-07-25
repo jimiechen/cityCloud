@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cityCloud/dart_class/extension/Iterable_extension.dart';
 import 'package:cityCloud/expanded/cubit/global_cubit.dart';
 import 'package:cityCloud/main/game/person/part_of_person/body.dart';
 import 'package:cityCloud/main/game/person/part_of_person/foot.dart';
@@ -7,6 +8,8 @@ import 'package:cityCloud/main/game/person/part_of_person/hand.dart';
 import 'package:cityCloud/main/game/person/part_of_person/head.dart';
 import 'package:cityCloud/main/game/person/part_of_person/remider.dart';
 import 'package:cityCloud/main/game/person/person_const_data.dart';
+import 'package:cityCloud/main/game/person/person_effect/enter_effect.dart';
+import 'package:cityCloud/main/game/person/person_effect/go_out_effect.dart';
 import 'package:flame/components/component.dart';
 
 import 'package:flame/effects/effects.dart';
@@ -47,14 +50,15 @@ class PersonSprite extends PositionComponent {
   ///隐藏提示定时器
   Timer _hideRemiderTimer;
 
-  ///移动effect
-  MoveEffect _moveEffect;
-
   ///运动的终点
   PathNode _endPathNode;
 
-  ///跳的时候存储的信息
-  JumpInfo jumpInfo;
+  ///移动effect
+  MoveEffect _moveEffect;
+
+  ///入场效果
+  EnterEffect _enterEffect;
+  GoOutEffect _goOutEffect;
 
   PersonSprite({@required Position initialPosition, @required PathNode endPathNode}) : assert(initialPosition != null && endPathNode != null) {
     _endPathNode = endPathNode;
@@ -88,6 +92,7 @@ class PersonSprite extends PositionComponent {
     });
   }
 
+  ///根据_endPathNode重新设置移动
   void resetMoveEffect() {
     _moveEffect = MoveEffect(destination: _endPathNode.position, curve: Curves.linear, speed: MoveSpeed);
     addEffect(_moveEffect);
@@ -96,49 +101,39 @@ class PersonSprite extends PositionComponent {
     } else if (_moveEffect.endPosition.x < x) {
       _faceOrigentation = HorizontalOrigentation.Left;
     } else if (_faceOrigentation == null) {
-      _faceOrigentation = HorizontalOrigentation.values[Random().nextInt(1)];
+      _faceOrigentation = HorizontalOrigentation.values.randomItem;
     }
   }
 
   void jumpto({@required PathNode targetEndNode, @required Position targetCenter}) {
-    // if (jumpInfo == null) {
-    //   endPathNode = targetEndNode;
-    //   jumpInfo = JumpInfo(
-    //       originPosition: toPosition(),
-    //       originSize: Size(width, height),
-    //       targetCenterPosition: targetCenter,
-    //       targetEndPathNode: targetEndNode);
-    //   jumpInfo.upEffects?.forEach((element) {
-    //     addEffect(element);
-    //   });
-    // }
-  }
-
-  void _updateJumpStatus(double dt) {
-    if (jumpInfo.time > jumpInfo.scaleTravelTime && jumpInfo.jumpStatus != JumpStatus.Downing) {
-      jumpInfo.time = jumpInfo.scaleTravelTime;
-      clearEffects();
-      setByPosition(jumpInfo.downBeginPosition);
-      setBySize(Position.fromSize(jumpInfo.scaleSize));
-      jumpInfo.jumpStatus = JumpStatus.Downing;
-      jumpInfo.downEffects?.forEach((element) {
-        addEffect(element);
+    goOut(() {
+      Timer.run(() {
+        enter(targetEndNode: targetEndNode, targetPosition: targetCenter);
       });
-    }
-
-    if (jumpInfo.time > jumpInfo.scaleTravelTime * 2 && jumpInfo.jumpStatus != JumpStatus.Finish) {
-      clearEffects();
-      width = jumpInfo.originSize.width;
-      height = jumpInfo.originSize.height;
-      // center = jumpInfo.targetCenterPosition;
-      jumpInfo.jumpStatus = JumpStatus.Finish;
-      jumpInfo = null;
-    }
-    if (jumpInfo != null) {
-      jumpInfo.time += dt;
-    }
+    });
   }
 
+  ///小人进入游戏界面
+  void enter({@required PathNode targetEndNode, @required Position targetPosition}) {
+    assert(targetEndNode != null && targetPosition != null);
+    _endPathNode = targetEndNode;
+    x = targetPosition.x;
+    y = targetPosition.y;
+    _enterEffect = EnterEffect(
+        personPosition: toPosition(),
+        onComplete: () {
+          x = targetPosition.x;
+          y = targetPosition.y;
+          resetMoveEffect();
+        });
+  }
+
+  ///小人从游戏界面消失
+  void goOut(VoidCallback onComplete) {
+    _goOutEffect = GoOutEffect(personPosition: toPosition(), onComplete: onComplete);
+  }
+
+  ///显示头顶提示
   void showRemider() {
     if (_remiderSprite == null) {
       _remiderSprite = RemiderSprite.fromSprite(
@@ -186,11 +181,11 @@ class PersonSprite extends PositionComponent {
 
   @override
   void update(double dt) {
-    super.update(dt);
-
-    if (jumpInfo != null) {
-      _updateJumpStatus(dt);
+    if (_enterEffect != null || _goOutEffect != null) {
+      _enterEffect?.update(dt);
+      _goOutEffect?.update(dt);
     } else {
+      super.update(dt);
       if (_moveEffect?.isMax() == true) {
         removeEffect(_moveEffect);
         _endPathNode = _endPathNode.randomLinkedNode;
@@ -204,6 +199,7 @@ class PersonSprite extends PositionComponent {
       });
       _dynamicComponents.removeWhere((c) => c.destroy());
     }
+
     if (!_isQuietcomponentsAllLoaded) {
       _isQuietcomponentsAllLoaded = true;
       Timer.run(() {
@@ -223,6 +219,16 @@ class PersonSprite extends PositionComponent {
 
   @override
   void render(Canvas canvas) {
+    canvas.save();
+    _enterEffect?.setEffectToCanvas(canvas);
+    _goOutEffect?.setEffectToCanvas(canvas);
+    _render(canvas);
+    canvas.restore();
+    if (_enterEffect?.hasFinished == true) _enterEffect = null;
+    if (_goOutEffect?.hasFinished == true) _goOutEffect = null;
+  }
+
+  void _render(Canvas canvas) {
     ///身体
     canvas.save();
     canvas.translate(x, y);
@@ -237,13 +243,15 @@ class PersonSprite extends PositionComponent {
 
     ///画脚下阴影
     canvas.drawOval(
-      Rect.fromCenter(center: Offset(x, y), width: 16, height: 8),
+      Rect.fromCenter(center: Offset(x, y), width: ShadowWidth, height: ShadowHeight),
       Paint()..color = Colors.grey.withOpacity(0.5),
     );
+
     ///手脚
     canvas.save();
     _dynamicComponents.forEach((comp) => _renderComponent(canvas, comp));
     canvas.restore();
+
     ///头
     canvas.save();
     canvas.translate(x, y);
@@ -263,68 +271,5 @@ class PersonSprite extends PositionComponent {
     c.render(canvas);
     canvas.restore();
     canvas.save();
-  }
-}
-
-enum JumpStatus { Upping, Downing, Finish }
-
-class JumpInfo {
-  final Size scaleSize;
-  final Size originSize;
-  final Position originPosition;
-
-  final Position targetCenterPosition;
-  final PathNode targetEndPathNode;
-
-  final double scaleSpeed;
-  final double upMoveDistance;
-
-  double scaleTravelTime;
-
-  List<PositionComponentEffect> _upEffects;
-  List<PositionComponentEffect> get upEffects => _upEffects;
-
-  List<PositionComponentEffect> _downEffects;
-  List<PositionComponentEffect> get downEffects => _downEffects;
-
-  Position get downBeginPosition => Position(targetCenterPosition.x, targetCenterPosition.y - upMoveDistance);
-
-  ///用来判断状态变换的
-  double time = 0;
-  JumpStatus jumpStatus;
-
-  JumpInfo({
-    @required this.originSize,
-    @required this.originPosition,
-    @required this.targetCenterPosition,
-    @required this.targetEndPathNode,
-    this.scaleSize = const Size(0, 60),
-    this.scaleSpeed = 200,
-    this.upMoveDistance = 80,
-  }) {
-    final scaleDistance = sqrt(pow(scaleSize.width - originSize.width, 2) + pow(scaleSize.height - originSize.height, 2));
-    scaleTravelTime = scaleDistance / scaleSpeed;
-
-    Position scaleTargetPosition = Position(originPosition.x + originSize.width / 2, originPosition.y - upMoveDistance);
-    final moveDistance = sqrt(pow(scaleTargetPosition.x - originPosition.x, 2) + pow(scaleTargetPosition.y - originPosition.y, 2));
-    double targetSpeed = moveDistance / scaleTravelTime;
-
-    _upEffects = [
-      ScaleEffect(
-        size: scaleSize,
-        speed: scaleSpeed,
-        curve: Curves.linear,
-      ),
-      MoveEffect(speed: targetSpeed, destination: scaleTargetPosition, curve: Curves.linear),
-    ];
-
-    _downEffects = [
-      ScaleEffect(
-        size: originSize,
-        speed: scaleSpeed,
-        curve: Curves.linear,
-      ),
-      MoveEffect(speed: targetSpeed, destination: Position(targetCenterPosition.x - originSize.width / 2, targetCenterPosition.y - originSize.height / 2), curve: Curves.linear),
-    ];
   }
 }
