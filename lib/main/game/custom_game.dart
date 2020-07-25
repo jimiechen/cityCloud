@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:cityCloud/main/game/model/tile_location.dart';
-import 'package:cityCloud/main/game/person_sprite.dart';
+import 'package:cityCloud/main/game/person/person_sprite.dart';
 import 'package:cityCloud/main/game/tile_component.dart';
 import 'package:cityCloud/main/game/model/tile_info.dart';
 import 'package:flame/components/mixins/tapable.dart';
@@ -57,7 +57,8 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
 
   ///地图component不添加到CustomGame，而是在_mapLayer中绘制出完整的地图缓存使用，以免每次都绘制一次浪费性能
   final Map<TileMapLocation, TileComponent> _tileComponentLocationMap = {};
-  CallbackLayer _mapLayer;
+  ///地图背景layer
+  CallbackPreRenderedLayer _mapLayer;
   @override
   bool debugMode() {
     return true;
@@ -75,7 +76,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
           addPersonSpriteToTileComponent(tileComponent: tileComponent);
         }
       }
-      _mapLayer = CallbackLayer(drawLayerCallback: (canvas) {
+      _mapLayer = CallbackPreRenderedLayer(drawLayerCallback: (canvas) {
         _tileComponentLocationMap?.forEach((key, value) {
           value.render(canvas);
         });

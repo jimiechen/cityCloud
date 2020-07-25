@@ -1,228 +1,23 @@
 import 'dart:async';
 
 import 'package:cityCloud/expanded/cubit/global_cubit.dart';
+import 'package:cityCloud/main/game/person/part_of_person/body.dart';
+import 'package:cityCloud/main/game/person/part_of_person/foot.dart';
+import 'package:cityCloud/main/game/person/part_of_person/hand.dart';
+import 'package:cityCloud/main/game/person/part_of_person/head.dart';
+import 'package:cityCloud/main/game/person/part_of_person/remider.dart';
+import 'package:cityCloud/main/game/person/person_const_data.dart';
 import 'package:flame/components/component.dart';
-import 'package:flame/components/composed_component.dart';
-import 'package:flame/components/mixins/has_game_ref.dart';
-import 'package:flame/components/mixins/tapable.dart';
+
 import 'package:flame/effects/effects.dart';
-import 'package:flame/game/base_game.dart';
 import 'package:flame/position.dart';
-import 'package:flame/sprite.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
-import 'callback_pre_render_layer.dart';
-import 'model/tile_info.dart';
+import '../callback_pre_render_layer.dart';
+import '../model/tile_info.dart';
 import 'package:ordered_set/ordered_set.dart';
 import 'package:ordered_set/comparing.dart';
-
-enum HorizontalOrigentation {
-  Left,
-  Right,
-}
-
-const double MoveSpeed = 5; //移动速度
-
-const double FootSpacing = 2; //两脚之间距离
-const double FootSpeed = 10; //抬脚速度
-const double FootPutUpHeight = 2; //脚抬起的高度
-const double FootHeight = 8; //脚的高度
-const double FootWidth = 2; //脚的宽度
-
-const double HandHeight = 18; //手臂的高度
-const double HandWidth = 2; //手臂的宽度
-const double HandSpacing = 8; //手臂的间隔
-const double HandRotateSpeed = 1; //手臂旋转速度
-const double HandRotateRadians = 0.5; //手臂旋转的弧度
-
-const double BodyWidth = 20; //身体宽度
-const double BodyHeight = 18; //身体高度
-const double BodyOffset = 2; //以为身体有屁股，所以要设置偏移
-
-const double HeadHeight = 18; //头高
-const double HeadWidth = 18; //头宽
-
-const double EyeHeight = 6.45; //眼睛宽度
-const double EyeWidth = 15; //眼睛高度
-
-/** 
- * 一开始左脚是抬起来的
- */
-class FootSprite extends SpriteComponent {
-  final HorizontalOrigentation origentation;
-  FootSprite({double footWidth = FootWidth, double footHeight = FootHeight, this.origentation}) {
-    assert(footWidth != null && footHeight != null);
-    x = origentation == HorizontalOrigentation.Left ? -footWidth - FootSpacing / 2 : FootSpacing / 2;
-    y = -footHeight;
-    width = footWidth;
-    height = origentation == HorizontalOrigentation.Left ? footHeight - FootPutUpHeight : footHeight;
-
-    Sprite.loadSprite('people-leg-5.png').then((value) {
-      sprite = value;
-      this.addEffect(
-        ScaleEffect(
-          size: Size(width, origentation == HorizontalOrigentation.Left ? footHeight : footHeight - FootPutUpHeight),
-          isInfinite: true,
-          isAlternating: true,
-          curve: Curves.linear,
-          speed: FootSpeed,
-        ),
-      );
-    });
-  }
-}
-
-class HandRotateEffect extends PositionComponentEffect {
-  double radians;
-  double speed;
-  Curve curve;
-
-  double _originalAngle;
-  double _peakAngle;
-
-  HandRotateEffect({
-    @required this.radians, // As many radians as you want to rotate
-    @required this.speed, // In radians per second
-    this.curve,
-    isInfinite = false,
-    isAlternating = false,
-  }) : super(isInfinite, isAlternating);
-
-  @override
-  void initialize(_comp) {
-    super.initialize(_comp);
-    if (!isAlternating) {
-      endAngle = _comp.angle + radians;
-    }
-    _originalAngle = component.angle;
-    _peakAngle = _originalAngle + radians;
-    travelTime = (radians / speed).abs();
-  }
-
-  @override
-  void update(double dt) {
-    super.update(dt);
-    final double c = curve?.transform(percentage) ?? 1.0;
-    component.angle = _originalAngle + _peakAngle * c;
-  }
-}
-
-class HandSprite extends SpriteComponent {
-  final HorizontalOrigentation origentation;
-  final double footAndBodyHeight;
-  HandSprite({double handWidth = HandWidth, double handHeight = HandHeight, this.footAndBodyHeight = FootHeight + BodyHeight, this.origentation}) {
-    assert(handWidth != null && handHeight != null);
-    x = origentation == HorizontalOrigentation.Left ? -handWidth - HandSpacing / 2 : HandSpacing / 2;
-    y = -footAndBodyHeight;
-    width = handWidth;
-    height = handHeight;
-
-    Sprite.loadSprite('people-hand-2.png').then((value) {
-      sprite = value;
-      this.addEffect(
-        HandRotateEffect(
-            isInfinite: true,
-            isAlternating: true,
-            curve: Curves.linear,
-            speed: HandRotateSpeed,
-            radians: origentation == HorizontalOrigentation.Left ? HandRotateRadians : -HandRotateRadians),
-      );
-    });
-  }
-}
-
-class BodySprite extends SpriteComponent {
-  final HorizontalOrigentation origentation;
-  BodySprite({double bodyWidth = BodyWidth, double bodyHeight = BodyHeight, double footHeight = FootHeight, this.origentation}) {
-    assert(bodyWidth != null && bodyHeight != null && footHeight != null);
-    x = -bodyWidth / 2 + BodyOffset;
-    y = -bodyHeight - footHeight + 1;
-    width = bodyWidth;
-    height = bodyHeight;
-
-    Sprite.loadSprite(
-      'people-body-5.png',
-    ).then((value) {
-      sprite = value;
-    });
-  }
-}
-
-class HeadSprite extends PositionComponent with HasGameRef {
-  OrderedSet<Component> components = OrderedSet(Comparing.on((c) => c.priority()));
-  final HorizontalOrigentation origentation;
-  final double footAndBodyHeight;
-
-  SpriteComponent hairComponent;
-  SpriteComponent noseComponent;
-
-  double _timeCount = 0;
-  SequenceEffect _eyeEffect;
-
-  HeadSprite({double headWidth = HeadWidth, double headHeight = HeadHeight, this.footAndBodyHeight = FootHeight + BodyHeight, this.origentation}) {
-    assert(headWidth != null && headHeight != null);
-    width = headWidth;
-    height = headHeight;
-
-    Sprite.loadSprite('people-hair-2.png').then((value) {
-      hairComponent = SpriteComponent.fromSprite(30, 30, value);
-      hairComponent.x = -14;
-      hairComponent.y = -footAndBodyHeight - 23;
-      add(hairComponent);
-    });
-  }
-
-  @override
-  bool loaded() {
-    return components.length == 1;
-  }
-
-  void add(Component c) {
-    if (gameRef is BaseGame) {
-      (gameRef as BaseGame).preAdd(c);
-    }
-    components.add(c);
-  }
-
-  @override
-  void render(Canvas canvas) {
-    Paint paint = Paint()..color = Colors.yellow;
-    canvas.drawCircle(Offset(0, -footAndBodyHeight - 7), 9, paint);
-    canvas.save();
-    components.forEach((comp) => _renderComponent(canvas, comp));
-    canvas.restore();
-  }
-
-  void _renderComponent(Canvas canvas, Component c) {
-    if (!c.loaded()) {
-      return;
-    }
-    c.render(canvas);
-    canvas.restore();
-    canvas.save();
-  }
-
-  void updatePosition({@required double personX, @required double personY}) {
-    assert(personX != null && personY != null);
-    x = personX - width / 2;
-    y = personY - footAndBodyHeight - height * 0.7;
-    hairComponent.x = x;
-    hairComponent.y = y;
-  }
-}
-
-class RemiderSprite extends SpriteComponent with Tapable {
-  RemiderSprite.fromSprite(double width, double height, Sprite sprite) {
-    this.sprite = sprite;
-    this.width = width;
-    this.height = height;
-  }
-  @override
-  void onTapDown(TapDownDetails details) {
-    super.onTapDown(details);
-  }
-}
 
 class PersonSprite extends PositionComponent {
   ///动态的部分，如手脚一直在动的就放在_dynamicComponents中
@@ -233,7 +28,7 @@ class PersonSprite extends PositionComponent {
 
   ///用于判断是否所有_quietComponents都已经loaded
   bool _isQuietcomponentsAllLoaded = false;
-  CallbackLayer _quietLayer;
+  CallbackPreRenderedLayer _quietLayer;
 
   ///小人面朝向
   HorizontalOrigentation _faceOrigentation;
@@ -245,7 +40,6 @@ class PersonSprite extends PositionComponent {
   HandSprite _rightHandSprite;
   BodySprite _bodySprite;
   HeadSprite _headSprite;
-  SpriteComponent _eyeSprite;
 
   ///头顶提示sprite
   RemiderSprite _remiderSprite;
@@ -272,10 +66,8 @@ class PersonSprite extends PositionComponent {
     _bodySprite = BodySprite(origentation: HorizontalOrigentation.Left);
     _leftHandSprite = HandSprite(origentation: HorizontalOrigentation.Left);
     _rightHandSprite = HandSprite(origentation: HorizontalOrigentation.Right);
+
     _headSprite = HeadSprite(origentation: HorizontalOrigentation.Right);
-    _eyeSprite = SpriteComponent.rectangle(EyeWidth, EyeHeight, 'people-eyes-1005.png');
-    _eyeSprite.x = -EyeWidth / 2;
-    _eyeSprite.y = -BodyHeight - FootHeight - 11;
 
     _dynamicComponents.add(_leftFootSprite);
     _dynamicComponents.add(_rightFootSprite);
@@ -283,10 +75,9 @@ class PersonSprite extends PositionComponent {
     _dynamicComponents.add(_rightHandSprite);
 
     _quietComponents.add(_bodySprite);
-    _quietComponents.add(_headSprite);
-    _quietComponents.add(_eyeSprite);
+    // _quietComponents.add(_headSprite);
 
-    _quietLayer = CallbackLayer(drawLayerCallback: (canvas) {
+    _quietLayer = CallbackPreRenderedLayer(drawLayerCallback: (canvas) {
       canvas.save();
       _quietComponents?.forEach((value) {
         if (value.loaded()) {
@@ -350,21 +141,20 @@ class PersonSprite extends PositionComponent {
 
   void showRemider() {
     if (_remiderSprite == null) {
-      Sprite.loadSprite(
-        'icon_mail.png',
-      ).then((value) {
-        _remiderSprite = RemiderSprite.fromSprite(20, 20, value);
-        _remiderSprite.x = -10;
-        _remiderSprite.y = -FootHeight - BodyHeight - HeadHeight - 20;
-        _dynamicComponents.add(_remiderSprite);
+      _remiderSprite = RemiderSprite.fromSprite(
+        20,
+        20,
+      );
+      _remiderSprite.x = -10;
+      _remiderSprite.y = -FootHeight - BodyHeight - HeadHeight - 20;
+      _dynamicComponents.add(_remiderSprite);
+      _hideRemiderTimer?.cancel();
+      _hideRemiderTimer = Timer(Duration(seconds: 5), () {
         _hideRemiderTimer?.cancel();
-        _hideRemiderTimer = Timer(Duration(seconds: 5), () {
-          _hideRemiderTimer?.cancel();
-          if (_dynamicComponents.contains(_remiderSprite)) {
-            _dynamicComponents.remove(_remiderSprite);
-          }
-          _remiderSprite = null;
-        });
+        if (_dynamicComponents.contains(_remiderSprite)) {
+          _dynamicComponents.remove(_remiderSprite);
+        }
+        _remiderSprite = null;
       });
     }
   }
@@ -388,7 +178,7 @@ class PersonSprite extends PositionComponent {
   }
 
   bool checkTapOverlap(Offset o) {
-    return toRect().contains(o);
+    return _remiderSprite != null && toRect().contains(o);
   }
 
   @override
@@ -408,9 +198,8 @@ class PersonSprite extends PositionComponent {
           resetMoveEffect();
         }
       }
-
+      _headSprite.update(dt);
       _dynamicComponents.forEach((c) {
-        // (c as PersonComponent).updatePosition(personX: x, personY: y);
         c.update(dt);
       });
       _dynamicComponents.removeWhere((c) => c.destroy());
@@ -434,22 +223,16 @@ class PersonSprite extends PositionComponent {
 
   @override
   void render(Canvas canvas) {
+    ///身体
     canvas.save();
+    canvas.translate(x, y);
     if (_faceOrigentation == HorizontalOrigentation.Right) {
       ///小人往右
-      canvas.translate(x, y);
       canvas.scale(-1.0, 1.0);
-      _quietLayer?.render(
-        canvas,
-      );
-    } else {
-      _quietLayer?.render(
-        canvas,
-        x: x,
-        y: y,
-      );
     }
-
+    _quietLayer?.render(
+      canvas,
+    );
     canvas.restore();
 
     ///画脚下阴影
@@ -457,8 +240,18 @@ class PersonSprite extends PositionComponent {
       Rect.fromCenter(center: Offset(x, y), width: 16, height: 8),
       Paint()..color = Colors.grey.withOpacity(0.5),
     );
+    ///手脚
     canvas.save();
     _dynamicComponents.forEach((comp) => _renderComponent(canvas, comp));
+    canvas.restore();
+    ///头
+    canvas.save();
+    canvas.translate(x, y);
+    if (_faceOrigentation == HorizontalOrigentation.Right) {
+      ///小人往右
+      canvas.scale(-1.0, 1.0);
+    }
+    _headSprite.render(canvas);
     canvas.restore();
   }
 
