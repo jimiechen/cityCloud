@@ -14,6 +14,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'callback_pre_render_layer.dart';
+import 'cloud/cloud_sprite.dart';
 import 'helper/double_animation.dart';
 import 'helper/inertial_motion.dart';
 import 'helper/translate_animation.dart';
@@ -87,6 +88,8 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
         });
       });
     });
+
+    add(CloudSprite());
   }
 
   @override

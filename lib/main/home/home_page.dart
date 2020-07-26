@@ -1,3 +1,4 @@
+import 'package:cityCloud/router/router.dart';
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
 
@@ -28,7 +29,7 @@ class _HomePageState extends State<HomePage> {
         children: <Widget>[
           InkWell(
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => GamePage()));
+              Navigator.push(context, Router.routeForPage(page: GamePage()));
             },
             child: Container(
               color: Colors.red,
