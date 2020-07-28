@@ -33,6 +33,7 @@ class CloudSprite extends Component with HasGameRef {
             speed: 10,
             curve: Curves.linear,
             onComplete: () {
+              component.clearEffects();
               component.sprite = null;
               Future(() {
                 addRandomCloud();

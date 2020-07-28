@@ -22,6 +22,8 @@ import '../model/tile_info.dart';
 import 'package:ordered_set/ordered_set.dart';
 import 'package:ordered_set/comparing.dart';
 
+import 'person_effect/person_move_effect.dart';
+
 class PersonSprite extends PositionComponent {
   ///动态的部分，如手脚一直在动的就放在_dynamicComponents中
   OrderedSet<Component> _dynamicComponents = OrderedSet(Comparing.on((c) => c.priority()));
@@ -54,7 +56,7 @@ class PersonSprite extends PositionComponent {
   PathNode _endPathNode;
 
   ///移动effect
-  MoveEffect _moveEffect;
+  PersonMoveEffect _moveEffect;
 
   ///入场效果
   EnterEffect _enterEffect;
@@ -65,7 +67,8 @@ class PersonSprite extends PositionComponent {
   ///原地跳效果
   JumpInPlaceEffect _jumpInPlaceEffect;
 
-  PersonSprite({@required Position initialPosition, @required PathNode endPathNode}) : assert(initialPosition != null && endPathNode != null) {
+  PersonSprite({@required Position initialPosition, @required PathNode endPathNode})
+      : assert(initialPosition != null && endPathNode != null) {
     _endPathNode = endPathNode;
     x = initialPosition.x;
     y = initialPosition.y;
@@ -99,7 +102,22 @@ class PersonSprite extends PositionComponent {
 
   ///根据_endPathNode重新设置移动
   void resetMoveEffect() {
-    _moveEffect = MoveEffect(destination: _endPathNode.position, curve: Curves.linear, speed: MoveSpeed);
+    if (_moveEffect != null && !_moveEffect.isDisposed) {
+      removeEffect(_moveEffect);
+    }
+    _moveEffect = PersonMoveEffect(
+      destination: _endPathNode.position,
+      curve: Curves.linear,
+      speed: MoveSpeed,
+      onComplete: () {
+        Timer.run(() {
+          _endPathNode = _endPathNode.randomLinkedNode;
+          if (_endPathNode != null) {
+            resetMoveEffect();
+          }
+        });
+      },
+    );
     addEffect(_moveEffect);
     if (_moveEffect.endPosition.x > x) {
       _faceOrigentation = HorizontalOrigentation.Right;
@@ -218,13 +236,6 @@ class PersonSprite extends PositionComponent {
     } else {
       super.update(dt);
       _jumpInPlaceEffect?.update(dt);
-      if (_moveEffect?.isMax() == true) {
-        removeEffect(_moveEffect);
-        _endPathNode = _endPathNode.randomLinkedNode;
-        if (_endPathNode != null) {
-          resetMoveEffect();
-        }
-      }
       _headSprite.update(dt);
       _dynamicComponents.forEach((c) {
         c.update(dt);
