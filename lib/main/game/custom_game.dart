@@ -5,7 +5,9 @@ import 'package:cityCloud/main/game/model/tile_location.dart';
 import 'package:cityCloud/main/game/person/person_sprite.dart';
 import 'package:cityCloud/main/game/tile_component.dart';
 import 'package:cityCloud/main/game/model/tile_info.dart';
-import 'package:flame/components/mixins/tapable.dart';
+import 'package:flame/components/component.dart';
+import 'package:ordered_set/ordered_set.dart';
+import 'package:ordered_set/comparing.dart';
 import 'package:flame/game/base_game.dart';
 import 'package:flame/gestures.dart';
 import 'package:flame/position.dart';
@@ -289,6 +291,10 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
 
     _translateAnimation?.update(t);
     _scaleAnimation?.update(t);
+
+    OrderedSet<Component> tmpComponents = OrderedSet(Comparing.on((c) => c.priority()));
+    tmpComponents.addAll(components);
+    components = tmpComponents;
   }
 
   @override
@@ -301,11 +307,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     // canvas.translate(60, 60);
     // canvas.scale(2, 2);
     _mapLayer?.render(canvas);
-    canvas.save();
-    components.toList()
-      ..sort((a, b) => a.priority().compareTo(b.priority()))
-      ..forEach((comp) => renderComponent(canvas, comp));
-    canvas.restore();
+    super.render(canvas);
   }
 
   @override
