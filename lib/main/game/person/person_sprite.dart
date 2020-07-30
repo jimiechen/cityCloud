@@ -13,7 +13,6 @@ import 'package:cityCloud/main/game/person/person_effect/go_out_effect.dart';
 import 'package:cityCloud/main/game/person/person_effect/jump_in_place_effect.dart';
 import 'package:flame/components/component.dart';
 
-import 'package:flame/effects/effects.dart';
 import 'package:flame/position.dart';
 import 'package:flutter/material.dart';
 

@@ -16,6 +16,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'callback_pre_render_layer.dart';
+import 'car/car_sprite.dart';
 import 'cloud/cloud_sprite.dart';
 import 'helper/double_animation.dart';
 import 'helper/inertial_motion.dart';
@@ -84,6 +85,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
         ///添加十个小人
         List.generate(10, (index) => randomAddPerson());
       });
+
       _mapLayer = CallbackPreRenderedLayer(drawLayerCallback: (canvas) {
         _tileComponentLocationMap?.forEach((key, value) {
           value.render(canvas);
@@ -222,6 +224,14 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     }
   }
 
+  ///随机添加小车
+  void randomAddCar() {
+    TileComponent tile = _tileComponentLocationMap?.values?.randomItem;
+    if (tile != null) {
+      addPersonSpriteToTileComponent(tileComponent: tile);
+    }
+  }
+
   ///随机添加小人
   void randomAddPerson() {
     TileComponent tile = _tileComponentLocationMap?.values?.randomItem;
@@ -235,6 +245,10 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
         PersonSprite(endPathNode: endNode, initialPosition: positionAmong(beginPosition: beginNode.position, endPosition: endNode.position, movePercent: movePercent));
 
     add(personSprite);
+
+    ///添加小车
+    add(CarSprite(endPathNode: endNode, initialPosition: positionAmong(beginPosition: beginNode.position, endPosition: endNode.position, movePercent: movePercent)));
+    
     personSprite.enter(targetEndNode: endNode, targetPosition: positionAmong(beginPosition: beginNode.position, endPosition: endNode.position, movePercent: movePercent));
   }
 
