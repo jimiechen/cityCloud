@@ -12,7 +12,7 @@ import '../model/tile_info.dart';
 
 class CarSprite extends PositionComponent {
   String _spriteImage = 'excavator_';
-  double _scale = 0.15;
+  double _scale = 0.13;
   List<SpriteComponent> _backComponents = [];
   List<SpriteComponent> _frontComponents = [];
   List<SpriteComponent> _leftComponents = [];
@@ -33,23 +33,54 @@ class CarSprite extends PositionComponent {
     x = initialPosition.x;
     y = initialPosition.y;
     resetMoveEffectAndComponents();
+    Paint shadowPaint = Paint()
+      ..color = Colors.black.withOpacity(0.3)
+      ..blendMode = BlendMode.difference;
+    Paint carPaint = Paint()
+      ..color = Colors.white
+      ..isAntiAlias = true;
     Sprite.loadSprite('${_spriteImage}back_shadow.png').then((shadow) {
-      _backComponents.add(SpriteComponent.fromSprite(shadow.size.x * _scale, shadow.size.y * _scale, shadow));
+      SpriteComponent shadowSpriteComponent = SpriteComponent.fromSprite(shadow.size.x * _scale, shadow.size.y * _scale, shadow);
+      shadowSpriteComponent.overridePaint = shadowPaint;
+      shadowSpriteComponent.x = -shadowSpriteComponent.width / 2;
+      shadowSpriteComponent.y = -shadowSpriteComponent.height / 2 - 2;
+      _backComponents.add(shadowSpriteComponent);
       Sprite.loadSprite('${_spriteImage}back.png').then((value) {
-        _backComponents.add(SpriteComponent.fromSprite(value.size.x * _scale, value.size.y * _scale, value));
+        SpriteComponent carSpriteComponent = SpriteComponent.fromSprite(value.size.x * _scale, value.size.y * _scale, value);
+        carSpriteComponent.x = -carSpriteComponent.width / 2;
+        carSpriteComponent.y = -carSpriteComponent.height * 0.7;
+        carSpriteComponent.overridePaint = carPaint;
+        _backComponents.add(carSpriteComponent);
       });
     });
     Sprite.loadSprite('${_spriteImage}front_shadow.png').then((shadow) {
-      _frontComponents.add(SpriteComponent.fromSprite(shadow.size.x * _scale, shadow.size.y * _scale, shadow));
+      SpriteComponent shadowSpriteComponent = SpriteComponent.fromSprite(shadow.size.x * _scale, shadow.size.y * _scale, shadow);
+      shadowSpriteComponent.overridePaint = shadowPaint;
+      shadowSpriteComponent.x = -shadowSpriteComponent.width / 2;
+      shadowSpriteComponent.y = -shadowSpriteComponent.height / 2 + 8;
+      _frontComponents.add(shadowSpriteComponent);
+
       Sprite.loadSprite('${_spriteImage}front.png').then((value) {
-        _frontComponents.add(SpriteComponent.fromSprite(value.size.x * _scale, value.size.y * _scale, value));
+        SpriteComponent carSpriteComponent = SpriteComponent.fromSprite(value.size.x * _scale, value.size.y * _scale, value);
+        carSpriteComponent.x = -carSpriteComponent.width / 2;
+        carSpriteComponent.y = -carSpriteComponent.height / 3;
+        carSpriteComponent.overridePaint = carPaint;
+        _frontComponents.add(carSpriteComponent);
       });
     });
 
     Sprite.loadSprite('${_spriteImage}side_shadow.png').then((shadow) {
-      _leftComponents.add(SpriteComponent.fromSprite(shadow.size.x * _scale, shadow.size.y * _scale, shadow));
+      SpriteComponent shadowSpriteComponent = SpriteComponent.fromSprite(shadow.size.x * _scale, shadow.size.y * _scale, shadow);
+      shadowSpriteComponent.overridePaint = shadowPaint;
+      shadowSpriteComponent.x = -shadowSpriteComponent.width / 2 - 6;
+      shadowSpriteComponent.y = -shadowSpriteComponent.height / 2;
+      _leftComponents.add(shadowSpriteComponent);
       Sprite.loadSprite('${_spriteImage}side.png').then((value) {
-        _leftComponents.add(SpriteComponent.fromSprite(value.size.x * _scale, value.size.y * _scale, value));
+        SpriteComponent carSpriteComponent = SpriteComponent.fromSprite(value.size.x * _scale, value.size.y * _scale, value);
+        carSpriteComponent.x = -carSpriteComponent.width * 0.7;
+        carSpriteComponent.y = -carSpriteComponent.height * 0.8;
+        carSpriteComponent.overridePaint = carPaint;
+        _leftComponents.add(carSpriteComponent);
       });
     });
   }
@@ -73,16 +104,16 @@ class CarSprite extends PositionComponent {
       },
     );
     addEffect(_moveEffect);
-    if (_moveEffect.endPosition.x > x) {
+    if (_moveEffect.destination.x > x) {
       _axisDirection = AxisDirection.right;
       _currentComponents = _leftComponents..forEach((e) => e..renderFlipX = true);
-    } else if (_moveEffect.endPosition.x < x) {
+    } else if (_moveEffect.destination.x < x) {
       _axisDirection = AxisDirection.left;
-      _currentComponents = _leftComponents;
-    } else if (_moveEffect.endPosition.y > y) {
+      _currentComponents = _leftComponents..forEach((e) => e..renderFlipX = false);
+    } else if (_moveEffect.destination.y > y) {
       _axisDirection = AxisDirection.down;
       _currentComponents = _frontComponents;
-    } else if (_moveEffect.endPosition.y < y) {
+    } else if (_moveEffect.destination.y < y) {
       _axisDirection = AxisDirection.up;
       _currentComponents = _backComponents;
     }
@@ -95,7 +126,6 @@ class CarSprite extends PositionComponent {
 
   @override
   Rect toRect() => Rect.fromLTWH(x - 10, y - FootHeight - BodyHeight - HeadHeight - 20, 20, 20);
-
   @override
   void update(double dt) {
     super.update(dt);
