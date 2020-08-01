@@ -46,38 +46,43 @@ class _GamePageState extends State<GamePage> {
     });
   }
 
-  Widget get addButton => Positioned(
-        left: 30,
-        bottom: 30,
-        child: FlatButton(
-          color: Colors.red,
-          onPressed: () {
-            _box2dGame.randomAddPerson();
-          },
-          child: Text('添加小人'),
-        ),
-      );
-
-  Widget get nextPageButton => Positioned(
-        right: 30,
-        bottom: 30,
-        child: FlatButton(
-          color: Colors.red,
-          onPressed: () {
-            Navigator.push(context, Router.routeForPage(page: EmptyPage()));
-          },
-          child: Text('跳到空白页'),
-        ),
-      );
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
           _box2dGame.widget,
-          addButton,
-          nextPageButton,
+          Positioned(
+            bottom: 30,
+            left: 0,
+            right: 0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                FlatButton(
+                  color: Colors.red,
+                  onPressed: () {
+                    _box2dGame.randomAddPerson();
+                  },
+                  child: Text('添加小人'),
+                ),
+                FlatButton(
+                  color: Colors.red,
+                  onPressed: () {
+                    _box2dGame.randomAddCar();
+                  },
+                  child: Text('添加小车'),
+                ),
+                FlatButton(
+                  color: Colors.red,
+                  onPressed: () {
+                    Navigator.push(context, Router.routeForPage(page: EmptyPage()));
+                  },
+                  child: Text('跳到空白页'),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

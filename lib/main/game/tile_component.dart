@@ -62,7 +62,7 @@ class TileComponent extends SpriteComponent {
     assert(callback != null);
 
     PathNode beginNode = _tileInfo?.randomPathNode();
-    PathNode endNode = beginNode.randomLinkedNode;
+    PathNode endNode = beginNode?.randomLinkedNode;
     callback(beginNode: beginNode, endNode: endNode);
   }
 

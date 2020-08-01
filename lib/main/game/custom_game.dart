@@ -81,10 +81,10 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
           addTileComponent(tileComponent);
         }
       }
-      Future.delayed(Duration(seconds: 2), () {
-        ///添加十个小人
-        List.generate(10, (index) => randomAddPerson());
-      });
+      // Future.delayed(Duration(seconds: 2), () {
+      //   ///添加十个小人
+      //   List.generate(10, (index) => randomAddPerson());
+      // });
 
       _mapLayer = CallbackPreRenderedLayer(drawLayerCallback: (canvas) {
         _tileComponentLocationMap?.forEach((key, value) {
@@ -226,36 +226,29 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
 
   ///随机添加小车
   void randomAddCar() {
-    TileComponent tile = _tileComponentLocationMap?.values?.randomItem;
-    if (tile != null) {
-      addPersonSpriteToTileComponent(tileComponent: tile);
-    }
+    randomPosition((endNode, position) {
+      ///添加小车
+      add(CarSprite(endPathNode: endNode, initialPosition: position));
+    });
   }
 
   ///随机添加小人
   void randomAddPerson() {
+    randomPosition((endNode, position) {
+      PersonSprite personSprite = PersonSprite(endPathNode: endNode, initialPosition: position);
+
+      add(personSprite);
+      personSprite.enter(targetEndNode: endNode, targetPosition: position);
+    });
+  }
+
+  void randomPosition(void callback(PathNode endNode, Position position)) {
     TileComponent tile = _tileComponentLocationMap?.values?.randomItem;
-    if (tile != null) {
-      addPersonSpriteToTileComponent(tileComponent: tile);
-    }
-  }
-
-  Future<void> addPersonSprite({@required PathNode beginNode, @required PathNode endNode, @required int movePercent}) async {
-    PersonSprite personSprite =
-        PersonSprite(endPathNode: endNode, initialPosition: positionAmong(beginPosition: beginNode.position, endPosition: endNode.position, movePercent: movePercent));
-
-    add(personSprite);
-
-    ///添加小车
-    add(CarSprite(endPathNode: endNode, initialPosition: positionAmong(beginPosition: beginNode.position, endPosition: endNode.position, movePercent: movePercent)));
-    
-    personSprite.enter(targetEndNode: endNode, targetPosition: positionAmong(beginPosition: beginNode.position, endPosition: endNode.position, movePercent: movePercent));
-  }
-
-  void addPersonSpriteToTileComponent({@required TileComponent tileComponent}) {
-    tileComponent?.randomPath(({beginNode, endNode}) {
-      int movePercent = Random().nextInt(100);
-      addPersonSprite(beginNode: beginNode, endNode: endNode, movePercent: movePercent);
+    tile?.randomPath(({beginNode, endNode}) {
+      if (beginNode != null && endNode != null) {
+        Position position = positionAmong(beginPosition: beginNode.position, endPosition: endNode.position, movePercent: Random().nextInt(100));
+        callback?.call(endNode, position);
+      }
     });
   }
 

@@ -1,8 +1,12 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:cityCloud/main/game/person/person_const_data.dart';
 import 'package:cityCloud/main/game/person/person_effect/person_move_effect.dart';
+import 'package:flame/anchor.dart';
 import 'package:flame/components/component.dart';
+import 'package:flame/effects/combined_effect.dart';
+import 'package:flame/effects/effects.dart';
 
 import 'package:flame/position.dart';
 import 'package:flame/sprite.dart';
@@ -12,7 +16,7 @@ import '../model/tile_info.dart';
 
 class CarSprite extends PositionComponent {
   String _spriteImage = 'excavator_';
-  double _scale = 0.13;
+  double _scale = 0.1;
   List<SpriteComponent> _backComponents = [];
   List<SpriteComponent> _frontComponents = [];
   List<SpriteComponent> _leftComponents = [];
@@ -25,20 +29,17 @@ class CarSprite extends PositionComponent {
   ///运动的终点
   PathNode _endPathNode;
 
-  ///移动effect
-  PersonMoveEffect _moveEffect;
-
   CarSprite({@required Position initialPosition, @required PathNode endPathNode}) : assert(initialPosition != null && endPathNode != null) {
     _endPathNode = endPathNode;
     x = initialPosition.x;
     y = initialPosition.y;
-    resetMoveEffectAndComponents();
     Paint shadowPaint = Paint()
       ..color = Colors.black.withOpacity(0.3)
       ..blendMode = BlendMode.difference;
     Paint carPaint = Paint()
       ..color = Colors.white
       ..isAntiAlias = true;
+
     Sprite.loadSprite('${_spriteImage}back_shadow.png').then((shadow) {
       SpriteComponent shadowSpriteComponent = SpriteComponent.fromSprite(shadow.size.x * _scale, shadow.size.y * _scale, shadow);
       shadowSpriteComponent.overridePaint = shadowPaint;
@@ -47,9 +48,16 @@ class CarSprite extends PositionComponent {
       _backComponents.add(shadowSpriteComponent);
       Sprite.loadSprite('${_spriteImage}back.png').then((value) {
         SpriteComponent carSpriteComponent = SpriteComponent.fromSprite(value.size.x * _scale, value.size.y * _scale, value);
-        carSpriteComponent.x = -carSpriteComponent.width / 2;
-        carSpriteComponent.y = -carSpriteComponent.height * 0.7;
         carSpriteComponent.overridePaint = carPaint;
+        RotateEffect rotateEffect = RotateEffect(
+          radians: pi / 20,
+          speed: 0.5,
+          curve: Curves.linear,
+          isInfinite: true,
+          isAlternating: true,
+        );
+        carSpriteComponent.anchor = Anchor(Offset(0.5, 0.7));
+        carSpriteComponent.addEffect(rotateEffect);
         _backComponents.add(carSpriteComponent);
       });
     });
@@ -62,9 +70,16 @@ class CarSprite extends PositionComponent {
 
       Sprite.loadSprite('${_spriteImage}front.png').then((value) {
         SpriteComponent carSpriteComponent = SpriteComponent.fromSprite(value.size.x * _scale, value.size.y * _scale, value);
-        carSpriteComponent.x = -carSpriteComponent.width / 2;
-        carSpriteComponent.y = -carSpriteComponent.height / 3;
         carSpriteComponent.overridePaint = carPaint;
+        RotateEffect rotateEffect = RotateEffect(
+          radians: pi / 20,
+          speed: 0.5,
+          curve: Curves.linear,
+          isInfinite: true,
+          isAlternating: true,
+        );
+        carSpriteComponent.anchor = Anchor(Offset(0.5, 1 / 3));
+        carSpriteComponent.addEffect(rotateEffect);
         _frontComponents.add(carSpriteComponent);
       });
     });
@@ -80,17 +95,37 @@ class CarSprite extends PositionComponent {
         carSpriteComponent.x = -carSpriteComponent.width * 0.7;
         carSpriteComponent.y = -carSpriteComponent.height * 0.8;
         carSpriteComponent.overridePaint = carPaint;
+        ScaleEffect scaleEffect = ScaleEffect(
+          size: Size(carSpriteComponent.width, carSpriteComponent.height - 4),
+          speed: 10,
+          curve: Curves.linear,
+        );
+        MoveEffect moveEffect = MoveEffect(
+          destination: carSpriteComponent.toPosition() + Position(0, 4),
+          speed: 10,
+          curve: Curves.linear,
+        );
+        carSpriteComponent.addEffect(
+          CombinedEffect(
+            effects: [scaleEffect, moveEffect],
+            isAlternating: true,
+            isInfinite: true,
+          ),
+        );
         _leftComponents.add(carSpriteComponent);
+        if (_axisDirection == AxisDirection.right && !_leftComponents.every((element) => element.renderFlipX)) {
+          _leftComponents.forEach((e) => e..renderFlipX = true);
+        }
       });
     });
+
+    resetMoveEffectAndComponents();
   }
 
   ///根据_endPathNode重新设置移动
   void resetMoveEffectAndComponents() {
-    if (_moveEffect != null && !_moveEffect.isDisposed) {
-      removeEffect(_moveEffect);
-    }
-    _moveEffect = PersonMoveEffect(
+    clearEffects();
+    PersonMoveEffect moveEffect = PersonMoveEffect(
       destination: _endPathNode.position,
       curve: Curves.linear,
       speed: MoveSpeed,
@@ -103,17 +138,18 @@ class CarSprite extends PositionComponent {
         });
       },
     );
-    addEffect(_moveEffect);
-    if (_moveEffect.destination.x > x) {
+    addEffect(moveEffect);
+
+    if (moveEffect.destination.x > x) {
       _axisDirection = AxisDirection.right;
       _currentComponents = _leftComponents..forEach((e) => e..renderFlipX = true);
-    } else if (_moveEffect.destination.x < x) {
+    } else if (moveEffect.destination.x < x) {
       _axisDirection = AxisDirection.left;
       _currentComponents = _leftComponents..forEach((e) => e..renderFlipX = false);
-    } else if (_moveEffect.destination.y > y) {
+    } else if (moveEffect.destination.y > y) {
       _axisDirection = AxisDirection.down;
       _currentComponents = _frontComponents;
-    } else if (_moveEffect.destination.y < y) {
+    } else if (moveEffect.destination.y < y) {
       _axisDirection = AxisDirection.up;
       _currentComponents = _backComponents;
     }
@@ -129,6 +165,7 @@ class CarSprite extends PositionComponent {
   @override
   void update(double dt) {
     super.update(dt);
+    _currentComponents.forEach((element) => element.update(dt));
   }
 
   @override
@@ -147,6 +184,7 @@ class CarSprite extends PositionComponent {
     if (!c.loaded()) {
       return;
     }
+
     c.render(canvas);
     canvas.restore();
     canvas.save();
