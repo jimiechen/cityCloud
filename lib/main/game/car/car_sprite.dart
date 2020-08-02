@@ -50,7 +50,7 @@ class CarSprite extends PositionComponent {
         SpriteComponent carSpriteComponent = SpriteComponent.fromSprite(value.size.x * _scale, value.size.y * _scale, value);
         carSpriteComponent.overridePaint = carPaint;
         RotateEffect rotateEffect = RotateEffect(
-          radians: pi / 20,
+          radians: pi / 30,
           speed: 0.5,
           curve: Curves.linear,
           isInfinite: true,
@@ -72,7 +72,7 @@ class CarSprite extends PositionComponent {
         SpriteComponent carSpriteComponent = SpriteComponent.fromSprite(value.size.x * _scale, value.size.y * _scale, value);
         carSpriteComponent.overridePaint = carPaint;
         RotateEffect rotateEffect = RotateEffect(
-          radians: pi / 20,
+          radians: pi / 30,
           speed: 0.5,
           curve: Curves.linear,
           isInfinite: true,
