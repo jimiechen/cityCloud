@@ -71,27 +71,16 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   }
 
   CustomGame() {
-    Sprite.loadSprite(
-      'map_tile_0.png',
-    ).then((value) {
-      for (int y = 0; y < 10; y++) {
-        for (int x = 0; x < 6; x++) {
-          TileComponent tileComponent = TileComponent(tileMapLocation: TileMapLocation(x, y));
-          tileComponent.sprite = value;
-          addTileComponent(tileComponent);
-        }
+    for (int y = 0; y < 10; y++) {
+      for (int x = 0; x < 6; x++) {
+        TileComponent tileComponent = TileComponent(tileMapLocation: TileMapLocation(x, y), tileImage: 'map_tile_0.png', tileViewImage: 'map_tile_view_0.png');
+        addTileComponent(tileComponent);
       }
-      // Future.delayed(Duration(seconds: 2), () {
-      //   ///添加十个小人
-      //   List.generate(10, (index) => randomAddPerson());
-      // });
-
-      _mapLayer = CallbackPreRenderedLayer(drawLayerCallback: (canvas) {
-        _tileComponentLocationMap?.forEach((key, value) {
-          value.render(canvas);
-        });
-      });
-    });
+    }
+    // Future.delayed(Duration(seconds: 2), () {
+    //   ///添加十个小人
+    //   List.generate(10, (index) => randomAddPerson());
+    // });
 
     add(CloudSprite());
   }
@@ -302,6 +291,16 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     OrderedSet<Component> tmpComponents = OrderedSet(Comparing.on((c) => c.priority()));
     tmpComponents.addAll(components);
     components = tmpComponents;
+
+    if (_mapLayer == null) {
+      if (_tileComponentLocationMap.values.every((element) => element.loaded())) {
+        _mapLayer = CallbackPreRenderedLayer(drawLayerCallback: (canvas) {
+          _tileComponentLocationMap?.forEach((key, value) {
+            value.render(canvas);
+          });
+        });
+      }
+    }
   }
 
   @override

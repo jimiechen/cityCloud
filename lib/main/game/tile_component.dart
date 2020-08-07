@@ -4,6 +4,7 @@ import 'package:cityCloud/main/game/model/tile_info.dart';
 import 'package:cityCloud/main/game/model/tile_location.dart';
 import 'package:flame/components/component.dart';
 import 'package:flame/position.dart';
+import 'package:flame/sprite.dart';
 import 'package:flutter/material.dart';
 
 const double PathPadding = 6;
@@ -11,15 +12,30 @@ const double TileWidth = 60;
 const double TileHeight = 60;
 
 class TileComponent extends SpriteComponent {
+  final String tileImage;
+  final String tileViewImage;
   TileInfo _tileInfo;
   TileInfo get tileInfo => _tileInfo;
   final TileMapLocation tileMapLocation;
-  TileComponent({@required this.tileMapLocation}) : assert(tileMapLocation != null) {
+  SpriteComponent viewSpriteComponent;
+  TileComponent({
+    @required this.tileMapLocation,
+    this.tileViewImage,
+    @required this.tileImage,
+  }) : assert(tileMapLocation != null && tileImage != null) {
     x = tileMapLocation.tileMapX * TileWidth;
     y = tileMapLocation.tileMapY * TileHeight;
     width = TileWidth;
-    height = TileHeight;
+    height = TileHeight * 194 / 180;
     _createTitleInfoAccordingToSelf();
+    Sprite.loadSprite(tileImage).then((value) => sprite = value);
+    if (tileViewImage != null) {
+      Sprite.loadSprite(tileViewImage).then((value) {
+        viewSpriteComponent = SpriteComponent.fromSprite(TileWidth - PathPadding * 4, TileWidth - PathPadding * 4, value);
+        viewSpriteComponent.x = x + PathPadding * 2;
+        viewSpriteComponent.y = y + PathPadding * 2;
+      });
+    }
   }
   // TileComponent({@required this.tileMapLocation, @required Rect rect})
   //     : assert(tileMapLocation != null && rect != null) {
@@ -31,7 +47,16 @@ class TileComponent extends SpriteComponent {
   // }
 
   @override
-  bool get debugMode => true;
+  bool loaded() {
+    bool b = super.loaded();
+    if (tileViewImage != null) {
+      return b && (viewSpriteComponent?.loaded() == true);
+    }
+    return b;
+  }
+
+  // @override
+  // bool get debugMode => true;
 
   void _createTitleInfoAccordingToSelf() {
     PathNode topLeftNode = PathNode(position: Position(x + PathPadding, y + PathPadding));
@@ -51,11 +76,7 @@ class TileComponent extends SpriteComponent {
     topRighttNode.left = topLeftNode;
     topRighttNode.bottom = bottomRighttNode;
 
-    _tileInfo = TileInfo(
-        topLeftNode: topLeftNode,
-        topRightNode: topRighttNode,
-        bottomLeftNode: bottomLeftNode,
-        bottomRightNode: bottomRighttNode);
+    _tileInfo = TileInfo(topLeftNode: topLeftNode, topRightNode: topRighttNode, bottomLeftNode: bottomLeftNode, bottomRightNode: bottomRighttNode);
   }
 
   void randomPath(void callback({@required PathNode beginNode, @required PathNode endNode})) {
@@ -91,9 +112,15 @@ class TileComponent extends SpriteComponent {
 
   @override
   void render(Canvas c) {
-    if (sprite != null) {
-      sprite.renderRect(c, Rect.fromLTWH(x, y, width + 1, height* 194/180));
-    }
+    c.save();
+    super.render(c);
+    c.restore();
+    // if (sprite != null) {
+    //   sprite.renderRect(c, Rect.fromLTWH(x, y, width + 1, height * 194 / 180));
+    // }
+    c.save();
+    viewSpriteComponent?.render(c);
+    c.restore();
     // drawPath(c);
   }
 

@@ -13,7 +13,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    [
+    Flame.images.loadAll([
       'map_tile_0.png',
       'people-body-5.png',
       'people-eyes-1005.png',
@@ -27,10 +27,10 @@ class _HomePageState extends State<HomePage> {
       'excavator_front.png',
       'excavator_front_shadow.png',
       'excavator_side.png',
-      'excavator_side_shadow.png'
-    ].forEach((element) {
-      Flame.images.load(element);
-    });
+      'excavator_side_shadow.png',
+      'map_tile_view_0.png',
+      'map_tile_view_1.png',
+    ]);
   }
 
   @override
