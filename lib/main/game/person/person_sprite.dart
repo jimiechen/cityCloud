@@ -27,7 +27,7 @@ class PersonSprite extends PositionComponent {
   ///动态的部分，如手脚一直在动的就放在_dynamicComponents中
   OrderedSet<Component> _dynamicComponents = OrderedSet(Comparing.on((c) => c.priority()));
 
-  ///静态的部分，如身体和头这些随人物整体移动，没有自身动画的就放在_quietComponents中，然后渲染到_quietLayer���缓存
+  ///静态的部分，如身体和头这些随人物整体移动，没有自身动画的就放在_quietComponents中，然后渲染到_quietLayer缓存
   OrderedSet<Component> _quietComponents = OrderedSet(Comparing.on((c) => c.priority()));
 
   ///用于判断是否所有_quietComponents都已经loaded
@@ -66,19 +66,34 @@ class PersonSprite extends PositionComponent {
   ///原地跳效果
   JumpInPlaceEffect _jumpInPlaceEffect;
 
-  PersonSprite({@required Position initialPosition, @required PathNode endPathNode})
-      : assert(initialPosition != null && endPathNode != null) {
+  PersonSprite({
+    @required String hairImage,
+    @required String eyeImage,
+    @required String noseImage,
+    @required String bodyImage,
+    @required String footImage,
+    @required String handImage,
+    @required Color faceColor,
+    @required Position initialPosition,
+    @required PathNode endPathNode,
+  }) : assert(initialPosition != null && endPathNode != null) {
     _endPathNode = endPathNode;
     x = initialPosition.x;
     y = initialPosition.y;
     resetMoveEffect();
-    _leftFootSprite = FootSprite(origentation: HorizontalOrigentation.Left);
-    _rightFootSprite = FootSprite(origentation: HorizontalOrigentation.Right);
-    _bodySprite = BodySprite(origentation: HorizontalOrigentation.Left);
-    _leftHandSprite = HandSprite(origentation: HorizontalOrigentation.Left);
-    _rightHandSprite = HandSprite(origentation: HorizontalOrigentation.Right);
+    _leftFootSprite = FootSprite(origentation: HorizontalOrigentation.Left, footImage: footImage);
+    _rightFootSprite = FootSprite(origentation: HorizontalOrigentation.Right, footImage: footImage);
+    _bodySprite = BodySprite(origentation: HorizontalOrigentation.Left, bodyImage: bodyImage);
+    _leftHandSprite = HandSprite(origentation: HorizontalOrigentation.Left, handImage: handImage);
+    _rightHandSprite = HandSprite(origentation: HorizontalOrigentation.Right, handImage: handImage);
 
-    _headSprite = HeadSprite(origentation: HorizontalOrigentation.Right);
+    _headSprite = HeadSprite(
+      origentation: HorizontalOrigentation.Right,
+      faceColor: faceColor,
+      hairImage: hairImage,
+      eyeImage: eyeImage,
+      noseImage: noseImage,
+    );
 
     _dynamicComponents.add(_leftFootSprite);
     _dynamicComponents.add(_rightFootSprite);

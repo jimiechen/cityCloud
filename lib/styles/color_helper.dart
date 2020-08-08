@@ -40,4 +40,12 @@ class ColorHelper {
   static const Color black333 = Color(0xFF333333);
   static const Color black999 = Color(0xFF999999);
   static const Color blackCCC = Color(0xFFcccccc);
+
+  static List<Color> faces = [
+    Color.fromRGBO(253, 228, 167, 1),
+    Color.fromRGBO(249, 205, 156, 1),
+    Color.fromRGBO(97, 82, 78, 1),
+    Color.fromRGBO(196, 140, 95, 1),
+    Color.fromRGBO(254, 244, 223, 1),
+  ];
 }

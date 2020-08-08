@@ -9,6 +9,11 @@ import 'package:flutter/rendering.dart';
 import '../person_const_data.dart';
 
 class HeadSprite extends PositionComponent {
+  final String hairImage;
+  final String eyeImage;
+  final String noseImage;
+  final Color faceColor;
+
   final HorizontalOrigentation origentation;
   final double footAndBodyHeight;
 
@@ -18,26 +23,42 @@ class HeadSprite extends PositionComponent {
 
   CallbackDynamicLayer _layer;
 
-  HeadSprite({double headWidth = HeadWidth, double headHeight = HeadHeight, this.footAndBodyHeight = FootHeight + BodyHeight, this.origentation}) {
+  HeadSprite(
+      {@required this.hairImage,
+      @required this.eyeImage,
+      @required this.noseImage,
+      @required this.faceColor,
+      double headWidth = HeadWidth,
+      double headHeight = HeadHeight,
+      this.footAndBodyHeight = FootHeight + BodyHeight,
+      this.origentation}) {
     assert(headWidth != null && headHeight != null);
     width = headWidth;
     height = headHeight;
+
     ///此xy是头的中心点
     x = 0;
-    y = -footAndBodyHeight - headHeight/2 + 1;
+    y = -footAndBodyHeight - headHeight / 2 + 1;
 
-    hairComponent = SpriteComponent.rectangle(HairWidth,HairHeight, 'people-hair-2.png');
-    hairComponent.x = -HairWidth/2;
-    hairComponent.y = -HairHeight/2;
+    hairComponent = SpriteComponent.rectangle(HairWidth, HairHeight, hairImage);
+    hairComponent.x = -HairWidth / 2.2;
+    hairComponent.y = -HairHeight / 1.9;
 
-    eyeSprite = EyeSprite(Position(x,y));
+    eyeSprite = EyeSprite(center: Position(x, y), eyeImage: eyeImage);
+
+    noseComponent = SpriteComponent.rectangle(NoseWidth, NoseHeight, noseImage);
+    noseComponent.x = -NoseWidth / 2.5;
+    noseComponent.y = -NoseHeight / 2.4;
 
     _layer = CallbackDynamicLayer(drawLayerCallback: (canvas) {
-      Paint paint = Paint()..color = Colors.yellow;
+      Paint paint = Paint()..color = faceColor;
       // canvas.drawCircle(Offset(0, 0), 9, paint);
-      canvas.drawOval(Rect.fromCenter(center:Offset(0, 0),width: width,height:height), paint);
+      canvas.drawOval(Rect.fromCenter(center: Offset(0, 0), width: width, height: height), paint);
       canvas.save();
       hairComponent.render(canvas);
+      canvas.restore();
+      canvas.save();
+      noseComponent.render(canvas);
       canvas.restore();
     });
     setupEffect();
@@ -46,7 +67,7 @@ class HeadSprite extends PositionComponent {
   void setupEffect() {
     addEffect(MoveEffect(
       curve: Curves.linear,
-      destination: toPosition() - Position(0, -3),
+      destination: toPosition() - Position(0, -HeadMoveDistance),
       speed: 6,
       isInfinite: true,
       isAlternating: true,
@@ -55,14 +76,14 @@ class HeadSprite extends PositionComponent {
 
   @override
   bool loaded() {
-    return hairComponent.loaded();
+    return hairComponent.loaded() && noseComponent.loaded();
   }
 
   @override
   void update(double dt) {
     super.update(dt);
     eyeSprite?.update(dt);
-    eyeSprite?.updateCenter(Position(x,y));
+    eyeSprite?.updateCenter(Position(x, y));
   }
 
   @override
@@ -75,20 +96,19 @@ class HeadSprite extends PositionComponent {
 }
 
 class EyeSprite extends SpriteComponent {
+  final String eyeImage;
   CombinedEffect _eyeEffect;
   double _timeCount = 0;
-  EyeSprite(Position center) {
+  EyeSprite({@required Position center, @required this.eyeImage}) {
     width = EyeWidth;
     height = EyeHeight;
     updateCenter(center);
-    Sprite.loadSprite('people-eyes-1005.png').then((value) {
-      sprite = value;
-    });
+    sprite = Sprite(eyeImage);
   }
 
-  void updateCenter(Position center){
-    x = center.x - width /2;
-    y = center.y - height /2;
+  void updateCenter(Position center) {
+    x = center.x - width / 2;
+    y = center.y - height / 2;
   }
 
   void setEffect() {

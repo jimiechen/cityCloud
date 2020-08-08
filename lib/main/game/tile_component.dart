@@ -30,11 +30,9 @@ class TileComponent extends SpriteComponent {
     _createTitleInfoAccordingToSelf();
     Sprite.loadSprite(tileImage).then((value) => sprite = value);
     if (tileViewImage != null) {
-      Sprite.loadSprite(tileViewImage).then((value) {
-        viewSpriteComponent = SpriteComponent.fromSprite(TileWidth - PathPadding * 4, TileWidth - PathPadding * 4, value);
-        viewSpriteComponent.x = x + PathPadding * 2;
-        viewSpriteComponent.y = y + PathPadding * 2;
-      });
+      viewSpriteComponent = SpriteComponent.rectangle(TileWidth - PathPadding * 4, TileWidth - PathPadding * 4, tileViewImage);
+      viewSpriteComponent.x = x + PathPadding * 2;
+      viewSpriteComponent.y = y + PathPadding * 2;
     }
   }
   // TileComponent({@required this.tileMapLocation, @required Rect rect})

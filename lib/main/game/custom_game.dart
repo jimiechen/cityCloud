@@ -5,13 +5,14 @@ import 'package:cityCloud/main/game/model/tile_location.dart';
 import 'package:cityCloud/main/game/person/person_sprite.dart';
 import 'package:cityCloud/main/game/tile_component.dart';
 import 'package:cityCloud/main/game/model/tile_info.dart';
+import 'package:cityCloud/styles/color_helper.dart';
+import 'package:cityCloud/util/image_helper.dart';
 import 'package:flame/components/component.dart';
 import 'package:ordered_set/ordered_set.dart';
 import 'package:ordered_set/comparing.dart';
 import 'package:flame/game/base_game.dart';
 import 'package:flame/gestures.dart';
 import 'package:flame/position.dart';
-import 'package:flame/sprite.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -224,7 +225,17 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   ///随机添加小人
   void randomAddPerson() {
     randomPosition((endNode, position) {
-      PersonSprite personSprite = PersonSprite(endPathNode: endNode, initialPosition: position);
+      PersonSprite personSprite = PersonSprite(
+        endPathNode: endNode,
+        initialPosition: position,
+        faceColor: ColorHelper.faces.randomItem,
+        bodyImage: ImageHelper.bodys.randomItem,
+        eyeImage: ImageHelper.eyes.randomItem,
+        footImage: ImageHelper.foots.randomItem,
+        hairImage: ImageHelper.hairs.randomItem,
+        handImage: ImageHelper.hands.randomItem,
+        noseImage: ImageHelper.noses.randomItem,
+      );
 
       add(personSprite);
       personSprite.enter(targetEndNode: endNode, targetPosition: position);

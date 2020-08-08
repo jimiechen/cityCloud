@@ -30,4 +30,11 @@ class ImageHelper {
         return 'images/' + path;
     }
   }
+
+  static List<String> bodys = List.generate(20, (index) => 'people_body_$index.png');
+  static List<String> eyes = List.generate(20, (index) => 'people_eye_$index.png');
+  static List<String> foots = List.generate(20, (index) => 'people_foot_$index.png');
+  static List<String> hairs = List.generate(20, (index) => 'people_hair_$index.png');
+  static List<String> hands = List.generate(10, (index) => 'people_hand_$index.png');
+  static List<String> noses = List.generate(3, (index) => 'people_nose_$index.png');
 }

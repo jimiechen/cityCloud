@@ -40,16 +40,17 @@ class HandRotateEffect extends PositionComponentEffect {
 }
 
 class HandSprite extends SpriteComponent {
+  final String handImage;
   final HorizontalOrigentation origentation;
   final double footAndBodyHeight;
-  HandSprite({double handWidth = HandWidth, double handHeight = HandHeight, this.footAndBodyHeight = FootHeight + BodyHeight, this.origentation}) {
+  HandSprite({double handWidth = HandWidth, double handHeight = HandHeight, @required this.handImage, this.footAndBodyHeight = FootHeight + BodyHeight, this.origentation}) {
     assert(handWidth != null && handHeight != null);
     x = origentation == HorizontalOrigentation.Left ? -handWidth - HandSpacing / 2 : HandSpacing / 2;
     y = -footAndBodyHeight;
     width = handWidth;
     height = handHeight;
 
-    Sprite.loadSprite('people-hand-2.png').then((value) {
+    Sprite.loadSprite(handImage).then((value) {
       sprite = value;
       this.addEffect(
         HandRotateEffect(
