@@ -24,8 +24,8 @@ class CloudSprite extends Component with HasGameRef {
       component.sprite = value;
       component.y = _gameSize == null ? 0 : Random().nextDouble() * _gameSize.height - value.size.y / 2;
       component.x = _gameSize == null ? -value.size.x : -Random().nextDouble() * value.size.x;
-      component.width = value.size.x;
-      component.height = value.size.y;
+      component.width = value.size.x * 0.5;
+      component.height = value.size.y * 0.5;
       component.overridePaint = Paint()..color = Colors.white.withOpacity(0.3);
       component.addEffect(
         MoveEffect(

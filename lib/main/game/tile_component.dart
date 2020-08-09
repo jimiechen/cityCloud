@@ -59,8 +59,8 @@ class TileComponent extends SpriteComponent {
   void _createTitleInfoAccordingToSelf() {
     PathNode topLeftNode = PathNode(position: Position(x + PathPadding, y + PathPadding));
     PathNode topRighttNode = PathNode(position: Position(x + width - PathPadding, y + PathPadding));
-    PathNode bottomLeftNode = PathNode(position: Position(x + PathPadding, y + height - PathPadding));
-    PathNode bottomRighttNode = PathNode(position: Position(x + width - PathPadding, y + height - PathPadding));
+    PathNode bottomLeftNode = PathNode(position: Position(x + PathPadding, y + TileHeight - PathPadding));
+    PathNode bottomRighttNode = PathNode(position: Position(x + width - PathPadding, y + TileHeight - PathPadding));
 
     topLeftNode.bottom = bottomLeftNode;
     topLeftNode.right = topRighttNode;

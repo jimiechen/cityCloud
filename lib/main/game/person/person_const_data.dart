@@ -29,7 +29,7 @@ const double HeadMoveDistance = 6 * _scale; //头上下移动的偏移量
 
 const double EyeHeight = EyeWidth * 0.43; //眼睛宽度
 const double EyeWidth = 26 * _scale; //眼睛高度
-const double EyeCloseSpeed = 15 * _scale; //眨眼睛速度
+const double EyeCloseSpeed = 18 * _scale; //眨眼睛速度
 const double EyeCloseTimeInterval = 6 * _scale; //眨眼睛时间间隔
 
 const double NoseWidth = 30 * _scale; //头发宽度
