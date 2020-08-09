@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 class CloudSprite extends Component with HasGameRef {
   List<PositionComponent> components = [];
   Size _gameSize;
-  CloudSprite() {
+  CloudSprite(this._gameSize) {
     addRandomCloud();
     addRandomCloud();
     addRandomCloud();

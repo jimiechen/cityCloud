@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:cityCloud/dart_class/extension/Iterable_extension.dart';
@@ -66,6 +67,8 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
 
   ///地图背景layer
   CallbackPreRenderedLayer _mapLayer;
+  ///云
+  CloudSprite _cloudSprite;
   @override
   bool debugMode() {
     return true;
@@ -83,7 +86,10 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     //   List.generate(10, (index) => randomAddPerson());
     // });
 
-    add(CloudSprite());
+    ///异步，要不size值为null
+    Timer.run(() {
+      _cloudSprite = CloudSprite(size);
+    });
   }
 
   @override
@@ -298,7 +304,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
 
     _translateAnimation?.update(t);
     _scaleAnimation?.update(t);
-
+    _cloudSprite?.update(t);
     OrderedSet<Component> tmpComponents = OrderedSet(Comparing.on((c) => c.priority()));
     tmpComponents.addAll(components);
     components = tmpComponents;
@@ -316,6 +322,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
 
   @override
   void render(Canvas canvas) {
+    canvas.save();
     canvas.scale(_scale, _scale);
     if (_translateAfterScale != null) {
       canvas.translate(_translateAfterScale.dx, _translateAfterScale.dy);
@@ -325,6 +332,10 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     // canvas.scale(2, 2);
     _mapLayer?.render(canvas);
     super.render(canvas);
+    canvas.restore();
+    canvas.save();
+    _cloudSprite?.render(canvas);
+    canvas.restore();
   }
 
   @override
