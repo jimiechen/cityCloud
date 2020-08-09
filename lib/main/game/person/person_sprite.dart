@@ -81,11 +81,11 @@ class PersonSprite extends PositionComponent {
     x = initialPosition.x;
     y = initialPosition.y;
     resetMoveEffect();
-    _leftFootSprite = FootSprite(origentation: HorizontalOrigentation.Left, footImage: footImage);
-    _rightFootSprite = FootSprite(origentation: HorizontalOrigentation.Right, footImage: footImage);
+    _leftFootSprite = FootSprite(origentation: HorizontalOrigentation.Left, footImage: footImage, color: faceColor);
+    _rightFootSprite = FootSprite(origentation: HorizontalOrigentation.Right, footImage: footImage, color: faceColor);
     _bodySprite = BodySprite(origentation: HorizontalOrigentation.Left, bodyImage: bodyImage);
-    _leftHandSprite = HandSprite(origentation: HorizontalOrigentation.Left, handImage: handImage);
-    _rightHandSprite = HandSprite(origentation: HorizontalOrigentation.Right, handImage: handImage);
+    _leftHandSprite = HandSprite(origentation: HorizontalOrigentation.Left, handImage: handImage, color: faceColor);
+    _rightHandSprite = HandSprite(origentation: HorizontalOrigentation.Right, handImage: handImage, color: faceColor);
 
     _headSprite = HeadSprite(
       origentation: HorizontalOrigentation.Right,

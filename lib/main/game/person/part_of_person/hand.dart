@@ -42,8 +42,9 @@ class HandRotateEffect extends PositionComponentEffect {
 class HandSprite extends SpriteComponent {
   final String handImage;
   final HorizontalOrigentation origentation;
+  final Color color;
   final double footAndBodyHeight;
-  HandSprite({double handWidth = HandWidth, double handHeight = HandHeight, @required this.handImage, this.footAndBodyHeight = FootHeight + BodyHeight, this.origentation}) {
+  HandSprite({this.color, handWidth = HandWidth, double handHeight = HandHeight, @required this.handImage, this.footAndBodyHeight = FootHeight + BodyHeight, this.origentation}) {
     assert(handWidth != null && handHeight != null);
     x = origentation == HorizontalOrigentation.Left ? -handWidth - HandSpacing / 2 : HandSpacing / 2;
     y = -footAndBodyHeight;
@@ -61,5 +62,15 @@ class HandSprite extends SpriteComponent {
             radians: origentation == HorizontalOrigentation.Left ? HandRotateRadians : -HandRotateRadians),
       );
     });
+  }
+
+  @override
+  void render(Canvas canvas) {
+    prepareCanvas(canvas);
+    if (color != null) {
+      canvas.drawRect(Rect.fromLTWH(0, 0, width, height), Paint()..color = color);
+    }
+
+    sprite.render(canvas, width: width, height: height, overridePaint: overridePaint);
   }
 }

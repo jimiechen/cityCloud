@@ -15,13 +15,6 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     Flame.images.loadAll([
       'map_tile_0.png',
-      'people-body-5.png',
-      'people-eyes-1005.png',
-      'people-face-1001.png',
-      'people-hair-2.png',
-      'people-hand-2.png',
-      'people-headb-1.png',
-      'people-leg-5.png',
       'excavator_back.png',
       'excavator_back_shadow.png',
       'excavator_front.png',

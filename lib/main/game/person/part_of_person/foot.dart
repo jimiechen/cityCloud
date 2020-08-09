@@ -10,7 +10,8 @@ import '../person_const_data.dart';
 class FootSprite extends SpriteComponent {
   final String footImage;
   final HorizontalOrigentation origentation;
-  FootSprite({double footWidth = FootWidth, double footHeight = FootHeight, @required this.footImage, this.origentation}) {
+  final Color color;
+  FootSprite({this.color, double footWidth = FootWidth, double footHeight = FootHeight, @required this.footImage, this.origentation}) {
     assert(footWidth != null && footHeight != null);
     x = origentation == HorizontalOrigentation.Left ? -footWidth - FootSpacing / 2 : FootSpacing / 2;
     y = -footHeight;
@@ -29,5 +30,15 @@ class FootSprite extends SpriteComponent {
         ),
       );
     });
+  }
+
+  @override
+  void render(Canvas canvas) {
+    prepareCanvas(canvas);
+    if (color != null) {
+      canvas.drawRect(Rect.fromLTWH(0, 0, width, height * 0.9), Paint()..color = color);
+    }
+
+    sprite.render(canvas, width: width, height: height, overridePaint: overridePaint);
   }
 }
