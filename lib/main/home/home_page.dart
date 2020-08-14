@@ -1,8 +1,7 @@
-import 'package:cityCloud/router/router.dart';
-import 'package:flame/flame.dart';
+import 'package:cityCloud/expanded/cubit/global_cubit.dart';
+import 'package:cityCloud/main/game/custom_game.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import '../game/game_page.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -10,42 +9,45 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  CustomGame _box2dGame = CustomGame();
   @override
   void initState() {
     super.initState();
-    Flame.images.loadAll([
-      'map_tile_0.png',
-      'excavator_back.png',
-      'excavator_back_shadow.png',
-      'excavator_front.png',
-      'excavator_front_shadow.png',
-      'excavator_side.png',
-      'excavator_side_shadow.png',
-      'map_tile_view_0.png',
-      'map_tile_view_1.png',
-    ]);
+    // _box2dComponent = MyBox2D();
+    GlobalCubit().listen((cubitState) {
+      if (cubitState is GlobalTapOnPersionSpriteRemider) {
+        ///点击了小人头部提示
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return CupertinoAlertDialog(
+              title: Text('点击了小人头上的提示'),
+              actions: <Widget>[
+                CupertinoDialogAction(
+                  child: Text(
+                    '确定',
+                    style: TextStyle(decoration: TextDecoration.none, fontSize: 16),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('游戏'),
-      ),
-      body: Column(
-        children: <Widget>[
-          InkWell(
-            onTap: () {
-              Navigator.push(context, Router.routeForPage(page: GamePage()));
-            },
-            child: Container(
-              color: Colors.red,
-              height: 40,
-              child: Text('跳转到游戏界面'),
-            ),
-          ),
-        ],
-      ),
-    );
+        body: Stack(
+      children: [
+        _box2dGame.widget,
+      ],
+    ));
   }
 }

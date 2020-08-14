@@ -1,4 +1,5 @@
 import 'package:cityCloud/main/home/home_page.dart';
+import 'package:cityCloud/main/launch/privacy_policy.dart';
 import 'package:flutter/material.dart';
 
 typedef PageWrapBuilder = Widget Function(Widget child, BuildContext context);
@@ -10,7 +11,7 @@ class Router {
   List<String> _routesName = [];
 
   static String root = "/";
-  static get rootPageBuilder => (_) => HomePage();
+  static get rootPageBuilder => (_) => PrivacyPolicyPage();
 
   static String _routeNameForPage(Type page) => page.toString();
 
