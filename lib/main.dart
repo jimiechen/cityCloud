@@ -24,6 +24,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return OKToast(
       child: MaterialApp(
+        builder: (BuildContext context, Widget child) {
+          return MediaQuery(
+            child: child,
+            data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+          );
+        },
         navigatorObservers: [CustomNavigatorObserver()],
         localizationsDelegates: [
           GlobalMaterialLocalizations.delegate,
@@ -45,7 +51,7 @@ class MyApp extends StatelessWidget {
           appBarTheme: AppBarTheme(
             elevation: 1,
             color: Colors.white,
-            centerTitle: true,
+            // centerTitle: true,
             brightness: Brightness.light,
             iconTheme: IconThemeData(color: ColorHelper.Black51),
             actionsIconTheme: IconThemeData(color: ColorHelper.Black33),

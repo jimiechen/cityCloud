@@ -18,6 +18,9 @@ class ColorHelper {
   static const Color PlaceholderTextColor = Color.fromRGBO(143, 143, 143, 1);
 
   static const Color ColorE3 = Color(0xFFE3E3E3);
+  static const Color ColorEB = Color(0xFFEBEBEB);
+  static const Color ColorE7 = Color(0xFFE7E7E7);
+  static const Color ColorF2 = Color(0xFFF2F2F2);
 
   static const Color Black33 = Color.fromRGBO(33, 33, 33, 1);
   static const Color Black51 = Color.fromRGBO(51, 51, 51, 1);

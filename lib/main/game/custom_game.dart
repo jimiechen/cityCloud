@@ -81,6 +81,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
         addTileComponent(tileComponent);
       }
     }
+  
     // Future.delayed(Duration(seconds: 2), () {
     //   ///添加十个小人
     //   List.generate(10, (index) => randomAddPerson());

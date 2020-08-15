@@ -1,7 +1,10 @@
 import 'package:cityCloud/expanded/cubit/global_cubit.dart';
 import 'package:cityCloud/main/game/custom_game.dart';
+import 'package:cityCloud/main/home/bloc/home_page_bloc.dart';
+import 'package:cityCloud/main/home/home_menu_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -10,6 +13,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   CustomGame _box2dGame = CustomGame();
+  HomeMenuPage _homeAbovePage = HomeMenuPage();
+  HomePageBloc _bloc = HomePageBloc();
+
   @override
   void initState() {
     super.initState();
@@ -44,10 +50,15 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Stack(
-      children: [
-        _box2dGame.widget,
-      ],
-    ));
+      body: BlocProvider.value(
+        value: _bloc,
+        child: Stack(
+          children: [
+            _box2dGame.widget,
+            _homeAbovePage,
+          ],
+        ),
+      ),
+    );
   }
 }
