@@ -19,7 +19,7 @@ class CloudSprite extends Component with HasGameRef {
 
   void addRandomCloud() {
     int randomInt = Random().nextInt(5);
-    Sprite.loadSprite('fc-cloud-$randomInt.png').then((value) {
+    Sprite.loadSprite('cloud_$randomInt.png').then((value) {
       SpriteComponent component = SpriteComponent();
       component.sprite = value;
       component.y = _gameSize == null ? 0 : Random().nextDouble() * _gameSize.height - value.size.y / 2;

@@ -1,7 +1,9 @@
 import 'package:cityCloud/expanded/cubit/global_cubit.dart';
 import 'package:cityCloud/main/game/custom_game.dart';
 import 'package:cityCloud/main/home/bloc/home_page_bloc.dart';
+import 'package:cityCloud/main/home/cubit/home_page_cubit.dart';
 import 'package:cityCloud/main/home/home_menu_page.dart';
+import 'package:cityCloud/main/home/home_status_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,7 +16,11 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   CustomGame _box2dGame = CustomGame();
   HomeMenuPage _homeAbovePage = HomeMenuPage();
+  HomeStatusPage _homeStatusPage = HomeStatusPage();
   HomePageBloc _bloc = HomePageBloc();
+
+  ///用与模块间事件传递
+  HomePageCubit _cubit = HomePageCubit();
 
   @override
   void initState() {
@@ -48,14 +54,25 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void dispose() {
+    _bloc.close();
+    _cubit.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocProvider.value(
-        value: _bloc,
+      body: MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: _bloc),
+          BlocProvider.value(value: _cubit),
+        ],
         child: Stack(
           children: [
             _box2dGame.widget,
             _homeAbovePage,
+            _homeStatusPage,
           ],
         ),
       ),

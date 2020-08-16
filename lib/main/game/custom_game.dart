@@ -82,10 +82,10 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
       }
     }
   
-    // Future.delayed(Duration(seconds: 2), () {
-    //   ///添加十个小人
-    //   List.generate(10, (index) => randomAddPerson());
-    // });
+    Future.delayed(Duration(seconds: 2), () {
+      ///添加十个小人
+      List.generate(10, (index) => randomAddPerson());
+    });
 
     ///异步，要不size值为null
     Timer.run(() {
