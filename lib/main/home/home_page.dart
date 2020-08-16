@@ -50,6 +50,12 @@ class _HomePageState extends State<HomePage> {
           },
         );
       }
+      else if (cubitState is GlobalCubitStateAddPerson) {
+        _box2dGame.randomAddPerson();
+      }
+       else if (cubitState is GlobalCubitStateAddCar) {
+        _box2dGame.randomAddCar();
+      }
     });
   }
 

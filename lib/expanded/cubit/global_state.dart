@@ -1,9 +1,12 @@
 part of 'global_cubit.dart';
 
 @immutable
-abstract class GlobalState {}
+abstract class GlobalCubitState {}
 
-class GlobalInitial extends GlobalState {}
+class GlobalInitial extends GlobalCubitState {}
 
 ///点击小人头顶提示
-class GlobalTapOnPersionSpriteRemider extends GlobalState {}
+class GlobalTapOnPersionSpriteRemider extends GlobalCubitState {}
+
+class GlobalCubitStateAddPerson extends GlobalCubitState {}
+class GlobalCubitStateAddCar extends GlobalCubitState {}

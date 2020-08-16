@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:isolate';
 import 'dart:math';
 
+import 'package:cityCloud/expanded/cubit/global_cubit.dart';
 import 'package:cityCloud/r.dart';
 import 'package:cityCloud/styles/color_helper.dart';
 import 'package:cityCloud/styles/custom_style.dart';
@@ -444,7 +446,8 @@ class _HomeMenuPageState extends State<HomeMenuPage> with SingleTickerProviderSt
                   color: Color(0xFF555555),
                 ),
                 onPressed: () {
-                  BlocProvider.of<HomePageCubit>(context).add(HomePageCubitTapOnMessageList());
+                  // BlocProvider.of<HomePageCubit>(context).add(HomePageCubitTapOnMessageList());
+                  GlobalCubit().add(GlobalCubitStateAddCar());
                 },
               ),
               Spacer(),
@@ -455,7 +458,8 @@ class _HomeMenuPageState extends State<HomeMenuPage> with SingleTickerProviderSt
                   color: Color(0xFF555555),
                 ),
                 onPressed: () {
-                  BlocProvider.of<HomePageCubit>(context).add(HomePageCubitTapOnAddDynamic());
+                  // BlocProvider.of<HomePageCubit>(context).add(HomePageCubitTapOnAddDynamic());
+                  GlobalCubit().add(GlobalCubitStateAddPerson());
                 },
               ),
               Spacer(),
