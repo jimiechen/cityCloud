@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:math';
 
 import 'package:cityCloud/dart_class/extension/Iterable_extension.dart';
+import 'package:cityCloud/main/game/model/component_linked_list_entry.dart';
 import 'package:cityCloud/main/game/model/tile_location.dart';
 import 'package:cityCloud/main/game/person/person_sprite.dart';
 import 'package:cityCloud/main/game/tile_component.dart';
@@ -9,6 +11,9 @@ import 'package:cityCloud/main/game/model/tile_info.dart';
 import 'package:cityCloud/styles/color_helper.dart';
 import 'package:cityCloud/util/image_helper.dart';
 import 'package:flame/components/component.dart';
+import 'package:flame/components/composed_component.dart';
+import 'package:flame/components/flare_component.dart';
+import 'package:flame/components/mixins/has_game_ref.dart';
 import 'package:ordered_set/ordered_set.dart';
 import 'package:ordered_set/comparing.dart';
 import 'package:flame/game/base_game.dart';
@@ -67,8 +72,11 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
 
   ///地图背景layer
   CallbackPreRenderedLayer _mapLayer;
+
   ///云
   CloudSprite _cloudSprite;
+
+  LinkedList<ComponentLinkedListEntry> _components = LinkedList<ComponentLinkedListEntry>();
   @override
   bool debugMode() {
     return true;
@@ -81,7 +89,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
         addTileComponent(tileComponent);
       }
     }
-  
+
     // Future.delayed(Duration(seconds: 2), () {
     //   ///添加十个小人
     //   List.generate(10, (index) => randomAddPerson());
@@ -91,7 +99,6 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     Timer.run(() {
       _cloudSprite = CloudSprite(size);
     });
-
   }
 
   @override
@@ -261,7 +268,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   }
 
   void jump() {
-    List<PersonSprite> personSprite = List<PersonSprite>.from(components.where((element) => element is PersonSprite));
+    List<PersonSprite> personSprite = List<PersonSprite>.from(_components.where((element) => element is PersonSprite));
     _tileComponentLocationMap.values?.randomItem?.randomPath(({beginNode, endNode}) {
       int movePercent = Random().nextInt(100);
       Position target = positionAmong(beginPosition: beginNode.position, endPosition: endNode.position, movePercent: movePercent);
@@ -270,12 +277,12 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   }
 
   void jumpInplace() {
-    List<PersonSprite> personSprite = List<PersonSprite>.from(components.where((element) => element is PersonSprite));
+    List<PersonSprite> personSprite = List<PersonSprite>.from(_components.where((element) => element is PersonSprite));
     personSprite.randomItem?.jumpInPlace();
   }
 
   void showRemider() {
-    List<PersonSprite> personSprite = List<PersonSprite>.from(components.where((element) => element is PersonSprite));
+    List<PersonSprite> personSprite = List<PersonSprite>.from(_components.where((element) => element is PersonSprite));
     personSprite.randomItem?.showRemider();
   }
 
@@ -284,11 +291,35 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   double jumpInPlaceTimeCount = 0;
   @override
   void update(double t) {
-    super.update(t);
+    // _components.forEach((c) => c.gameComponent.update(t));
+
+    if (_components.isNotEmpty) {
+      ComponentLinkedListEntry tmpEntry = _components.first;
+      if (tmpEntry != null) {
+        do {
+          tmpEntry.gameComponent?.update(t);
+          ComponentLinkedListEntry reorder = tmpEntry;
+          tmpEntry = tmpEntry.next;
+          ComponentLinkedListEntry previous = reorder.previous;
+          while(previous != null && previous.priority > reorder.priority) {
+            previous = previous.previous;
+          }
+          if(previous != null && previous != reorder.previous) {
+            _components.remove(reorder);
+            previous.insertAfter(reorder);
+          }
+          else  if(previous == null && !identical(reorder, _components.first)) {
+            _components.remove(reorder);
+            _components.addFirst(reorder);
+          }
+          
+        } while (tmpEntry != null && !identical(tmpEntry, _components.first));
+      }
+    }
+    // _components.removeWhere((c) => c.destroy()).forEach((c) => c.onDestroy());
     showRemiderTimeCount += t;
     if (showRemiderTimeCount > 5) {
       showRemiderTimeCount = 0;
-      // jump();
       showRemider();
     }
 
@@ -299,7 +330,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     }
 
     jumpInPlaceTimeCount += t;
-    if (jumpInPlaceTimeCount > (components.length > 15 ? 3 : 7)) {
+    if (jumpInPlaceTimeCount > (_components.length > 15 ? 3 : 7)) {
       jumpInPlaceTimeCount = 0;
       jumpInplace();
     }
@@ -307,9 +338,6 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     _translateAnimation?.update(t);
     _scaleAnimation?.update(t);
     _cloudSprite?.update(t);
-    OrderedSet<Component> tmpComponents = OrderedSet(Comparing.on((c) => c.priority()));
-    tmpComponents.addAll(components);
-    components = tmpComponents;
 
     if (_mapLayer == null) {
       if (_tileComponentLocationMap.values.every((element) => element.loaded())) {
@@ -333,7 +361,11 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     // canvas.translate(60, 60);
     // canvas.scale(2, 2);
     _mapLayer?.render(canvas);
-    super.render(canvas);
+
+    canvas.save();
+    _components.forEach((comp) => renderComponent(canvas, comp.gameComponent));
+    canvas.restore();
+
     canvas.restore();
     canvas.save();
     _cloudSprite?.render(canvas);
@@ -343,9 +375,32 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   @override
   void onTapDown(TapDownDetails details) {
     super.onTapDown(details);
-    components.where((element) => element is PersonSprite).forEach((element) {
+    _components.where((element) => element is PersonSprite).forEach((element) {
       (element as PersonSprite).handleTapDown(fromGame(details.localPosition));
     });
+  }
+
+  @override
+  void add(Component c) {
+    if (debugMode() && c is PositionComponent) {
+      c.debugMode = true;
+    }
+
+    if (c is HasGameRef) {
+      (c as HasGameRef).gameRef = this;
+    }
+
+    // first time resize
+    if (size != null) {
+      c.resize(size);
+    }
+
+    if (c is ComposedComponent) {
+      c.components.forEach(add);
+    }
+
+    c.onMount();
+    _components.add(ComponentLinkedListEntry(c));
   }
 
   @override
