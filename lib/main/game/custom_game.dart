@@ -3,6 +3,8 @@ import 'dart:collection';
 import 'dart:math';
 
 import 'package:cityCloud/dart_class/extension/Iterable_extension.dart';
+import 'package:cityCloud/main/game/building/building_Component.dart';
+import 'package:cityCloud/main/game/model/building_info.dart';
 import 'package:cityCloud/main/game/model/component_linked_list_entry.dart';
 import 'package:cityCloud/main/game/model/tile_location.dart';
 import 'package:cityCloud/main/game/person/person_sprite.dart';
@@ -79,7 +81,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   LinkedList<ComponentLinkedListEntry> _components = LinkedList<ComponentLinkedListEntry>();
   @override
   bool debugMode() {
-    return true;
+    return false;
   }
 
   CustomGame() {
@@ -87,6 +89,28 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
       for (int x = 0; x < 6; x++) {
         TileComponent tileComponent = TileComponent(tileMapLocation: TileMapLocation(x, y), tileImage: 'map_tile_0.png', tileViewImage: 'map_tile_view_0.png');
         addTileComponent(tileComponent);
+        ///添加房子
+        add(
+          BuildingSprite(
+              buildingInfo: BuildingInfo(
+                image: ImageHelper.buildings.randomItem,
+                scale: 20,
+                relativePosition: Position(30, 35),
+              ),
+              tileMapX: x,
+              tileMapY: y),
+        );
+        ///添加树
+        add(
+          BuildingSprite(
+              buildingInfo: BuildingInfo(
+                image: ImageHelper.trees.randomItem,
+                scale: 5,
+                relativePosition: Position(20, 45),
+              ),
+              tileMapX: x,
+              tileMapY: y),
+        );
       }
     }
 
@@ -301,18 +325,16 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
           ComponentLinkedListEntry reorder = tmpEntry;
           tmpEntry = tmpEntry.next;
           ComponentLinkedListEntry previous = reorder.previous;
-          while(previous != null && previous.priority > reorder.priority) {
+          while (previous != null && previous.priority > reorder.priority) {
             previous = previous.previous;
           }
-          if(previous != null && previous != reorder.previous) {
+          if (previous != null && previous != reorder.previous) {
             _components.remove(reorder);
             previous.insertAfter(reorder);
-          }
-          else  if(previous == null && !identical(reorder, _components.first)) {
+          } else if (previous == null && !identical(reorder, _components.first)) {
             _components.remove(reorder);
             _components.addFirst(reorder);
           }
-          
         } while (tmpEntry != null && !identical(tmpEntry, _components.first));
       }
     }

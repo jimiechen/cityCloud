@@ -9,6 +9,40 @@ class R {
   static final String assetsImagesIconIconTopBarBackArrow = 'assets/images/icon/icon_topBar_back_arrow.png';
   /// ![](http://127.0.0.1:9527/assets/images/background/bg_empty.png)
   static final String assetsImagesBackgroundBgEmpty = 'assets/images/background/bg_empty.png';
+  /// ![](http://127.0.0.1:9527/assets/images/building_0.png)
+  static final String assetsImagesBuilding0 = 'assets/images/building_0.png';
+  /// ![](http://127.0.0.1:9527/assets/images/building_1.png)
+  static final String assetsImagesBuilding1 = 'assets/images/building_1.png';
+  /// ![](http://127.0.0.1:9527/assets/images/building_10.png)
+  static final String assetsImagesBuilding10 = 'assets/images/building_10.png';
+  /// ![](http://127.0.0.1:9527/assets/images/building_11.png)
+  static final String assetsImagesBuilding11 = 'assets/images/building_11.png';
+  /// ![](http://127.0.0.1:9527/assets/images/building_12.png)
+  static final String assetsImagesBuilding12 = 'assets/images/building_12.png';
+  /// ![](http://127.0.0.1:9527/assets/images/building_13.png)
+  static final String assetsImagesBuilding13 = 'assets/images/building_13.png';
+  /// ![](http://127.0.0.1:9527/assets/images/building_14.png)
+  static final String assetsImagesBuilding14 = 'assets/images/building_14.png';
+  /// ![](http://127.0.0.1:9527/assets/images/building_15.png)
+  static final String assetsImagesBuilding15 = 'assets/images/building_15.png';
+  /// ![](http://127.0.0.1:9527/assets/images/building_16.png)
+  static final String assetsImagesBuilding16 = 'assets/images/building_16.png';
+  /// ![](http://127.0.0.1:9527/assets/images/building_2.png)
+  static final String assetsImagesBuilding2 = 'assets/images/building_2.png';
+  /// ![](http://127.0.0.1:9527/assets/images/building_3.png)
+  static final String assetsImagesBuilding3 = 'assets/images/building_3.png';
+  /// ![](http://127.0.0.1:9527/assets/images/building_4.png)
+  static final String assetsImagesBuilding4 = 'assets/images/building_4.png';
+  /// ![](http://127.0.0.1:9527/assets/images/building_5.png)
+  static final String assetsImagesBuilding5 = 'assets/images/building_5.png';
+  /// ![](http://127.0.0.1:9527/assets/images/building_6.png)
+  static final String assetsImagesBuilding6 = 'assets/images/building_6.png';
+  /// ![](http://127.0.0.1:9527/assets/images/building_7.png)
+  static final String assetsImagesBuilding7 = 'assets/images/building_7.png';
+  /// ![](http://127.0.0.1:9527/assets/images/building_8.png)
+  static final String assetsImagesBuilding8 = 'assets/images/building_8.png';
+  /// ![](http://127.0.0.1:9527/assets/images/building_9.png)
+  static final String assetsImagesBuilding9 = 'assets/images/building_9.png';
   /// ![](http://127.0.0.1:9527/assets/images/cloud_0.png)
   static final String assetsImagesCloud0 = 'assets/images/cloud_0.png';
   /// ![](http://127.0.0.1:9527/assets/images/cloud_1.png)
@@ -225,4 +259,16 @@ class R {
   static final String assetsImagesPeopleNose1 = 'assets/images/people_nose_1.png';
   /// ![](http://127.0.0.1:9527/assets/images/people_nose_2.png)
   static final String assetsImagesPeopleNose2 = 'assets/images/people_nose_2.png';
+  /// ![](http://127.0.0.1:9527/assets/images/tree_1.png)
+  static final String assetsImagesTree1 = 'assets/images/tree_1.png';
+  /// ![](http://127.0.0.1:9527/assets/images/tree_2.png)
+  static final String assetsImagesTree2 = 'assets/images/tree_2.png';
+  /// ![](http://127.0.0.1:9527/assets/images/tree_3.png)
+  static final String assetsImagesTree3 = 'assets/images/tree_3.png';
+  /// ![](http://127.0.0.1:9527/assets/images/tree_4.png)
+  static final String assetsImagesTree4 = 'assets/images/tree_4.png';
+  /// ![](http://127.0.0.1:9527/assets/images/tree_5.png)
+  static final String assetsImagesTree5 = 'assets/images/tree_5.png';
+  /// ![](http://127.0.0.1:9527/assets/images/tree_6.png)
+  static final String assetsImagesTree6 = 'assets/images/tree_6.png';
 }

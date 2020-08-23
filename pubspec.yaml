@@ -85,6 +85,23 @@ flutter:
     # assets/images/background/*
     - assets/images/background/bg_empty.png
     # assets/images/*
+    - assets/images/building_0.png
+    - assets/images/building_1.png
+    - assets/images/building_10.png
+    - assets/images/building_11.png
+    - assets/images/building_12.png
+    - assets/images/building_13.png
+    - assets/images/building_14.png
+    - assets/images/building_15.png
+    - assets/images/building_16.png
+    - assets/images/building_2.png
+    - assets/images/building_3.png
+    - assets/images/building_4.png
+    - assets/images/building_5.png
+    - assets/images/building_6.png
+    - assets/images/building_7.png
+    - assets/images/building_8.png
+    - assets/images/building_9.png
     - assets/images/cloud_0.png
     - assets/images/cloud_1.png
     - assets/images/cloud_2.png
@@ -193,6 +210,12 @@ flutter:
     - assets/images/people_nose_0.png
     - assets/images/people_nose_1.png
     - assets/images/people_nose_2.png
+    - assets/images/tree_1.png
+    - assets/images/tree_2.png
+    - assets/images/tree_3.png
+    - assets/images/tree_4.png
+    - assets/images/tree_5.png
+    - assets/images/tree_6.png
     # assets-generator-end
 
   # An image asset can refer to one or more resolution-specific "variants", see

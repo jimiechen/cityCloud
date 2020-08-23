@@ -37,4 +37,6 @@ class ImageHelper {
   static List<String> hairs = List.generate(20, (index) => 'people_hair_$index.png');
   static List<String> hands = List.generate(10, (index) => 'people_hand_$index.png');
   static List<String> noses = List.generate(3, (index) => 'people_nose_$index.png');
+  static List<String> buildings = List.generate(17, (index) => 'building_$index.png');
+  static List<String> trees = List.generate(6, (index) => 'tree_$index.png');
 }
