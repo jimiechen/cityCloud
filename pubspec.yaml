@@ -54,6 +54,14 @@ dev_dependencies:
   moor_generator: ^3.3.0
   # flutter_test:
   #   sdk: flutter
+  #设置appicon
+  flutter_launcher_icons: "^0.7.5"
+#配合flutter_launcher_icons设置app icon
+#配置好之后执行`flutter pub run flutter_launcher_icons:main`命令可以自动生成android和iOS的icon放置到合适的路径下
+flutter_icons:
+  android: "ic_launcher" 
+  ios: true
+  image_path: "assets/icon.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
