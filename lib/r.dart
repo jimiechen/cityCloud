@@ -259,6 +259,8 @@ class R {
   static final String assetsImagesPeopleNose1 = 'assets/images/people_nose_1.png';
   /// ![](http://127.0.0.1:9527/assets/images/people_nose_2.png)
   static final String assetsImagesPeopleNose2 = 'assets/images/people_nose_2.png';
+  /// ![](http://127.0.0.1:9527/assets/images/tree_0.png)
+  static final String assetsImagesTree0 = 'assets/images/tree_0.png';
   /// ![](http://127.0.0.1:9527/assets/images/tree_1.png)
   static final String assetsImagesTree1 = 'assets/images/tree_1.png';
   /// ![](http://127.0.0.1:9527/assets/images/tree_2.png)
@@ -269,6 +271,4 @@ class R {
   static final String assetsImagesTree4 = 'assets/images/tree_4.png';
   /// ![](http://127.0.0.1:9527/assets/images/tree_5.png)
   static final String assetsImagesTree5 = 'assets/images/tree_5.png';
-  /// ![](http://127.0.0.1:9527/assets/images/tree_6.png)
-  static final String assetsImagesTree6 = 'assets/images/tree_6.png';
 }
