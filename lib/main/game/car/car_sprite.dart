@@ -12,7 +12,7 @@ import 'package:flame/position.dart';
 import 'package:flame/sprite.dart';
 import 'package:flutter/material.dart';
 
-import '../model/tile_info.dart';
+import '../map_tile/model/tile_info.dart';
 
 class CarSprite extends PositionComponent {
   String _spriteImage = 'excavator_';

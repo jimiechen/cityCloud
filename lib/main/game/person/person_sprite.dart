@@ -17,7 +17,7 @@ import 'package:flame/position.dart';
 import 'package:flutter/material.dart';
 
 import '../callback_pre_render_layer.dart';
-import '../model/tile_info.dart';
+import '../map_tile/model/tile_info.dart';
 import 'package:ordered_set/ordered_set.dart';
 import 'package:ordered_set/comparing.dart';
 

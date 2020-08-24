@@ -1,7 +1,7 @@
 import 'dart:ui';
 
-import 'package:cityCloud/main/game/model/tile_info.dart';
-import 'package:cityCloud/main/game/model/tile_location.dart';
+import 'package:cityCloud/main/game/map_tile/model/tile_info.dart';
+import 'package:cityCloud/main/game/map_tile/model/tile_location.dart';
 import 'package:flame/components/component.dart';
 import 'package:flame/position.dart';
 import 'package:flame/sprite.dart';

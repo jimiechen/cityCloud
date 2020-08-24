@@ -4,12 +4,12 @@ import 'dart:math';
 
 import 'package:cityCloud/dart_class/extension/Iterable_extension.dart';
 import 'package:cityCloud/main/game/building/building_Component.dart';
-import 'package:cityCloud/main/game/model/building_info.dart';
+import 'package:cityCloud/main/game/building/model/building_info.dart';
 import 'package:cityCloud/main/game/model/component_linked_list_entry.dart';
-import 'package:cityCloud/main/game/model/tile_location.dart';
+import 'package:cityCloud/main/game/map_tile/model/tile_location.dart';
 import 'package:cityCloud/main/game/person/person_sprite.dart';
-import 'package:cityCloud/main/game/tile_component.dart';
-import 'package:cityCloud/main/game/model/tile_info.dart';
+import 'package:cityCloud/main/game/map_tile/tile_component.dart';
+import 'package:cityCloud/main/game/map_tile/model/tile_info.dart';
 import 'package:cityCloud/styles/color_helper.dart';
 import 'package:cityCloud/util/image_helper.dart';
 import 'package:flame/components/component.dart';
@@ -30,7 +30,7 @@ import 'cloud/cloud_sprite.dart';
 import 'helper/double_animation.dart';
 import 'helper/inertial_motion.dart';
 import 'helper/translate_animation.dart';
-import 'model/tile_info.dart';
+import 'map_tile/model/tile_info.dart';
 
 /*
  * 缩放回调中手势分类
