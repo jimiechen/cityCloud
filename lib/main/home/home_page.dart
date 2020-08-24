@@ -14,7 +14,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  CustomGame _box2dGame = CustomGame();
+  CustomGame _box2dGame;
   HomeMenuPage _homeAbovePage = HomeMenuPage();
   HomeStatusPage _homeStatusPage = HomeStatusPage();
   HomePageBloc _bloc = HomePageBloc();
@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    // _box2dComponent = MyBox2D();
+    _box2dGame = CustomGame(homePageBloc: _bloc,homePageCubit: _cubit);
     GlobalCubit().listen((cubitState) {
       if (cubitState is GlobalTapOnPersionSpriteRemider) {
         ///点击了小人头部提示

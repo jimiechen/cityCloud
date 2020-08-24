@@ -1,0 +1,1 @@
+const String API_CREATE_OBJECT = 'open/citycloud/index';//创建对象

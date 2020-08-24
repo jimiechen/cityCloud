@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cityCloud/dart_class/extension/Iterable_extension.dart';
 import 'package:cityCloud/expanded/cubit/global_cubit.dart';
+import 'package:cityCloud/main/game/person/model/person_model.dart';
 import 'package:cityCloud/main/game/person/part_of_person/body.dart';
 import 'package:cityCloud/main/game/person/part_of_person/foot.dart';
 import 'package:cityCloud/main/game/person/part_of_person/hand.dart';
@@ -11,6 +12,7 @@ import 'package:cityCloud/main/game/person/person_const_data.dart';
 import 'package:cityCloud/main/game/person/person_effect/enter_effect.dart';
 import 'package:cityCloud/main/game/person/person_effect/go_out_effect.dart';
 import 'package:cityCloud/main/game/person/person_effect/jump_in_place_effect.dart';
+import 'package:cityCloud/util/image_helper.dart';
 import 'package:flame/components/component.dart';
 
 import 'package:flame/position.dart';
@@ -49,7 +51,7 @@ class PersonSprite extends PositionComponent {
   RemiderSprite _remiderSprite;
 
   ///隐藏提示定时器
-  Timer _hideRemiderTimer;
+  double _hideRemiderTimerCount;
 
   ///运动的终点
   PathNode _endPathNode;
@@ -66,14 +68,11 @@ class PersonSprite extends PositionComponent {
   ///原地跳效果
   JumpInPlaceEffect _jumpInPlaceEffect;
 
+  ///小人身体各部位信息
+  final PersonModel model;
+
   PersonSprite({
-    @required String hairImage,
-    @required String eyeImage,
-    @required String noseImage,
-    @required String bodyImage,
-    @required String footImage,
-    @required String handImage,
-    @required Color faceColor,
+    @required this.model,
     @required Position initialPosition,
     @required PathNode endPathNode,
   }) : assert(initialPosition != null && endPathNode != null) {
@@ -81,18 +80,23 @@ class PersonSprite extends PositionComponent {
     x = initialPosition.x;
     y = initialPosition.y;
     resetMoveEffect();
-    _leftFootSprite = FootSprite(origentation: HorizontalOrigentation.Left, footImage: footImage, color: faceColor);
-    _rightFootSprite = FootSprite(origentation: HorizontalOrigentation.Right, footImage: footImage, color: faceColor);
-    _bodySprite = BodySprite(origentation: HorizontalOrigentation.Left, bodyImage: bodyImage);
-    _leftHandSprite = HandSprite(origentation: HorizontalOrigentation.Left, handImage: handImage, color: faceColor);
-    _rightHandSprite = HandSprite(origentation: HorizontalOrigentation.Right, handImage: handImage, color: faceColor);
+    Color faceColor = Color(model.faceColorValue);
+    _leftFootSprite = FootSprite(
+        origentation: HorizontalOrigentation.Left, footImage: ImageHelper.foots[model.footID], color: faceColor);
+    _rightFootSprite = FootSprite(
+        origentation: HorizontalOrigentation.Right, footImage: ImageHelper.foots[model.footID], color: faceColor);
+    _bodySprite = BodySprite(origentation: HorizontalOrigentation.Left, bodyImage: ImageHelper.bodys[model.bodyID]);
+    _leftHandSprite = HandSprite(
+        origentation: HorizontalOrigentation.Left, handImage: ImageHelper.hands[model.handID], color: faceColor);
+    _rightHandSprite = HandSprite(
+        origentation: HorizontalOrigentation.Right, handImage: ImageHelper.hands[model.handID], color: faceColor);
 
     _headSprite = HeadSprite(
       origentation: HorizontalOrigentation.Right,
       faceColor: faceColor,
-      hairImage: hairImage,
-      eyeImage: eyeImage,
-      noseImage: noseImage,
+      hairImage: ImageHelper.hairs[model.hairID],
+      eyeImage: ImageHelper.eyes[model.eyeID],
+      noseImage: ImageHelper.noses[model.noseID],
     );
 
     _dynamicComponents.add(_leftFootSprite);
@@ -206,14 +210,7 @@ class PersonSprite extends PositionComponent {
       _remiderSprite.x = -10;
       _remiderSprite.y = -FootHeight - BodyHeight - HeadHeight - 20;
       _dynamicComponents.add(_remiderSprite);
-      _hideRemiderTimer?.cancel();
-      _hideRemiderTimer = Timer(Duration(seconds: 5), () {
-        _hideRemiderTimer?.cancel();
-        if (_dynamicComponents.contains(_remiderSprite)) {
-          _dynamicComponents.remove(_remiderSprite);
-        }
-        _remiderSprite = null;
-      });
+      _hideRemiderTimerCount = 0;
     }
   }
 
@@ -244,6 +241,14 @@ class PersonSprite extends PositionComponent {
 
   @override
   void update(double dt) {
+    if(_remiderSprite != null) {
+      _hideRemiderTimerCount ??= 0;
+      _hideRemiderTimerCount += dt;
+      if(_hideRemiderTimerCount > 5) {
+        _hideRemiderTimerCount = 0;
+        _remiderSprite = null;
+      }
+    }
     if (_enterEffect != null || _goOutEffect != null) {
       _enterEffect?.update(dt);
       _goOutEffect?.update(dt);

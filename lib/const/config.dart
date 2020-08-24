@@ -1,0 +1,1 @@
+const String BASE_URL = 'http://47.107.22.182/';

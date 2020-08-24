@@ -1,9 +1,12 @@
+import 'package:cityCloud/const/config.dart';
 import 'package:cityCloud/dart_class/mixn/dispose_listenable.dart';
+import 'package:cityCloud/expanded/network_api/dio_log_intercepor.dart';
 import 'package:cityCloud/util/util.dart';
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
+export 'package:cityCloud/const/net_api_path.dart';
 const String IsUseToken = 'isUseToken';
 bool defaultCheckCode(dynamic code) {
   return code is int && code >= 0;
@@ -75,9 +78,9 @@ class NetworkDio {
     ..options.receiveTimeout = receiveTimeout
     ..options.connectTimeout = connectTimeout
     ..options.sendTimeout = sendTimeout
-    // ..options.baseUrl = BASE_URL
+    ..options.baseUrl = BASE_URL
     ..interceptors.addAll([
-      // PrettyDioLogger(),
+      if (Util.isInDebugMode) PrettyDioLogger(),
       CustomInterceptor(),
     ]);
 
@@ -189,7 +192,8 @@ class NetworkDio {
       }
 
       ///处理数据
-      dynamic requiredData = requiredDataPath is List<String> ? Util.mapValueForPath(response.data, requiredDataPath) : response.data;
+      dynamic requiredData =
+          requiredDataPath is List<String> ? Util.mapValueForPath(response.data, requiredDataPath) : response.data;
 
       ///加M == R是为了防止R是dynamic的时候List<M>() is R恒为true
       bool requiredDataIsList = M == R ? false : List<M>() is R;
