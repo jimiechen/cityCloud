@@ -23,7 +23,6 @@ class LifeCycle with WidgetsBindingObserver {
   static initApp() async {
     ///预加载游戏相关图片
     Flame.images.loadAll([
-      'map_tile_0.png',
       'excavator_back.png',
       'excavator_back_shadow.png',
       'excavator_front.png',

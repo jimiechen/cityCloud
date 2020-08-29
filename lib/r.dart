@@ -67,12 +67,14 @@ class R {
   static final String assetsImagesExcavatorSideShadow = 'assets/images/excavator_side_shadow.png';
   /// ![](http://127.0.0.1:9527/assets/images/icon_mail.png)
   static final String assetsImagesIconMail = 'assets/images/icon_mail.png';
-  /// ![](http://127.0.0.1:9527/assets/images/map_tile_0.png)
-  static final String assetsImagesMapTile0 = 'assets/images/map_tile_0.png';
   /// ![](http://127.0.0.1:9527/assets/images/map_tile_view_0.png)
   static final String assetsImagesMapTileView0 = 'assets/images/map_tile_view_0.png';
   /// ![](http://127.0.0.1:9527/assets/images/map_tile_view_1.png)
   static final String assetsImagesMapTileView1 = 'assets/images/map_tile_view_1.png';
+  /// ![](http://127.0.0.1:9527/assets/images/map_tile_view_2.png)
+  static final String assetsImagesMapTileView2 = 'assets/images/map_tile_view_2.png';
+  /// ![](http://127.0.0.1:9527/assets/images/map_tile_view_3.png)
+  static final String assetsImagesMapTileView3 = 'assets/images/map_tile_view_3.png';
   /// ![](http://127.0.0.1:9527/assets/images/people_body_0.png)
   static final String assetsImagesPeopleBody0 = 'assets/images/people_body_0.png';
   /// ![](http://127.0.0.1:9527/assets/images/people_body_1.png)
@@ -271,4 +273,6 @@ class R {
   static final String assetsImagesTree4 = 'assets/images/tree_4.png';
   /// ![](http://127.0.0.1:9527/assets/images/tree_5.png)
   static final String assetsImagesTree5 = 'assets/images/tree_5.png';
+  /// ![](http://127.0.0.1:9527/assets/images/wall.png)
+  static final String assetsImagesWall = 'assets/images/wall.png';
 }

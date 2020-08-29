@@ -37,4 +37,13 @@ class ColorHelper {
     Color.fromRGBO(196, 140, 95, 1),
     Color.fromRGBO(254, 244, 223, 1),
   ];
+
+  static List<Color> mapTile = [
+    Color.fromRGBO(195, 216, 207, 1),
+    Color.fromRGBO(178, 217, 231, 1),
+    Color.fromRGBO(215, 187, 190, 1),
+    Color.fromRGBO(191, 175, 195, 1),
+    Color.fromRGBO(159, 183, 208, 1),
+    Color.fromRGBO(220, 214, 200, 1),
+  ];
 }

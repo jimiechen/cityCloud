@@ -5,14 +5,16 @@ import 'dart:math';
 import 'package:cityCloud/dart_class/extension/Iterable_extension.dart';
 import 'package:cityCloud/main/game/building/building_Component.dart';
 import 'package:cityCloud/main/game/building/model/building_info.dart';
+import 'package:cityCloud/main/game/map_tile/model/tile_info.dart';
 import 'package:cityCloud/main/game/model/component_linked_list_entry.dart';
 import 'package:cityCloud/main/game/map_tile/model/tile_location.dart';
 import 'package:cityCloud/main/game/person/model/person_model.dart';
 import 'package:cityCloud/main/game/person/person_sprite.dart';
 import 'package:cityCloud/main/game/map_tile/tile_component.dart';
-import 'package:cityCloud/main/game/map_tile/model/tile_info.dart';
+import 'package:cityCloud/main/game/map_tile/model/tile_path_node_info.dart';
 import 'package:cityCloud/main/home/bloc/home_page_bloc.dart';
 import 'package:cityCloud/main/home/cubit/home_page_cubit.dart';
+import 'package:cityCloud/styles/color_helper.dart';
 import 'package:cityCloud/util/image_helper.dart';
 import 'package:flame/components/component.dart';
 import 'package:flame/components/composed_component.dart';
@@ -29,7 +31,7 @@ import 'cloud/cloud_sprite.dart';
 import 'helper/double_animation.dart';
 import 'helper/inertial_motion.dart';
 import 'helper/translate_animation.dart';
-import 'map_tile/model/tile_info.dart';
+import 'map_tile/model/tile_path_node_info.dart';
 
 /*
  * 缩放回调中手势分类
@@ -47,8 +49,7 @@ const double MaxScale = 2;
 Position positionAmong({@required Position beginPosition, @required Position endPosition, @required int movePercent}) {
   assert(movePercent != null);
   if (beginPosition == null || endPosition == null) return beginPosition ?? endPosition;
-  return Position(beginPosition.x + (endPosition.x - beginPosition.x) * movePercent / 100,
-      beginPosition.y + (endPosition.y - beginPosition.y) * movePercent / 100);
+  return Position(beginPosition.x + (endPosition.x - beginPosition.x) * movePercent / 100, beginPosition.y + (endPosition.y - beginPosition.y) * movePercent / 100);
 }
 
 class CustomGame extends BaseGame with TapDetector, ScaleDetector {
@@ -87,36 +88,48 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   final HomePageBloc homePageBloc;
   final HomePageCubit homePageCubit;
 
-  CustomGame({this.homePageBloc,this.homePageCubit}) {
+  CustomGame({this.homePageBloc, this.homePageCubit}) {
+    int tileBGColor = ColorHelper.mapTile.randomItem.value;
     for (int y = 0; y < 10; y++) {
       for (int x = 0; x < 6; x++) {
         TileComponent tileComponent = TileComponent(
-            tileMapLocation: TileMapLocation(x, y), tileImage: 'map_tile_0.png', tileViewImage: 'map_tile_view_0.png');
+          tileInfo: TileInfo(
+            bgColor: tileBGColor,
+            tileMapX: x,
+            tileMapY: y,
+            viewID: Random().nextInt(ImageHelper.mapTileViews.length),
+          ),
+        );
+        tileComponent.showWall = !_tileComponentLocationMap.containsKey(TileMapLocation(x, y + 1));
+        if (_tileComponentLocationMap.containsKey(TileMapLocation(x, y - 1))) {
+          _tileComponentLocationMap[TileMapLocation(x, y - 1)].showWall = false;
+        }
+
         addTileComponent(tileComponent);
 
-        ///添加房子
-        add(
-          BuildingSprite(
-              buildingInfo: BuildingInfo(
-                image: ImageHelper.buildings.randomItem,
-                scale: 20,
-                relativePosition: Position(30, 35),
-              ),
-              tileMapX: x,
-              tileMapY: y),
-        );
+        // ///添加房子
+        // add(
+        //   BuildingSprite(
+        //       buildingInfo: BuildingInfo(
+        //         image: ImageHelper.buildings.randomItem,
+        //         scale: 20,
+        //         relativePosition: Position(30, 35),
+        //       ),
+        //       tileMapX: x,
+        //       tileMapY: y),
+        // );
 
-        ///添加树
-        add(
-          BuildingSprite(
-              buildingInfo: BuildingInfo(
-                image: ImageHelper.trees.randomItem,
-                scale: 5,
-                relativePosition: Position(20, 45),
-              ),
-              tileMapX: x,
-              tileMapY: y),
-        );
+        // ///添加树
+        // add(
+        //   BuildingSprite(
+        //       buildingInfo: BuildingInfo(
+        //         image: ImageHelper.trees.randomItem,
+        //         scale: 5,
+        //         relativePosition: Position(20, 45),
+        //       ),
+        //       tileMapX: x,
+        //       tileMapY: y),
+        // );
       }
     }
 
@@ -240,14 +253,10 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   void addTileComponent(TileComponent tileComponent) {
     assert(tileComponent != null);
     _tileComponentLocationMap[tileComponent.tileMapLocation] = tileComponent;
-    TileComponent topTileComponent = _tileComponentLocationMap[
-        TileMapLocation(tileComponent.tileMapLocation.tileMapX, tileComponent.tileMapLocation.tileMapY - 1)];
-    TileComponent leftTileComponent = _tileComponentLocationMap[
-        TileMapLocation(tileComponent.tileMapLocation.tileMapX - 1, tileComponent.tileMapLocation.tileMapY)];
-    TileComponent bottomTileComponent = _tileComponentLocationMap[
-        TileMapLocation(tileComponent.tileMapLocation.tileMapX, tileComponent.tileMapLocation.tileMapY + 1)];
-    TileComponent rightTileComponent = _tileComponentLocationMap[
-        TileMapLocation(tileComponent.tileMapLocation.tileMapX + 1, tileComponent.tileMapLocation.tileMapY)];
+    TileComponent topTileComponent = _tileComponentLocationMap[TileMapLocation(tileComponent.tileInfo.tileMapX, tileComponent.tileInfo.tileMapY - 1)];
+    TileComponent leftTileComponent = _tileComponentLocationMap[TileMapLocation(tileComponent.tileInfo.tileMapX - 1, tileComponent.tileInfo.tileMapY)];
+    TileComponent bottomTileComponent = _tileComponentLocationMap[TileMapLocation(tileComponent.tileInfo.tileMapX, tileComponent.tileInfo.tileMapY + 1)];
+    TileComponent rightTileComponent = _tileComponentLocationMap[TileMapLocation(tileComponent.tileInfo.tileMapX + 1, tileComponent.tileInfo.tileMapY)];
 
     if (topTileComponent != null) {
       tileComponent.linkWithTileComponent(tileComponent: topTileComponent, borderOrientation: BorderOrientation.Top);
@@ -256,12 +265,10 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
       tileComponent.linkWithTileComponent(tileComponent: leftTileComponent, borderOrientation: BorderOrientation.Left);
     }
     if (bottomTileComponent != null) {
-      tileComponent.linkWithTileComponent(
-          tileComponent: bottomTileComponent, borderOrientation: BorderOrientation.Bottom);
+      tileComponent.linkWithTileComponent(tileComponent: bottomTileComponent, borderOrientation: BorderOrientation.Bottom);
     }
     if (rightTileComponent != null) {
-      tileComponent.linkWithTileComponent(
-          tileComponent: rightTileComponent, borderOrientation: BorderOrientation.Right);
+      tileComponent.linkWithTileComponent(tileComponent: rightTileComponent, borderOrientation: BorderOrientation.Right);
     }
   }
 
@@ -292,8 +299,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     TileComponent tile = _tileComponentLocationMap?.values?.randomItem;
     tile?.randomPath(({beginNode, endNode}) {
       if (beginNode != null && endNode != null) {
-        Position position = positionAmong(
-            beginPosition: beginNode.position, endPosition: endNode.position, movePercent: Random().nextInt(100));
+        Position position = positionAmong(beginPosition: beginNode.position, endPosition: endNode.position, movePercent: Random().nextInt(100));
         callback?.call(endNode, position);
       }
     });
@@ -303,8 +309,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     List<PersonSprite> personSprite = List<PersonSprite>.from(_components.where((element) => element is PersonSprite));
     _tileComponentLocationMap.values?.randomItem?.randomPath(({beginNode, endNode}) {
       int movePercent = Random().nextInt(100);
-      Position target =
-          positionAmong(beginPosition: beginNode.position, endPosition: endNode.position, movePercent: movePercent);
+      Position target = positionAmong(beginPosition: beginNode.position, endPosition: endNode.position, movePercent: movePercent);
       personSprite.randomItem?.jumpto(targetEndNode: endNode, targetCenter: target);
     });
   }

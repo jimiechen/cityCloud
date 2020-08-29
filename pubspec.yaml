@@ -114,9 +114,10 @@ flutter:
     - assets/images/excavator_side.png
     - assets/images/excavator_side_shadow.png
     - assets/images/icon_mail.png
-    - assets/images/map_tile_0.png
     - assets/images/map_tile_view_0.png
     - assets/images/map_tile_view_1.png
+    - assets/images/map_tile_view_2.png
+    - assets/images/map_tile_view_3.png
     - assets/images/people_body_0.png
     - assets/images/people_body_1.png
     - assets/images/people_body_10.png
@@ -216,6 +217,7 @@ flutter:
     - assets/images/tree_3.png
     - assets/images/tree_4.png
     - assets/images/tree_5.png
+    - assets/images/wall.png
     # assets-generator-end
 
   # An image asset can refer to one or more resolution-specific "variants", see
