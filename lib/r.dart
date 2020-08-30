@@ -9,6 +9,8 @@ class R {
   static final String assetsImagesIconIconTopBarBackArrow = 'assets/images/icon/icon_topBar_back_arrow.png';
   /// ![](http://127.0.0.1:9527/assets/images/background/bg_empty.png)
   static final String assetsImagesBackgroundBgEmpty = 'assets/images/background/bg_empty.png';
+  /// ![](http://127.0.0.1:9527/assets/images/.DS_Store)
+  static final String assetsImages = 'assets/images/.DS_Store';
   /// ![](http://127.0.0.1:9527/assets/images/building_0.png)
   static final String assetsImagesBuilding0 = 'assets/images/building_0.png';
   /// ![](http://127.0.0.1:9527/assets/images/building_1.png)
@@ -43,6 +45,162 @@ class R {
   static final String assetsImagesBuilding8 = 'assets/images/building_8.png';
   /// ![](http://127.0.0.1:9527/assets/images/building_9.png)
   static final String assetsImagesBuilding9 = 'assets/images/building_9.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_0_back.png)
+  static final String assetsImagesCar0Back = 'assets/images/car_0_back.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_0_back_shadow.png)
+  static final String assetsImagesCar0BackShadow = 'assets/images/car_0_back_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_0_front.png)
+  static final String assetsImagesCar0Front = 'assets/images/car_0_front.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_0_front_shadow.png)
+  static final String assetsImagesCar0FrontShadow = 'assets/images/car_0_front_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_0_side.png)
+  static final String assetsImagesCar0Side = 'assets/images/car_0_side.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_0_side_shadow.png)
+  static final String assetsImagesCar0SideShadow = 'assets/images/car_0_side_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_10_back.png)
+  static final String assetsImagesCar10Back = 'assets/images/car_10_back.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_10_back_shadow.png)
+  static final String assetsImagesCar10BackShadow = 'assets/images/car_10_back_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_10_front.png)
+  static final String assetsImagesCar10Front = 'assets/images/car_10_front.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_10_front_shadow.png)
+  static final String assetsImagesCar10FrontShadow = 'assets/images/car_10_front_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_10_side.png)
+  static final String assetsImagesCar10Side = 'assets/images/car_10_side.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_10_side_shadow.png)
+  static final String assetsImagesCar10SideShadow = 'assets/images/car_10_side_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_11_back.png)
+  static final String assetsImagesCar11Back = 'assets/images/car_11_back.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_11_back_shadow.png)
+  static final String assetsImagesCar11BackShadow = 'assets/images/car_11_back_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_11_front.png)
+  static final String assetsImagesCar11Front = 'assets/images/car_11_front.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_11_front_shadow.png)
+  static final String assetsImagesCar11FrontShadow = 'assets/images/car_11_front_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_11_side.png)
+  static final String assetsImagesCar11Side = 'assets/images/car_11_side.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_11_side_shadow.png)
+  static final String assetsImagesCar11SideShadow = 'assets/images/car_11_side_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_12_back.png)
+  static final String assetsImagesCar12Back = 'assets/images/car_12_back.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_12_back_shadow.png)
+  static final String assetsImagesCar12BackShadow = 'assets/images/car_12_back_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_12_front.png)
+  static final String assetsImagesCar12Front = 'assets/images/car_12_front.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_12_front_shadow.png)
+  static final String assetsImagesCar12FrontShadow = 'assets/images/car_12_front_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_12_side.png)
+  static final String assetsImagesCar12Side = 'assets/images/car_12_side.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_12_side_shadow.png)
+  static final String assetsImagesCar12SideShadow = 'assets/images/car_12_side_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_1_back.png)
+  static final String assetsImagesCar1Back = 'assets/images/car_1_back.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_1_back_shadow.png)
+  static final String assetsImagesCar1BackShadow = 'assets/images/car_1_back_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_1_front.png)
+  static final String assetsImagesCar1Front = 'assets/images/car_1_front.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_1_front_shadow.png)
+  static final String assetsImagesCar1FrontShadow = 'assets/images/car_1_front_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_1_side.png)
+  static final String assetsImagesCar1Side = 'assets/images/car_1_side.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_1_side_shadow.png)
+  static final String assetsImagesCar1SideShadow = 'assets/images/car_1_side_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_2_back.png)
+  static final String assetsImagesCar2Back = 'assets/images/car_2_back.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_2_back_shadow.png)
+  static final String assetsImagesCar2BackShadow = 'assets/images/car_2_back_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_2_front.png)
+  static final String assetsImagesCar2Front = 'assets/images/car_2_front.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_2_front_shadow.png)
+  static final String assetsImagesCar2FrontShadow = 'assets/images/car_2_front_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_2_side.png)
+  static final String assetsImagesCar2Side = 'assets/images/car_2_side.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_2_side_shadow.png)
+  static final String assetsImagesCar2SideShadow = 'assets/images/car_2_side_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_3_back.png)
+  static final String assetsImagesCar3Back = 'assets/images/car_3_back.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_3_back_shadow.png)
+  static final String assetsImagesCar3BackShadow = 'assets/images/car_3_back_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_3_front.png)
+  static final String assetsImagesCar3Front = 'assets/images/car_3_front.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_3_front_shadow.png)
+  static final String assetsImagesCar3FrontShadow = 'assets/images/car_3_front_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_3_side.png)
+  static final String assetsImagesCar3Side = 'assets/images/car_3_side.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_3_side_shadow.png)
+  static final String assetsImagesCar3SideShadow = 'assets/images/car_3_side_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_4_back.png)
+  static final String assetsImagesCar4Back = 'assets/images/car_4_back.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_4_back_shadow.png)
+  static final String assetsImagesCar4BackShadow = 'assets/images/car_4_back_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_4_front.png)
+  static final String assetsImagesCar4Front = 'assets/images/car_4_front.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_4_front_shadow.png)
+  static final String assetsImagesCar4FrontShadow = 'assets/images/car_4_front_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_4_side.png)
+  static final String assetsImagesCar4Side = 'assets/images/car_4_side.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_4_side_shadow.png)
+  static final String assetsImagesCar4SideShadow = 'assets/images/car_4_side_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_5_back.png)
+  static final String assetsImagesCar5Back = 'assets/images/car_5_back.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_5_back_shadow.png)
+  static final String assetsImagesCar5BackShadow = 'assets/images/car_5_back_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_5_front.png)
+  static final String assetsImagesCar5Front = 'assets/images/car_5_front.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_5_front_shadow.png)
+  static final String assetsImagesCar5FrontShadow = 'assets/images/car_5_front_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_5_side.png)
+  static final String assetsImagesCar5Side = 'assets/images/car_5_side.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_5_side_shadow.png)
+  static final String assetsImagesCar5SideShadow = 'assets/images/car_5_side_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_6_back.png)
+  static final String assetsImagesCar6Back = 'assets/images/car_6_back.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_6_back_shadow.png)
+  static final String assetsImagesCar6BackShadow = 'assets/images/car_6_back_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_6_front.png)
+  static final String assetsImagesCar6Front = 'assets/images/car_6_front.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_6_front_shadow.png)
+  static final String assetsImagesCar6FrontShadow = 'assets/images/car_6_front_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_6_side.png)
+  static final String assetsImagesCar6Side = 'assets/images/car_6_side.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_6_side_shadow.png)
+  static final String assetsImagesCar6SideShadow = 'assets/images/car_6_side_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_7__side_shadow.png)
+  static final String assetsImagesCar7SideShadow = 'assets/images/car_7__side_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_7_back.png)
+  static final String assetsImagesCar7Back = 'assets/images/car_7_back.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_7_back_shadow.png)
+  static final String assetsImagesCar7BackShadow = 'assets/images/car_7_back_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_7_front.png)
+  static final String assetsImagesCar7Front = 'assets/images/car_7_front.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_7_front_shadow.png)
+  static final String assetsImagesCar7FrontShadow = 'assets/images/car_7_front_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_7_side.png)
+  static final String assetsImagesCar7Side = 'assets/images/car_7_side.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_8_back.png)
+  static final String assetsImagesCar8Back = 'assets/images/car_8_back.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_8_back_shadow.png)
+  static final String assetsImagesCar8BackShadow = 'assets/images/car_8_back_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_8_front.png)
+  static final String assetsImagesCar8Front = 'assets/images/car_8_front.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_8_front_shadow.png)
+  static final String assetsImagesCar8FrontShadow = 'assets/images/car_8_front_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_8_side.png)
+  static final String assetsImagesCar8Side = 'assets/images/car_8_side.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_8_side_shadow.png)
+  static final String assetsImagesCar8SideShadow = 'assets/images/car_8_side_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_9_back.png)
+  static final String assetsImagesCar9Back = 'assets/images/car_9_back.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_9_back_shadow.png)
+  static final String assetsImagesCar9BackShadow = 'assets/images/car_9_back_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_9_front.png)
+  static final String assetsImagesCar9Front = 'assets/images/car_9_front.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_9_front_shadow.png)
+  static final String assetsImagesCar9FrontShadow = 'assets/images/car_9_front_shadow.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_9_side.png)
+  static final String assetsImagesCar9Side = 'assets/images/car_9_side.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_9_side_shadow.png)
+  static final String assetsImagesCar9SideShadow = 'assets/images/car_9_side_shadow.png';
   /// ![](http://127.0.0.1:9527/assets/images/cloud_0.png)
   static final String assetsImagesCloud0 = 'assets/images/cloud_0.png';
   /// ![](http://127.0.0.1:9527/assets/images/cloud_1.png)
@@ -53,18 +211,6 @@ class R {
   static final String assetsImagesCloud3 = 'assets/images/cloud_3.png';
   /// ![](http://127.0.0.1:9527/assets/images/cloud_4.png)
   static final String assetsImagesCloud4 = 'assets/images/cloud_4.png';
-  /// ![](http://127.0.0.1:9527/assets/images/excavator_back.png)
-  static final String assetsImagesExcavatorBack = 'assets/images/excavator_back.png';
-  /// ![](http://127.0.0.1:9527/assets/images/excavator_back_shadow.png)
-  static final String assetsImagesExcavatorBackShadow = 'assets/images/excavator_back_shadow.png';
-  /// ![](http://127.0.0.1:9527/assets/images/excavator_front.png)
-  static final String assetsImagesExcavatorFront = 'assets/images/excavator_front.png';
-  /// ![](http://127.0.0.1:9527/assets/images/excavator_front_shadow.png)
-  static final String assetsImagesExcavatorFrontShadow = 'assets/images/excavator_front_shadow.png';
-  /// ![](http://127.0.0.1:9527/assets/images/excavator_side.png)
-  static final String assetsImagesExcavatorSide = 'assets/images/excavator_side.png';
-  /// ![](http://127.0.0.1:9527/assets/images/excavator_side_shadow.png)
-  static final String assetsImagesExcavatorSideShadow = 'assets/images/excavator_side_shadow.png';
   /// ![](http://127.0.0.1:9527/assets/images/icon_mail.png)
   static final String assetsImagesIconMail = 'assets/images/icon_mail.png';
   /// ![](http://127.0.0.1:9527/assets/images/map_tile_view_0.png)

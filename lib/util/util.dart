@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 import 'package:convert/convert.dart';
@@ -53,5 +54,15 @@ class Util {
     bool inDebugMode = false;
     assert(inDebugMode = true);
     return inDebugMode;
+  }
+
+  static String get deviceStrType {
+    if(Platform.isAndroid) {
+      return 'android';
+    }
+    else if(Platform.isIOS) {
+      return 'ios';
+    }
+    return 'other';
   }
 }

@@ -85,6 +85,7 @@ flutter:
     # assets/images/background/*
     - assets/images/background/bg_empty.png
     # assets/images/*
+    - assets/images/.DS_Store
     - assets/images/building_0.png
     - assets/images/building_1.png
     - assets/images/building_10.png
@@ -102,17 +103,89 @@ flutter:
     - assets/images/building_7.png
     - assets/images/building_8.png
     - assets/images/building_9.png
+    - assets/images/car_0_back.png
+    - assets/images/car_0_back_shadow.png
+    - assets/images/car_0_front.png
+    - assets/images/car_0_front_shadow.png
+    - assets/images/car_0_side.png
+    - assets/images/car_0_side_shadow.png
+    - assets/images/car_10_back.png
+    - assets/images/car_10_back_shadow.png
+    - assets/images/car_10_front.png
+    - assets/images/car_10_front_shadow.png
+    - assets/images/car_10_side.png
+    - assets/images/car_10_side_shadow.png
+    - assets/images/car_11_back.png
+    - assets/images/car_11_back_shadow.png
+    - assets/images/car_11_front.png
+    - assets/images/car_11_front_shadow.png
+    - assets/images/car_11_side.png
+    - assets/images/car_11_side_shadow.png
+    - assets/images/car_12_back.png
+    - assets/images/car_12_back_shadow.png
+    - assets/images/car_12_front.png
+    - assets/images/car_12_front_shadow.png
+    - assets/images/car_12_side.png
+    - assets/images/car_12_side_shadow.png
+    - assets/images/car_1_back.png
+    - assets/images/car_1_back_shadow.png
+    - assets/images/car_1_front.png
+    - assets/images/car_1_front_shadow.png
+    - assets/images/car_1_side.png
+    - assets/images/car_1_side_shadow.png
+    - assets/images/car_2_back.png
+    - assets/images/car_2_back_shadow.png
+    - assets/images/car_2_front.png
+    - assets/images/car_2_front_shadow.png
+    - assets/images/car_2_side.png
+    - assets/images/car_2_side_shadow.png
+    - assets/images/car_3_back.png
+    - assets/images/car_3_back_shadow.png
+    - assets/images/car_3_front.png
+    - assets/images/car_3_front_shadow.png
+    - assets/images/car_3_side.png
+    - assets/images/car_3_side_shadow.png
+    - assets/images/car_4_back.png
+    - assets/images/car_4_back_shadow.png
+    - assets/images/car_4_front.png
+    - assets/images/car_4_front_shadow.png
+    - assets/images/car_4_side.png
+    - assets/images/car_4_side_shadow.png
+    - assets/images/car_5_back.png
+    - assets/images/car_5_back_shadow.png
+    - assets/images/car_5_front.png
+    - assets/images/car_5_front_shadow.png
+    - assets/images/car_5_side.png
+    - assets/images/car_5_side_shadow.png
+    - assets/images/car_6_back.png
+    - assets/images/car_6_back_shadow.png
+    - assets/images/car_6_front.png
+    - assets/images/car_6_front_shadow.png
+    - assets/images/car_6_side.png
+    - assets/images/car_6_side_shadow.png
+    - assets/images/car_7__side_shadow.png
+    - assets/images/car_7_back.png
+    - assets/images/car_7_back_shadow.png
+    - assets/images/car_7_front.png
+    - assets/images/car_7_front_shadow.png
+    - assets/images/car_7_side.png
+    - assets/images/car_8_back.png
+    - assets/images/car_8_back_shadow.png
+    - assets/images/car_8_front.png
+    - assets/images/car_8_front_shadow.png
+    - assets/images/car_8_side.png
+    - assets/images/car_8_side_shadow.png
+    - assets/images/car_9_back.png
+    - assets/images/car_9_back_shadow.png
+    - assets/images/car_9_front.png
+    - assets/images/car_9_front_shadow.png
+    - assets/images/car_9_side.png
+    - assets/images/car_9_side_shadow.png
     - assets/images/cloud_0.png
     - assets/images/cloud_1.png
     - assets/images/cloud_2.png
     - assets/images/cloud_3.png
     - assets/images/cloud_4.png
-    - assets/images/excavator_back.png
-    - assets/images/excavator_back_shadow.png
-    - assets/images/excavator_front.png
-    - assets/images/excavator_front_shadow.png
-    - assets/images/excavator_side.png
-    - assets/images/excavator_side_shadow.png
     - assets/images/icon_mail.png
     - assets/images/map_tile_view_0.png
     - assets/images/map_tile_view_1.png

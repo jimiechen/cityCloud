@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 export 'package:cityCloud/const/net_api_path.dart';
 const String IsUseToken = 'isUseToken';
 bool defaultCheckCode(dynamic code) {
-  return code is int && code >= 0;
+  return code == 10200;
 }
 
 const List<String> DefaultResponseDataPath = ['data'];

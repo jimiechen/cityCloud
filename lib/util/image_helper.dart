@@ -40,4 +40,12 @@ class ImageHelper {
   // static List<String> buildings = List.generate(17, (index) => 'building_$index.png');
   // static List<String> trees = List.generate(6, (index) => 'tree_$index.png');
   static List<String> mapTileViews = List.generate(4, (index) => 'map_tile_view_$index.png');
+
+  static int carNumber = 13;
+  static List<String> carBack = List.generate(carNumber, (index) => 'car_${index}_back.png');
+  static List<String> carFront = List.generate(carNumber, (index) => 'car_${index}_front.png');
+  static List<String> carSide = List.generate(carNumber, (index) => 'car_${index}_side.png');
+  static List<String> carShadowBack = List.generate(carNumber, (index) => 'car_${index}_back_shadow.png');
+  static List<String> carShadowFront = List.generate(carNumber, (index) => 'car_${index}_front_shadow.png');
+  static List<String> carShadowSide = List.generate(carNumber, (index) => 'car_${index}_side_shadow.png');
 }

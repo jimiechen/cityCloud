@@ -3,8 +3,10 @@ import 'dart:collection';
 import 'dart:math';
 
 import 'package:cityCloud/dart_class/extension/Iterable_extension.dart';
+import 'package:cityCloud/expanded/database/database.dart';
 import 'package:cityCloud/main/game/building/building_Component.dart';
 import 'package:cityCloud/main/game/building/model/building_info.dart';
+import 'package:cityCloud/main/game/car/model/car_info.dart';
 import 'package:cityCloud/main/game/map_tile/model/tile_info.dart';
 import 'package:cityCloud/main/game/model/component_linked_list_entry.dart';
 import 'package:cityCloud/main/game/map_tile/model/tile_location.dart';
@@ -16,6 +18,7 @@ import 'package:cityCloud/main/home/bloc/home_page_bloc.dart';
 import 'package:cityCloud/main/home/cubit/home_page_cubit.dart';
 import 'package:cityCloud/styles/color_helper.dart';
 import 'package:cityCloud/util/image_helper.dart';
+import 'package:cityCloud/util/uuid.dart';
 import 'package:flame/components/component.dart';
 import 'package:flame/components/composed_component.dart';
 import 'package:flame/components/mixins/has_game_ref.dart';
@@ -89,58 +92,42 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   final HomePageCubit homePageCubit;
 
   CustomGame({this.homePageBloc, this.homePageCubit}) {
-    int tileBGColor = ColorHelper.mapTile.randomItem.value;
-    for (int y = 0; y < 10; y++) {
-      for (int x = 0; x < 6; x++) {
-        TileComponent tileComponent = TileComponent(
-          tileInfo: TileInfo(
-            bgColor: tileBGColor,
-            tileMapX: x,
-            tileMapY: y,
-            viewID: Random().nextInt(ImageHelper.mapTileViews.length),
-          ),
-        );
-        tileComponent.showWall = !_tileComponentLocationMap.containsKey(TileMapLocation(x, y + 1));
-        if (_tileComponentLocationMap.containsKey(TileMapLocation(x, y - 1))) {
-          _tileComponentLocationMap[TileMapLocation(x, y - 1)].showWall = false;
-        }
-
-        addTileComponent(tileComponent);
-
-        // ///添加房子
-        // add(
-        //   BuildingSprite(
-        //       buildingInfo: BuildingInfo(
-        //         image: ImageHelper.buildings.randomItem,
-        //         scale: 20,
-        //         relativePosition: Position(30, 35),
-        //       ),
-        //       tileMapX: x,
-        //       tileMapY: y),
-        // );
-
-        // ///添加树
-        // add(
-        //   BuildingSprite(
-        //       buildingInfo: BuildingInfo(
-        //         image: ImageHelper.trees.randomItem,
-        //         scale: 5,
-        //         relativePosition: Position(20, 45),
-        //       ),
-        //       tileMapX: x,
-        //       tileMapY: y),
-        // );
-      }
-    }
-
-    // Future.delayed(Duration(seconds: 2), () {
-    //   ///添加十个小人
-    //   List.generate(10, (index) => randomAddPerson());
-    // });
+    loadDBData();
 
     ///异步，要不size值为null
     Timer.run(() {
       _cloudSprite = CloudSprite(size);
+    });
+  }
+
+  void loadDBData() {
+    CustomDatabase.share.select(CustomDatabase.share.tileInfos).get().then((value) {
+      if (value != null && value.isNotEmpty) {
+        print(value);
+        value.forEach((element) {
+          addTile(element);
+        });
+      } else {
+        addOriginMapTile();
+      }
+    });
+
+    CustomDatabase.share.select(CustomDatabase.share.personModels).get().then((value) {
+      if (value != null && value.isNotEmpty) {
+        print(value);
+        value.forEach((element) {
+          addPerson(element);
+        });
+      }
+    });
+
+    CustomDatabase.share.select(CustomDatabase.share.carInfos).get().then((value) {
+      if (value != null && value.isNotEmpty) {
+        print(value);
+        value.forEach((element) {
+          addCar(element);
+        });
+      }
     });
   }
 
@@ -250,6 +237,81 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     );
   }
 
+  ///添加初始地图
+  void addOriginMapTile() {
+    int tileBGColor = ColorHelper.mapTile.randomItem.value;
+    [
+      TileInfo(
+        bgColor: tileBGColor,
+        tileMapX: 4,
+        tileMapY: 6,
+        viewID: Random().nextInt(ImageHelper.mapTileViews.length),
+        id: Uuid.generateUuidV4WithoutDashes(),
+      ),
+      TileInfo(
+        bgColor: tileBGColor,
+        tileMapX: 4,
+        tileMapY: 5,
+        viewID: Random().nextInt(ImageHelper.mapTileViews.length),
+        id: Uuid.generateUuidV4WithoutDashes(),
+      ),
+      TileInfo(
+        bgColor: tileBGColor,
+        tileMapX: 3,
+        tileMapY: 6,
+        viewID: Random().nextInt(ImageHelper.mapTileViews.length),
+        id: Uuid.generateUuidV4WithoutDashes(),
+      ),
+      TileInfo(
+        bgColor: tileBGColor,
+        tileMapX: 5,
+        tileMapY: 6,
+        viewID: Random().nextInt(ImageHelper.mapTileViews.length),
+        id: Uuid.generateUuidV4WithoutDashes(),
+      ),
+    ].forEach((element) {
+      addTile(element, saveDb: true);
+      // ///添加房子
+      // add(
+      //   BuildingSprite(
+      //       buildingInfo: BuildingInfo(
+      //         image: ImageHelper.buildings.randomItem,
+      //         scale: 20,
+      //         relativePosition: Position(30, 35),
+      //       ),
+      //       tileMapX: x,
+      //       tileMapY: y),
+      // );
+
+      // ///添加树
+      // add(
+      //   BuildingSprite(
+      //       buildingInfo: BuildingInfo(
+      //         image: ImageHelper.trees.randomItem,
+      //         scale: 5,
+      //         relativePosition: Position(20, 45),
+      //       ),
+      //       tileMapX: x,
+      //       tileMapY: y),
+      // );
+    });
+  }
+
+  void addTile(TileInfo info, {bool saveDb = false}) {
+    assert(info != null);
+    TileComponent tileComponent = TileComponent(
+      tileInfo: info,
+    );
+    tileComponent.showWall = !_tileComponentLocationMap.containsKey(TileMapLocation(info.tileMapX, info.tileMapY + 1));
+    if (_tileComponentLocationMap.containsKey(TileMapLocation(info.tileMapX, info.tileMapY - 1))) {
+      _tileComponentLocationMap[TileMapLocation(info.tileMapX, info.tileMapY - 1)].showWall = false;
+    }
+    addTileComponent(tileComponent);
+    if (saveDb == true) {
+      CustomDatabase.share.into(CustomDatabase.share.tileInfos).insert(info);
+    }
+  }
+
   void addTileComponent(TileComponent tileComponent) {
     assert(tileComponent != null);
     _tileComponentLocationMap[tileComponent.tileMapLocation] = tileComponent;
@@ -274,24 +336,66 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
 
   ///随机添加小车
   void randomAddCar() {
+    CarInfo carInfo = CarInfo(
+      carID: Random().nextInt(ImageHelper.carNumber),
+      id: Uuid.generateUuidV4WithoutDashes(),
+    );
+    addCar(carInfo, saveDb: true);
+  }
+
+  void addCar(CarInfo carInfo, {bool saveDb = false}) {
     randomPosition((endNode, position) {
       ///添加小车
-      add(CarSprite(endPathNode: endNode, initialPosition: position));
+      add(
+        CarSprite(
+          endPathNode: endNode,
+          initialPosition: position,
+          carInfo: carInfo,
+        ),
+      );
     });
+    if (saveDb == true) {
+      CustomDatabase.share.into(CustomDatabase.share.carInfos).insert(carInfo);
+    }
   }
 
   ///随机添加小人
   void randomAddPerson() {
+    Random random = Random();
+    int bodyID = random.nextInt(ImageHelper.bodys.length);
+    int tmpID = random.nextInt(ImageHelper.hairs.length ~/ 2);
+    if (bodyID >= ImageHelper.hairs.length ~/ 2) {
+      //女的
+      tmpID += ImageHelper.hairs.length ~/ 2;
+    }
+    int hairID = tmpID;
+    PersonModel personModel = PersonModel(
+      bodyID: bodyID,
+      eyeID: random.nextInt(ImageHelper.eyes.length),
+      faceColorValue: ColorHelper.faces.randomItem.value,
+      footID: random.nextInt(ImageHelper.foots.length),
+      hairID: hairID,
+      handID: random.nextInt(ImageHelper.hands.length),
+      id: Uuid.generateUuidV4WithoutDashes(),
+      noseID: random.nextInt(ImageHelper.noses.length),
+    );
+    addPerson(personModel, saveDb: true);
+  }
+
+  void addPerson(PersonModel model, {bool saveDb = false}) {
+    assert(model != null);
     randomPosition((endNode, position) {
-      PersonModel personModel = PersonModel();
       PersonSprite personSprite = PersonSprite(
         endPathNode: endNode,
         initialPosition: position,
-        model: personModel,
+        model: model,
       );
-      homePageBloc?.add(HomePageEventUploadPersonSpriteInfo(model: personModel));
+      homePageBloc?.add(HomePageEventUploadPersonSpriteInfo(model: model));
       add(personSprite);
       personSprite.enter(targetEndNode: endNode, targetPosition: position);
+      if (saveDb == true) {
+        CustomDatabase.share.into(CustomDatabase.share.personModels).insert(model);
+      }
     });
   }
 
