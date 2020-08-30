@@ -3,6 +3,7 @@ import 'package:cityCloud/router/router.dart';
 import 'package:cityCloud/styles/color_helper.dart';
 import 'package:cityCloud/widgets/default_app_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:umeng_sdk/umeng_sdk.dart';
 
 class PrivacyPolicyPage extends StatelessWidget {
   @override
@@ -34,7 +35,11 @@ class PrivacyPolicyPage extends StatelessWidget {
                     width: 164,
                     height: 43,
                     child: FlatButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        UmengSdk.onEvent('openApp', {});
+                        UmengSdk.onEvent('hello', {});
+                        UmengSdk.onPageStart('helloworld');
+                      },
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                       color: ColorHelper.ColorE3,
                       child: Text(

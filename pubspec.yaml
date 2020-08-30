@@ -40,6 +40,8 @@ dependencies:
   #moor数据库相关
   moor: ^3.3.0
   moor_ffi: ^0.8.0
+  umeng_sdk:
+    path: ./local_packages/umeng_sdk/
 
 
   # The following adds the Cupertino Icons font to your application.
