@@ -22,16 +22,6 @@ class LifeCycle with WidgetsBindingObserver {
   ///App 初始化
   static initApp() async {
     ///预加载游戏相关图片
-    Flame.images.loadAll([
-      'excavator_back.png',
-      'excavator_back_shadow.png',
-      'excavator_front.png',
-      'excavator_front_shadow.png',
-      'excavator_side.png',
-      'excavator_side_shadow.png',
-      'map_tile_view_0.png',
-      'map_tile_view_1.png',
-    ]);
   }
 
   ///请求相关权限，会弹出权限确认框

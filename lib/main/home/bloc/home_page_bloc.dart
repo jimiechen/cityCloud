@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:cityCloud/const/const.dart';
+import 'package:cityCloud/dart_class/extension/Iterable_extension.dart';
 import 'package:cityCloud/dart_class/mixn/bloc_mixin.dart';
 import 'package:cityCloud/expanded/database/database.dart';
 import 'package:cityCloud/expanded/network_api/model/common_server_data_model.dart';
@@ -28,7 +29,11 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> with BlocAddStateM
     } else if (event is HomePageEventUploadMapTileInfo) {
       uploadMapTileInfo(event.model);
     } else if (event is HomePageEventGetGameData) {
-      getGameData();
+      getGameData(
+        personData: (personList) {},
+        carData: (carList) {},
+        mapTileData: (tileList) {},
+      );
     }
   }
 
@@ -37,35 +42,47 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> with BlocAddStateM
     ValueChanged<List<CarInfo>> carData,
     ValueChanged<List<TileInfo>> mapTileData,
   }) {
-    NetworkDio.get<List<CommonServerDataModel>,CommonServerDataModel>(
-      modelFromJson: (json)=>CommonServerDataModel.fromJson(json),
-      pathForData: ['data','list'],
+    NetworkDio.get<List<CommonServerDataModel>, CommonServerDataModel>(
+      modelFromJson: (json) => CommonServerDataModel.fromJson(json),
+      pathForData: ['data', 'list'],
       url: API_QUERY_OBJECT,
       body: {
         'data_type': NetworkDataType.person,
       },
     ).then((value) {
-      print(value.toString());
+      List<CommonServerDataModel> tmpList = value?.data?.where((element) => element.json is Map);
+      personData?.call(tmpList?.map((e) {
+        e.json['uploaded'] = true;
+        return PersonModel.fromJson(e.json);
+      }));
     });
-    NetworkDio.get<List<CommonServerDataModel>,CommonServerDataModel>(
-      modelFromJson: (json)=>CommonServerDataModel.fromJson(json),
-      pathForData: ['data','list'],
+    NetworkDio.get<List<CommonServerDataModel>, CommonServerDataModel>(
+      modelFromJson: (json) => CommonServerDataModel.fromJson(json),
+      pathForData: ['data', 'list'],
       url: API_QUERY_OBJECT,
       body: {
         'data_type': NetworkDataType.car,
       },
     ).then((value) {
-      print(value.toString());
+      List<CommonServerDataModel> tmpList = value?.data?.where((element) => element.json is Map);
+      carData?.call(tmpList?.map((e) {
+        e.json['uploaded'] = true;
+        return CarInfo.fromJson(e.json);
+      }));
     });
-    NetworkDio.get<List<CommonServerDataModel>,CommonServerDataModel>(
-      modelFromJson: (json)=>CommonServerDataModel.fromJson(json),
-      pathForData: ['data','list'],
+    NetworkDio.get<List<CommonServerDataModel>, CommonServerDataModel>(
+      modelFromJson: (json) => CommonServerDataModel.fromJson(json),
+      pathForData: ['data', 'list'],
       url: API_QUERY_OBJECT,
       body: {
         'data_type': NetworkDataType.map,
       },
     ).then((value) {
-      print(value.toString());
+      List<CommonServerDataModel> tmpList = value?.data?.where((element) => element.json is Map);
+      mapTileData?.call(tmpList?.map((e) {
+        e.json['uploaded'] = true;
+        return TileInfo.fromJson(e.json);
+      }));
     });
   }
 
@@ -75,8 +92,9 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> with BlocAddStateM
       url: API_CREATE_OBJECT,
       body: {
         'json': model.toJson(),
-        'id': model.id,
+        'uid': 'cc',
         'data_type': NetworkDataType.person,
+        'data_format': 'json',
         'source': Util.deviceStrType,
         'create_time': DateTime.now().millisecondsSinceEpoch ~/ 1000,
       },
@@ -99,8 +117,9 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> with BlocAddStateM
       url: API_CREATE_OBJECT,
       body: {
         'json': model.toJson(),
-        'id': model.id,
+        'uid': 'cc',
         'data_type': NetworkDataType.car,
+        'data_format': 'json',
         'source': Util.deviceStrType,
         'create_time': DateTime.now().millisecondsSinceEpoch ~/ 1000,
       },
@@ -123,8 +142,9 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> with BlocAddStateM
       url: API_CREATE_OBJECT,
       body: {
         'json': model.toJson(),
-        'id': model.id,
+        'uid': 'cc',
         'data_type': NetworkDataType.map,
+        'data_format': 'json',
         'source': Util.deviceStrType,
         'create_time': DateTime.now().millisecondsSinceEpoch ~/ 1000,
       },

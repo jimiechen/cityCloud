@@ -6,6 +6,7 @@ import 'package:cityCloud/dart_class/extension/Iterable_extension.dart';
 import 'package:cityCloud/expanded/database/database.dart';
 import 'package:cityCloud/main/game/model/component_linked_list_entry.dart';
 import 'package:cityCloud/main/game/map_tile/model/tile_location.dart';
+import 'package:cityCloud/main/game/model/game_data_status.dart';
 import 'package:cityCloud/main/game/person/person_sprite.dart';
 import 'package:cityCloud/main/game/map_tile/tile_component.dart';
 import 'package:cityCloud/main/game/map_tile/model/tile_path_node_info.dart';
@@ -77,7 +78,20 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   ///云
   CloudSprite _cloudSprite;
 
+  ///自定义存放components链表
   LinkedList<ComponentLinkedListEntry> _components = LinkedList<ComponentLinkedListEntry>();
+
+  ///bloc监听
+  StreamSubscription _blocSubscription;
+
+  ///游戏页面相关数据状态，标识是否完成数据库加载和网络加载
+  GameDataStatus _gameDataStatus = GameDataStatus();
+
+  ///记录正在显示的东西
+  Set<String> showingPersonIDs = {};
+  Set<String> showingCarIDs = {};
+  Set<String> showingMapTileIDs = {};
+
   @override
   bool debugMode() {
     return false;
@@ -87,7 +101,55 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   final HomePageCubit homePageCubit;
 
   CustomGame({this.homePageBloc, this.homePageCubit}) {
-    // homePageBloc?.add(HomePageEventGetGameData());
+    homePageBloc?.add(HomePageEventGetGameData());
+    _blocSubscription = homePageBloc.listen((currentState) {
+      if (currentState is HomePageStatePersonData) {
+        _gameDataStatus.networkGotPerson = true;
+        CustomDatabase.share.delete(CustomDatabase.share.personModels).go();
+
+        if (currentState.list.isNotNullAndEmpty) {
+          CustomDatabase.share.batch((batch) {
+            batch.insertAll(CustomDatabase.share.personModels, currentState.list);
+          });
+        }
+        currentState.list?.forEach((element) {
+          if (!showingPersonIDs.contains(element.id)) {
+            addPerson(element);
+          }
+          showingPersonIDs.add(element.id);
+        });
+      } else if (currentState is HomePageStateCarData) {
+        _gameDataStatus.networkGotCar = true;
+        CustomDatabase.share.delete(CustomDatabase.share.carInfos).go();
+
+        if (currentState.list.isNotNullAndEmpty) {
+          CustomDatabase.share.batch((batch) {
+            batch.insertAll(CustomDatabase.share.carInfos, currentState.list);
+          });
+        }
+        currentState.list?.forEach((element) {
+          if (!showingCarIDs.contains(element.id)) {
+            addCar(element);
+          }
+          showingCarIDs.add(element.id);
+        });
+      } else if (currentState is HomePageStateMapTileData) {
+        _gameDataStatus.networkGotMapTile = true;
+        CustomDatabase.share.delete(CustomDatabase.share.tileInfos).go();
+
+        if (currentState.list.isNotNullAndEmpty) {
+          CustomDatabase.share.batch((batch) {
+            batch.insertAll(CustomDatabase.share.tileInfos, currentState.list);
+          });
+        }
+        currentState.list?.forEach((element) {
+          if (!showingMapTileIDs.contains(element.id)) {
+            addTile(element);
+          }
+          showingMapTileIDs.add(element.id);
+        });
+      }
+    });
     loadDBData();
 
     ///异步，要不size值为null
@@ -99,31 +161,46 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   ///加载数据库数据
   void loadDBData() {
     CustomDatabase.share.select(CustomDatabase.share.tileInfos).get().then((value) {
-      if (value != null && value.isNotEmpty) {
-        print(value);
-        value.forEach((element) {
-          addTile(element,saveDb: false);
-        });
-      } else {
-        addOriginMapTile();
+      _gameDataStatus.dbLoadedMapTile = true;
+
+      ///如果网络加载成功了使用网络数据
+      if (!_gameDataStatus.networkGotMapTile) {
+        if (value != null && value.isNotEmpty) {
+          print(value);
+          value.forEach((element) {
+            addTile(element, saveDb: false);
+          });
+        } else if (_gameDataStatus.networkGotMapTile) {
+          addOriginMapTile();
+        }
       }
     });
 
     CustomDatabase.share.select(CustomDatabase.share.personModels).get().then((value) {
-      if (value != null && value.isNotEmpty) {
-        print(value);
-        value.forEach((element) {
-          addPerson(element,saveDb: false);
-        });
+      _gameDataStatus.dbLoadedPerson = true;
+
+      ///如果网络加载成功了使用网络数据
+      if (!_gameDataStatus.networkGotPerson) {
+        if (value != null && value.isNotEmpty) {
+          print(value);
+          value.forEach((element) {
+            addPerson(element, saveDb: false);
+          });
+        }
       }
     });
 
     CustomDatabase.share.select(CustomDatabase.share.carInfos).get().then((value) {
-      if (value != null && value.isNotEmpty) {
-        print(value);
-        value.forEach((element) {
-          addCar(element,saveDb: false);
-        });
+      _gameDataStatus.dbLoadedCar = true;
+
+      ///如果网络加载成功了使用网络数据
+      if (!_gameDataStatus.networkGotCar) {
+        if (value != null && value.isNotEmpty) {
+          print(value);
+          value.forEach((element) {
+            addCar(element, saveDb: false);
+          });
+        }
       }
     });
   }
@@ -309,8 +386,8 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     }
     addTileComponent(tileComponent);
     if (info.uploaded != true) {
-        homePageBloc?.add(HomePageEventUploadMapTileInfo(model: info));
-      }
+      homePageBloc?.add(HomePageEventUploadMapTileInfo(model: info));
+    }
     if (saveDb == true) {
       CustomDatabase.share.into(CustomDatabase.share.tileInfos).insert(info);
     }
@@ -557,6 +634,12 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   @override
   Color backgroundColor() {
     return Color.fromRGBO(142, 211, 240, 1);
+  }
+
+  @override
+  void onDetach() {
+    _blocSubscription?.cancel();
+    super.onDetach();
   }
 
   @override
