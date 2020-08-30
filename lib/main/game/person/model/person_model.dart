@@ -1,9 +1,3 @@
-import 'dart:math';
-
-import 'package:cityCloud/dart_class/extension/Iterable_extension.dart';
-import 'package:cityCloud/styles/color_helper.dart';
-import 'package:cityCloud/util/image_helper.dart';
-import 'package:cityCloud/util/uuid.dart';
 import 'package:moor/moor.dart';
 
 class PersonModels extends Table {
@@ -15,6 +9,9 @@ class PersonModels extends Table {
   IntColumn get handID => integer()();
   IntColumn get noseID => integer()();
   TextColumn get id => text()();
+
+  ///该条数据是否已经上传到服务器了
+  BoolColumn get uploaded => boolean().withDefault(Constant(false))();
 
   @override
   Set<Column> get primaryKey => {id};

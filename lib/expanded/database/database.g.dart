@@ -249,15 +249,19 @@ class $CacheDBItemsTable extends CacheDBItems
 class CarInfo extends DataClass implements Insertable<CarInfo> {
   final int carID;
   final String id;
-  CarInfo({@required this.carID, @required this.id});
+  final bool uploaded;
+  CarInfo({@required this.carID, @required this.id, @required this.uploaded});
   factory CarInfo.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
     final intType = db.typeSystem.forDartType<int>();
     final stringType = db.typeSystem.forDartType<String>();
+    final boolType = db.typeSystem.forDartType<bool>();
     return CarInfo(
       carID: intType.mapFromDatabaseResponse(data['${effectivePrefix}car_i_d']),
       id: stringType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      uploaded:
+          boolType.mapFromDatabaseResponse(data['${effectivePrefix}uploaded']),
     );
   }
   @override
@@ -269,6 +273,9 @@ class CarInfo extends DataClass implements Insertable<CarInfo> {
     if (!nullToAbsent || id != null) {
       map['id'] = Variable<String>(id);
     }
+    if (!nullToAbsent || uploaded != null) {
+      map['uploaded'] = Variable<bool>(uploaded);
+    }
     return map;
   }
 
@@ -277,6 +284,9 @@ class CarInfo extends DataClass implements Insertable<CarInfo> {
       carID:
           carID == null && nullToAbsent ? const Value.absent() : Value(carID),
       id: id == null && nullToAbsent ? const Value.absent() : Value(id),
+      uploaded: uploaded == null && nullToAbsent
+          ? const Value.absent()
+          : Value(uploaded),
     );
   }
 
@@ -286,6 +296,7 @@ class CarInfo extends DataClass implements Insertable<CarInfo> {
     return CarInfo(
       carID: serializer.fromJson<int>(json['carID']),
       id: serializer.fromJson<String>(json['id']),
+      uploaded: serializer.fromJson<bool>(json['uploaded']),
     );
   }
   @override
@@ -294,56 +305,70 @@ class CarInfo extends DataClass implements Insertable<CarInfo> {
     return <String, dynamic>{
       'carID': serializer.toJson<int>(carID),
       'id': serializer.toJson<String>(id),
+      'uploaded': serializer.toJson<bool>(uploaded),
     };
   }
 
-  CarInfo copyWith({int carID, String id}) => CarInfo(
+  CarInfo copyWith({int carID, String id, bool uploaded}) => CarInfo(
         carID: carID ?? this.carID,
         id: id ?? this.id,
+        uploaded: uploaded ?? this.uploaded,
       );
   @override
   String toString() {
     return (StringBuffer('CarInfo(')
           ..write('carID: $carID, ')
-          ..write('id: $id')
+          ..write('id: $id, ')
+          ..write('uploaded: $uploaded')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => $mrjf($mrjc(carID.hashCode, id.hashCode));
+  int get hashCode =>
+      $mrjf($mrjc(carID.hashCode, $mrjc(id.hashCode, uploaded.hashCode)));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
-      (other is CarInfo && other.carID == this.carID && other.id == this.id);
+      (other is CarInfo &&
+          other.carID == this.carID &&
+          other.id == this.id &&
+          other.uploaded == this.uploaded);
 }
 
 class CarInfosCompanion extends UpdateCompanion<CarInfo> {
   final Value<int> carID;
   final Value<String> id;
+  final Value<bool> uploaded;
   const CarInfosCompanion({
     this.carID = const Value.absent(),
     this.id = const Value.absent(),
+    this.uploaded = const Value.absent(),
   });
   CarInfosCompanion.insert({
     @required int carID,
     @required String id,
+    this.uploaded = const Value.absent(),
   })  : carID = Value(carID),
         id = Value(id);
   static Insertable<CarInfo> custom({
     Expression<int> carID,
     Expression<String> id,
+    Expression<bool> uploaded,
   }) {
     return RawValuesInsertable({
       if (carID != null) 'car_i_d': carID,
       if (id != null) 'id': id,
+      if (uploaded != null) 'uploaded': uploaded,
     });
   }
 
-  CarInfosCompanion copyWith({Value<int> carID, Value<String> id}) {
+  CarInfosCompanion copyWith(
+      {Value<int> carID, Value<String> id, Value<bool> uploaded}) {
     return CarInfosCompanion(
       carID: carID ?? this.carID,
       id: id ?? this.id,
+      uploaded: uploaded ?? this.uploaded,
     );
   }
 
@@ -356,6 +381,9 @@ class CarInfosCompanion extends UpdateCompanion<CarInfo> {
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
+    if (uploaded.present) {
+      map['uploaded'] = Variable<bool>(uploaded.value);
+    }
     return map;
   }
 
@@ -363,7 +391,8 @@ class CarInfosCompanion extends UpdateCompanion<CarInfo> {
   String toString() {
     return (StringBuffer('CarInfosCompanion(')
           ..write('carID: $carID, ')
-          ..write('id: $id')
+          ..write('id: $id, ')
+          ..write('uploaded: $uploaded')
           ..write(')'))
         .toString();
   }
@@ -397,8 +426,17 @@ class $CarInfosTable extends CarInfos with TableInfo<$CarInfosTable, CarInfo> {
     );
   }
 
+  final VerificationMeta _uploadedMeta = const VerificationMeta('uploaded');
+  GeneratedBoolColumn _uploaded;
   @override
-  List<GeneratedColumn> get $columns => [carID, id];
+  GeneratedBoolColumn get uploaded => _uploaded ??= _constructUploaded();
+  GeneratedBoolColumn _constructUploaded() {
+    return GeneratedBoolColumn('uploaded', $tableName, false,
+        defaultValue: Constant(false));
+  }
+
+  @override
+  List<GeneratedColumn> get $columns => [carID, id, uploaded];
   @override
   $CarInfosTable get asDslTable => this;
   @override
@@ -420,6 +458,10 @@ class $CarInfosTable extends CarInfos with TableInfo<$CarInfosTable, CarInfo> {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id'], _idMeta));
     } else if (isInserting) {
       context.missing(_idMeta);
+    }
+    if (data.containsKey('uploaded')) {
+      context.handle(_uploadedMeta,
+          uploaded.isAcceptableOrUnknown(data['uploaded'], _uploadedMeta));
     }
     return context;
   }
@@ -447,6 +489,7 @@ class PersonModel extends DataClass implements Insertable<PersonModel> {
   final int handID;
   final int noseID;
   final String id;
+  final bool uploaded;
   PersonModel(
       {@required this.faceColorValue,
       @required this.bodyID,
@@ -455,12 +498,14 @@ class PersonModel extends DataClass implements Insertable<PersonModel> {
       @required this.hairID,
       @required this.handID,
       @required this.noseID,
-      @required this.id});
+      @required this.id,
+      @required this.uploaded});
   factory PersonModel.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
     final intType = db.typeSystem.forDartType<int>();
     final stringType = db.typeSystem.forDartType<String>();
+    final boolType = db.typeSystem.forDartType<bool>();
     return PersonModel(
       faceColorValue: intType
           .mapFromDatabaseResponse(data['${effectivePrefix}face_color_value']),
@@ -476,6 +521,8 @@ class PersonModel extends DataClass implements Insertable<PersonModel> {
       noseID:
           intType.mapFromDatabaseResponse(data['${effectivePrefix}nose_i_d']),
       id: stringType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      uploaded:
+          boolType.mapFromDatabaseResponse(data['${effectivePrefix}uploaded']),
     );
   }
   @override
@@ -505,6 +552,9 @@ class PersonModel extends DataClass implements Insertable<PersonModel> {
     if (!nullToAbsent || id != null) {
       map['id'] = Variable<String>(id);
     }
+    if (!nullToAbsent || uploaded != null) {
+      map['uploaded'] = Variable<bool>(uploaded);
+    }
     return map;
   }
 
@@ -526,6 +576,9 @@ class PersonModel extends DataClass implements Insertable<PersonModel> {
       noseID:
           noseID == null && nullToAbsent ? const Value.absent() : Value(noseID),
       id: id == null && nullToAbsent ? const Value.absent() : Value(id),
+      uploaded: uploaded == null && nullToAbsent
+          ? const Value.absent()
+          : Value(uploaded),
     );
   }
 
@@ -541,6 +594,7 @@ class PersonModel extends DataClass implements Insertable<PersonModel> {
       handID: serializer.fromJson<int>(json['handID']),
       noseID: serializer.fromJson<int>(json['noseID']),
       id: serializer.fromJson<String>(json['id']),
+      uploaded: serializer.fromJson<bool>(json['uploaded']),
     );
   }
   @override
@@ -555,6 +609,7 @@ class PersonModel extends DataClass implements Insertable<PersonModel> {
       'handID': serializer.toJson<int>(handID),
       'noseID': serializer.toJson<int>(noseID),
       'id': serializer.toJson<String>(id),
+      'uploaded': serializer.toJson<bool>(uploaded),
     };
   }
 
@@ -566,7 +621,8 @@ class PersonModel extends DataClass implements Insertable<PersonModel> {
           int hairID,
           int handID,
           int noseID,
-          String id}) =>
+          String id,
+          bool uploaded}) =>
       PersonModel(
         faceColorValue: faceColorValue ?? this.faceColorValue,
         bodyID: bodyID ?? this.bodyID,
@@ -576,6 +632,7 @@ class PersonModel extends DataClass implements Insertable<PersonModel> {
         handID: handID ?? this.handID,
         noseID: noseID ?? this.noseID,
         id: id ?? this.id,
+        uploaded: uploaded ?? this.uploaded,
       );
   @override
   String toString() {
@@ -587,7 +644,8 @@ class PersonModel extends DataClass implements Insertable<PersonModel> {
           ..write('hairID: $hairID, ')
           ..write('handID: $handID, ')
           ..write('noseID: $noseID, ')
-          ..write('id: $id')
+          ..write('id: $id, ')
+          ..write('uploaded: $uploaded')
           ..write(')'))
         .toString();
   }
@@ -603,8 +661,10 @@ class PersonModel extends DataClass implements Insertable<PersonModel> {
                   footID.hashCode,
                   $mrjc(
                       hairID.hashCode,
-                      $mrjc(handID.hashCode,
-                          $mrjc(noseID.hashCode, id.hashCode))))))));
+                      $mrjc(
+                          handID.hashCode,
+                          $mrjc(noseID.hashCode,
+                              $mrjc(id.hashCode, uploaded.hashCode)))))))));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
@@ -616,7 +676,8 @@ class PersonModel extends DataClass implements Insertable<PersonModel> {
           other.hairID == this.hairID &&
           other.handID == this.handID &&
           other.noseID == this.noseID &&
-          other.id == this.id);
+          other.id == this.id &&
+          other.uploaded == this.uploaded);
 }
 
 class PersonModelsCompanion extends UpdateCompanion<PersonModel> {
@@ -628,6 +689,7 @@ class PersonModelsCompanion extends UpdateCompanion<PersonModel> {
   final Value<int> handID;
   final Value<int> noseID;
   final Value<String> id;
+  final Value<bool> uploaded;
   const PersonModelsCompanion({
     this.faceColorValue = const Value.absent(),
     this.bodyID = const Value.absent(),
@@ -637,6 +699,7 @@ class PersonModelsCompanion extends UpdateCompanion<PersonModel> {
     this.handID = const Value.absent(),
     this.noseID = const Value.absent(),
     this.id = const Value.absent(),
+    this.uploaded = const Value.absent(),
   });
   PersonModelsCompanion.insert({
     @required int faceColorValue,
@@ -647,6 +710,7 @@ class PersonModelsCompanion extends UpdateCompanion<PersonModel> {
     @required int handID,
     @required int noseID,
     @required String id,
+    this.uploaded = const Value.absent(),
   })  : faceColorValue = Value(faceColorValue),
         bodyID = Value(bodyID),
         eyeID = Value(eyeID),
@@ -664,6 +728,7 @@ class PersonModelsCompanion extends UpdateCompanion<PersonModel> {
     Expression<int> handID,
     Expression<int> noseID,
     Expression<String> id,
+    Expression<bool> uploaded,
   }) {
     return RawValuesInsertable({
       if (faceColorValue != null) 'face_color_value': faceColorValue,
@@ -674,6 +739,7 @@ class PersonModelsCompanion extends UpdateCompanion<PersonModel> {
       if (handID != null) 'hand_i_d': handID,
       if (noseID != null) 'nose_i_d': noseID,
       if (id != null) 'id': id,
+      if (uploaded != null) 'uploaded': uploaded,
     });
   }
 
@@ -685,7 +751,8 @@ class PersonModelsCompanion extends UpdateCompanion<PersonModel> {
       Value<int> hairID,
       Value<int> handID,
       Value<int> noseID,
-      Value<String> id}) {
+      Value<String> id,
+      Value<bool> uploaded}) {
     return PersonModelsCompanion(
       faceColorValue: faceColorValue ?? this.faceColorValue,
       bodyID: bodyID ?? this.bodyID,
@@ -695,6 +762,7 @@ class PersonModelsCompanion extends UpdateCompanion<PersonModel> {
       handID: handID ?? this.handID,
       noseID: noseID ?? this.noseID,
       id: id ?? this.id,
+      uploaded: uploaded ?? this.uploaded,
     );
   }
 
@@ -725,6 +793,9 @@ class PersonModelsCompanion extends UpdateCompanion<PersonModel> {
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
+    if (uploaded.present) {
+      map['uploaded'] = Variable<bool>(uploaded.value);
+    }
     return map;
   }
 
@@ -738,7 +809,8 @@ class PersonModelsCompanion extends UpdateCompanion<PersonModel> {
           ..write('hairID: $hairID, ')
           ..write('handID: $handID, ')
           ..write('noseID: $noseID, ')
-          ..write('id: $id')
+          ..write('id: $id, ')
+          ..write('uploaded: $uploaded')
           ..write(')'))
         .toString();
   }
@@ -847,9 +919,27 @@ class $PersonModelsTable extends PersonModels
     );
   }
 
+  final VerificationMeta _uploadedMeta = const VerificationMeta('uploaded');
+  GeneratedBoolColumn _uploaded;
   @override
-  List<GeneratedColumn> get $columns =>
-      [faceColorValue, bodyID, eyeID, footID, hairID, handID, noseID, id];
+  GeneratedBoolColumn get uploaded => _uploaded ??= _constructUploaded();
+  GeneratedBoolColumn _constructUploaded() {
+    return GeneratedBoolColumn('uploaded', $tableName, false,
+        defaultValue: Constant(false));
+  }
+
+  @override
+  List<GeneratedColumn> get $columns => [
+        faceColorValue,
+        bodyID,
+        eyeID,
+        footID,
+        hairID,
+        handID,
+        noseID,
+        id,
+        uploaded
+      ];
   @override
   $PersonModelsTable get asDslTable => this;
   @override
@@ -910,6 +1000,10 @@ class $PersonModelsTable extends PersonModels
     } else if (isInserting) {
       context.missing(_idMeta);
     }
+    if (data.containsKey('uploaded')) {
+      context.handle(_uploadedMeta,
+          uploaded.isAcceptableOrUnknown(data['uploaded'], _uploadedMeta));
+    }
     return context;
   }
 
@@ -933,17 +1027,20 @@ class TileInfo extends DataClass implements Insertable<TileInfo> {
   final int viewID;
   final int bgColor;
   final String id;
+  final bool uploaded;
   TileInfo(
       {@required this.tileMapX,
       @required this.tileMapY,
       @required this.viewID,
       @required this.bgColor,
-      @required this.id});
+      @required this.id,
+      @required this.uploaded});
   factory TileInfo.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
     final intType = db.typeSystem.forDartType<int>();
     final stringType = db.typeSystem.forDartType<String>();
+    final boolType = db.typeSystem.forDartType<bool>();
     return TileInfo(
       tileMapX:
           intType.mapFromDatabaseResponse(data['${effectivePrefix}tile_map_x']),
@@ -954,6 +1051,8 @@ class TileInfo extends DataClass implements Insertable<TileInfo> {
       bgColor:
           intType.mapFromDatabaseResponse(data['${effectivePrefix}bg_color']),
       id: stringType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      uploaded:
+          boolType.mapFromDatabaseResponse(data['${effectivePrefix}uploaded']),
     );
   }
   @override
@@ -974,6 +1073,9 @@ class TileInfo extends DataClass implements Insertable<TileInfo> {
     if (!nullToAbsent || id != null) {
       map['id'] = Variable<String>(id);
     }
+    if (!nullToAbsent || uploaded != null) {
+      map['uploaded'] = Variable<bool>(uploaded);
+    }
     return map;
   }
 
@@ -991,6 +1093,9 @@ class TileInfo extends DataClass implements Insertable<TileInfo> {
           ? const Value.absent()
           : Value(bgColor),
       id: id == null && nullToAbsent ? const Value.absent() : Value(id),
+      uploaded: uploaded == null && nullToAbsent
+          ? const Value.absent()
+          : Value(uploaded),
     );
   }
 
@@ -1003,6 +1108,7 @@ class TileInfo extends DataClass implements Insertable<TileInfo> {
       viewID: serializer.fromJson<int>(json['viewID']),
       bgColor: serializer.fromJson<int>(json['bgColor']),
       id: serializer.fromJson<String>(json['id']),
+      uploaded: serializer.fromJson<bool>(json['uploaded']),
     );
   }
   @override
@@ -1014,17 +1120,24 @@ class TileInfo extends DataClass implements Insertable<TileInfo> {
       'viewID': serializer.toJson<int>(viewID),
       'bgColor': serializer.toJson<int>(bgColor),
       'id': serializer.toJson<String>(id),
+      'uploaded': serializer.toJson<bool>(uploaded),
     };
   }
 
   TileInfo copyWith(
-          {int tileMapX, int tileMapY, int viewID, int bgColor, String id}) =>
+          {int tileMapX,
+          int tileMapY,
+          int viewID,
+          int bgColor,
+          String id,
+          bool uploaded}) =>
       TileInfo(
         tileMapX: tileMapX ?? this.tileMapX,
         tileMapY: tileMapY ?? this.tileMapY,
         viewID: viewID ?? this.viewID,
         bgColor: bgColor ?? this.bgColor,
         id: id ?? this.id,
+        uploaded: uploaded ?? this.uploaded,
       );
   @override
   String toString() {
@@ -1033,7 +1146,8 @@ class TileInfo extends DataClass implements Insertable<TileInfo> {
           ..write('tileMapY: $tileMapY, ')
           ..write('viewID: $viewID, ')
           ..write('bgColor: $bgColor, ')
-          ..write('id: $id')
+          ..write('id: $id, ')
+          ..write('uploaded: $uploaded')
           ..write(')'))
         .toString();
   }
@@ -1041,8 +1155,12 @@ class TileInfo extends DataClass implements Insertable<TileInfo> {
   @override
   int get hashCode => $mrjf($mrjc(
       tileMapX.hashCode,
-      $mrjc(tileMapY.hashCode,
-          $mrjc(viewID.hashCode, $mrjc(bgColor.hashCode, id.hashCode)))));
+      $mrjc(
+          tileMapY.hashCode,
+          $mrjc(
+              viewID.hashCode,
+              $mrjc(
+                  bgColor.hashCode, $mrjc(id.hashCode, uploaded.hashCode))))));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
@@ -1051,7 +1169,8 @@ class TileInfo extends DataClass implements Insertable<TileInfo> {
           other.tileMapY == this.tileMapY &&
           other.viewID == this.viewID &&
           other.bgColor == this.bgColor &&
-          other.id == this.id);
+          other.id == this.id &&
+          other.uploaded == this.uploaded);
 }
 
 class TileInfosCompanion extends UpdateCompanion<TileInfo> {
@@ -1060,12 +1179,14 @@ class TileInfosCompanion extends UpdateCompanion<TileInfo> {
   final Value<int> viewID;
   final Value<int> bgColor;
   final Value<String> id;
+  final Value<bool> uploaded;
   const TileInfosCompanion({
     this.tileMapX = const Value.absent(),
     this.tileMapY = const Value.absent(),
     this.viewID = const Value.absent(),
     this.bgColor = const Value.absent(),
     this.id = const Value.absent(),
+    this.uploaded = const Value.absent(),
   });
   TileInfosCompanion.insert({
     @required int tileMapX,
@@ -1073,6 +1194,7 @@ class TileInfosCompanion extends UpdateCompanion<TileInfo> {
     @required int viewID,
     @required int bgColor,
     @required String id,
+    this.uploaded = const Value.absent(),
   })  : tileMapX = Value(tileMapX),
         tileMapY = Value(tileMapY),
         viewID = Value(viewID),
@@ -1084,6 +1206,7 @@ class TileInfosCompanion extends UpdateCompanion<TileInfo> {
     Expression<int> viewID,
     Expression<int> bgColor,
     Expression<String> id,
+    Expression<bool> uploaded,
   }) {
     return RawValuesInsertable({
       if (tileMapX != null) 'tile_map_x': tileMapX,
@@ -1091,6 +1214,7 @@ class TileInfosCompanion extends UpdateCompanion<TileInfo> {
       if (viewID != null) 'view_i_d': viewID,
       if (bgColor != null) 'bg_color': bgColor,
       if (id != null) 'id': id,
+      if (uploaded != null) 'uploaded': uploaded,
     });
   }
 
@@ -1099,13 +1223,15 @@ class TileInfosCompanion extends UpdateCompanion<TileInfo> {
       Value<int> tileMapY,
       Value<int> viewID,
       Value<int> bgColor,
-      Value<String> id}) {
+      Value<String> id,
+      Value<bool> uploaded}) {
     return TileInfosCompanion(
       tileMapX: tileMapX ?? this.tileMapX,
       tileMapY: tileMapY ?? this.tileMapY,
       viewID: viewID ?? this.viewID,
       bgColor: bgColor ?? this.bgColor,
       id: id ?? this.id,
+      uploaded: uploaded ?? this.uploaded,
     );
   }
 
@@ -1127,6 +1253,9 @@ class TileInfosCompanion extends UpdateCompanion<TileInfo> {
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
+    if (uploaded.present) {
+      map['uploaded'] = Variable<bool>(uploaded.value);
+    }
     return map;
   }
 
@@ -1137,7 +1266,8 @@ class TileInfosCompanion extends UpdateCompanion<TileInfo> {
           ..write('tileMapY: $tileMapY, ')
           ..write('viewID: $viewID, ')
           ..write('bgColor: $bgColor, ')
-          ..write('id: $id')
+          ..write('id: $id, ')
+          ..write('uploaded: $uploaded')
           ..write(')'))
         .toString();
   }
@@ -1208,9 +1338,18 @@ class $TileInfosTable extends TileInfos
     );
   }
 
+  final VerificationMeta _uploadedMeta = const VerificationMeta('uploaded');
+  GeneratedBoolColumn _uploaded;
+  @override
+  GeneratedBoolColumn get uploaded => _uploaded ??= _constructUploaded();
+  GeneratedBoolColumn _constructUploaded() {
+    return GeneratedBoolColumn('uploaded', $tableName, false,
+        defaultValue: Constant(false));
+  }
+
   @override
   List<GeneratedColumn> get $columns =>
-      [tileMapX, tileMapY, viewID, bgColor, id];
+      [tileMapX, tileMapY, viewID, bgColor, id, uploaded];
   @override
   $TileInfosTable get asDslTable => this;
   @override
@@ -1250,6 +1389,10 @@ class $TileInfosTable extends TileInfos
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id'], _idMeta));
     } else if (isInserting) {
       context.missing(_idMeta);
+    }
+    if (data.containsKey('uploaded')) {
+      context.handle(_uploadedMeta,
+          uploaded.isAcceptableOrUnknown(data['uploaded'], _uploadedMeta));
     }
     return context;
   }

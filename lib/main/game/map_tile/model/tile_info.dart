@@ -1,8 +1,3 @@
-import 'dart:math';
-
-import 'package:cityCloud/styles/color_helper.dart';
-import 'package:cityCloud/util/image_helper.dart';
-import 'package:cityCloud/util/uuid.dart';
 import 'package:moor/moor.dart';
 // import 'package:flutter/material.dart';
 
@@ -12,6 +7,8 @@ class TileInfos extends Table {
   IntColumn get viewID => integer()();
   IntColumn get bgColor => integer()();
   TextColumn get id => text()();
+  ///该条数据是否已经上传到服务器了
+  BoolColumn get uploaded => boolean().withDefault(Constant(false))();
 
   @override
   Set<Column> get primaryKey => {id};

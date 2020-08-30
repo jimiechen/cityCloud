@@ -4,13 +4,8 @@ import 'dart:math';
 
 import 'package:cityCloud/dart_class/extension/Iterable_extension.dart';
 import 'package:cityCloud/expanded/database/database.dart';
-import 'package:cityCloud/main/game/building/building_Component.dart';
-import 'package:cityCloud/main/game/building/model/building_info.dart';
-import 'package:cityCloud/main/game/car/model/car_info.dart';
-import 'package:cityCloud/main/game/map_tile/model/tile_info.dart';
 import 'package:cityCloud/main/game/model/component_linked_list_entry.dart';
 import 'package:cityCloud/main/game/map_tile/model/tile_location.dart';
-import 'package:cityCloud/main/game/person/model/person_model.dart';
 import 'package:cityCloud/main/game/person/person_sprite.dart';
 import 'package:cityCloud/main/game/map_tile/tile_component.dart';
 import 'package:cityCloud/main/game/map_tile/model/tile_path_node_info.dart';
@@ -92,6 +87,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   final HomePageCubit homePageCubit;
 
   CustomGame({this.homePageBloc, this.homePageCubit}) {
+    // homePageBloc?.add(HomePageEventGetGameData());
     loadDBData();
 
     ///异步，要不size值为null
@@ -100,12 +96,13 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     });
   }
 
+  ///加载数据库数据
   void loadDBData() {
     CustomDatabase.share.select(CustomDatabase.share.tileInfos).get().then((value) {
       if (value != null && value.isNotEmpty) {
         print(value);
         value.forEach((element) {
-          addTile(element);
+          addTile(element,saveDb: false);
         });
       } else {
         addOriginMapTile();
@@ -116,7 +113,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
       if (value != null && value.isNotEmpty) {
         print(value);
         value.forEach((element) {
-          addPerson(element);
+          addPerson(element,saveDb: false);
         });
       }
     });
@@ -125,7 +122,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
       if (value != null && value.isNotEmpty) {
         print(value);
         value.forEach((element) {
-          addCar(element);
+          addCar(element,saveDb: false);
         });
       }
     });
@@ -242,6 +239,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     int tileBGColor = ColorHelper.mapTile.randomItem.value;
     [
       TileInfo(
+        uploaded: false,
         bgColor: tileBGColor,
         tileMapX: 4,
         tileMapY: 6,
@@ -249,6 +247,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
         id: Uuid.generateUuidV4WithoutDashes(),
       ),
       TileInfo(
+        uploaded: false,
         bgColor: tileBGColor,
         tileMapX: 4,
         tileMapY: 5,
@@ -256,6 +255,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
         id: Uuid.generateUuidV4WithoutDashes(),
       ),
       TileInfo(
+        uploaded: false,
         bgColor: tileBGColor,
         tileMapX: 3,
         tileMapY: 6,
@@ -263,6 +263,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
         id: Uuid.generateUuidV4WithoutDashes(),
       ),
       TileInfo(
+        uploaded: false,
         bgColor: tileBGColor,
         tileMapX: 5,
         tileMapY: 6,
@@ -307,6 +308,9 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
       _tileComponentLocationMap[TileMapLocation(info.tileMapX, info.tileMapY - 1)].showWall = false;
     }
     addTileComponent(tileComponent);
+    if (info.uploaded != true) {
+        homePageBloc?.add(HomePageEventUploadMapTileInfo(model: info));
+      }
     if (saveDb == true) {
       CustomDatabase.share.into(CustomDatabase.share.tileInfos).insert(info);
     }
@@ -337,6 +341,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   ///随机添加小车
   void randomAddCar() {
     CarInfo carInfo = CarInfo(
+      uploaded: false,
       carID: Random().nextInt(ImageHelper.carNumber),
       id: Uuid.generateUuidV4WithoutDashes(),
     );
@@ -354,6 +359,9 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
         ),
       );
     });
+    if (carInfo.uploaded != true) {
+      homePageBloc?.add(HomePageEventUploadCarInfo(model: carInfo));
+    }
     if (saveDb == true) {
       CustomDatabase.share.into(CustomDatabase.share.carInfos).insert(carInfo);
     }
@@ -370,6 +378,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     }
     int hairID = tmpID;
     PersonModel personModel = PersonModel(
+      uploaded: false,
       bodyID: bodyID,
       eyeID: random.nextInt(ImageHelper.eyes.length),
       faceColorValue: ColorHelper.faces.randomItem.value,
@@ -390,9 +399,11 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
         initialPosition: position,
         model: model,
       );
-      homePageBloc?.add(HomePageEventUploadPersonSpriteInfo(model: model));
       add(personSprite);
       personSprite.enter(targetEndNode: endNode, targetPosition: position);
+      if (model.uploaded != true) {
+        homePageBloc?.add(HomePageEventUploadPersonSpriteInfo(model: model));
+      }
       if (saveDb == true) {
         CustomDatabase.share.into(CustomDatabase.share.personModels).insert(model);
       }

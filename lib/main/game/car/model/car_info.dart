@@ -1,12 +1,11 @@
-import 'dart:math';
-
-import 'package:cityCloud/util/image_helper.dart';
-import 'package:cityCloud/util/uuid.dart';
 import 'package:moor/moor.dart';
 
 class CarInfos extends Table {
   IntColumn get carID => integer()();
   TextColumn get id => text()();
+
+  ///该条数据是否已经上传到服务器了
+  BoolColumn get uploaded => boolean().withDefault(Constant(false))();
 
   @override
   Set<Column> get primaryKey => {id};
