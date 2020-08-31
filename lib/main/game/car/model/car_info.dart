@@ -1,3 +1,4 @@
+import 'package:cityCloud/expanded/database/database.dart';
 import 'package:moor/moor.dart';
 
 class CarInfos extends Table {
@@ -9,6 +10,10 @@ class CarInfos extends Table {
 
   @override
   Set<Column> get primaryKey => {id};
+
+  static bool isAllValueValidated(CarInfo carInfo) {
+    return carInfo.carID != null && carInfo.id != null && carInfo.uploaded != null;
+  }
 }
 
 // int carID;

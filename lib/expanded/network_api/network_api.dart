@@ -7,6 +7,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 export 'package:cityCloud/const/net_api_path.dart';
+
 const String IsUseToken = 'isUseToken';
 bool defaultCheckCode(dynamic code) {
   return code == 10200;
@@ -166,7 +167,15 @@ class NetworkDio {
     }
     RequestOptions requestOptions = RequestOptions(method: method, extra: extraMap);
 // DioMixin
-    return shareDio.request(url, data: body, options: requestOptions, cancelToken: cancelToken).whenComplete(() {
+    return shareDio
+        .request(
+      url,
+      data: method == 'POST' ? body : null,
+      options: requestOptions,
+      cancelToken: cancelToken,
+      queryParameters: method == 'GET' ? body : null,
+    )
+        .whenComplete(() {
       cancelToken?.close();
     }).then((response) async {
       DioError responseError() {
