@@ -3,11 +3,23 @@ import 'package:cityCloud/router/router.dart';
 import 'package:cityCloud/styles/color_helper.dart';
 import 'package:cityCloud/widgets/default_app_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:umeng_sdk/umeng_sdk.dart';
 
 class PrivacyPolicyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    MethodChannel methodChannel = MethodChannel('custom_push');
+    methodChannel.setMethodCallHandler((call) async{
+      print(call.method);
+      return true;
+    });
+
+    // EventChannel eventChannel = EventChannel('custom_push_event');
+    // eventChannel.receiveBroadcastStream().listen((event) {
+    //   print('event_channel');
+    //   print(event.toString());
+    // });
     return Scaffold(
       appBar: DefaultAppBar(
         leading: SizedBox(),
@@ -36,9 +48,10 @@ class PrivacyPolicyPage extends StatelessWidget {
                     height: 43,
                     child: FlatButton(
                       onPressed: () {
-                        UmengSdk.onEvent('openApp', {});
-                        UmengSdk.onEvent('hello', {});
-                        UmengSdk.onPageStart('helloworld');
+                        // UmengSdk.onEvent('openApp', {'key':'hello'});
+                        // UmengSdk.onEvent('hello', {'key':'hello'});
+                        // UmengSdk.onPageStart('helloworld');
+                        methodChannel.invokeMethod('hello method');
                       },
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                       color: ColorHelper.ColorE3,
