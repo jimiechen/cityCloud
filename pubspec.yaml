@@ -87,7 +87,6 @@ flutter:
     # assets/images/background/*
     - assets/images/background/bg_empty.png
     # assets/images/*
-    - assets/images/.DS_Store
     - assets/images/building_0.png
     - assets/images/building_1.png
     - assets/images/building_10.png

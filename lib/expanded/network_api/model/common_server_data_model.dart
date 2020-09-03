@@ -1,10 +1,12 @@
+import 'dart:convert';
+
 class CommonServerDataModel {
   String id;
   String dataId;
   String dataFormat;
   String dataType;
   String data;
-  Map<String,dynamic> json;
+  Map<String, dynamic> json;
   String uid;
   String f1;
   String f2;
@@ -40,26 +42,30 @@ class CommonServerDataModel {
       this.createTime,
       this.updateTime});
 
-  CommonServerDataModel.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    dataId = json['data_id'];
-    dataFormat = json['data_format'];
-    dataType = json['data_type'];
-    data = json['data'];
-    json = json['json'];
-    uid = json['uid'];
-    f1 = json['f1'];
-    f2 = json['f2'];
-    f3 = json['f3'];
-    f4 = json['f4'];
-    f5 = json['f5'];
-    f6 = json['f6'];
-    version = json['version'];
-    source = json['source'];
-    sign = json['sign'];
-    createDate = json['create_date'];
-    createTime = json['create_time'];
-    updateTime = json['update_time'];
+  CommonServerDataModel.fromJson(Map<String, dynamic> jsonMap) {
+    id = jsonMap['id'];
+    dataId = jsonMap['data_id'];
+    dataFormat = jsonMap['data_format'];
+    dataType = jsonMap['data_type'];
+    data = jsonMap['data'];
+    dynamic tmpJson = jsonMap['json'];
+    if (tmpJson is String) {
+      tmpJson = jsonDecode(tmpJson);
+    }
+    json = tmpJson is Map ? tmpJson : null;
+    uid = jsonMap['uid'];
+    f1 = jsonMap['f1'];
+    f2 = jsonMap['f2'];
+    f3 = jsonMap['f3'];
+    f4 = jsonMap['f4'];
+    f5 = jsonMap['f5'];
+    f6 = jsonMap['f6'];
+    version = jsonMap['version'];
+    source = jsonMap['source'];
+    sign = jsonMap['sign'];
+    createDate = jsonMap['create_date'];
+    createTime = jsonMap['create_time'];
+    updateTime = jsonMap['update_time'];
   }
 
   Map<String, dynamic> toJson() {

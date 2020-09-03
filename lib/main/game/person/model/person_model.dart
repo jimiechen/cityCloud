@@ -1,3 +1,4 @@
+import 'package:cityCloud/expanded/database/database.dart';
 import 'package:moor/moor.dart';
 
 class PersonModels extends Table {
@@ -15,6 +16,18 @@ class PersonModels extends Table {
 
   @override
   Set<Column> get primaryKey => {id};
+
+  static bool isAllValueValidated(PersonModel personModel) {
+    return personModel.faceColorValue != null &&
+        personModel.bodyID != null &&
+        personModel.eyeID != null &&
+        personModel.footID != null &&
+        personModel.hairID != null &&
+        personModel.handID != null &&
+        personModel.noseID != null &&
+        personModel.id != null &&
+        personModel.uploaded != null;
+  }
   // int faceColorValue; //通过Color(faceColorValue)得到脸的颜色
   // int bodyID; //身体id，对应于ImageHelper.bodys数组下标
   // int eyeID; //眼睛id，对应于ImageHelper.eyes数组下标

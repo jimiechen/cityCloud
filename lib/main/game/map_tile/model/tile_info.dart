@@ -1,3 +1,4 @@
+import 'package:cityCloud/expanded/database/database.dart';
 import 'package:moor/moor.dart';
 // import 'package:flutter/material.dart';
 
@@ -7,11 +8,21 @@ class TileInfos extends Table {
   IntColumn get viewID => integer()();
   IntColumn get bgColor => integer()();
   TextColumn get id => text()();
+
   ///该条数据是否已经上传到服务器了
   BoolColumn get uploaded => boolean().withDefault(Constant(false))();
 
   @override
   Set<Column> get primaryKey => {id};
+
+  static bool isAllValueValidated(TileInfo tileInfo) {
+    return tileInfo.tileMapX != null &&
+        tileInfo.tileMapY != null &&
+        tileInfo.viewID != null &&
+        tileInfo.bgColor != null &&
+        tileInfo.id != null &&
+        tileInfo.uploaded != null;
+  }
   // int tileMapX;
   // int tileMapY;
   // int viewID;
