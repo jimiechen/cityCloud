@@ -9,8 +9,6 @@ class R {
   static final String assetsImagesIconIconTopBarBackArrow = 'assets/images/icon/icon_topBar_back_arrow.png';
   /// ![](http://127.0.0.1:9527/assets/images/background/bg_empty.png)
   static final String assetsImagesBackgroundBgEmpty = 'assets/images/background/bg_empty.png';
-  /// ![](http://127.0.0.1:9527/assets/images/.DS_Store)
-  static final String assetsImages = 'assets/images/.DS_Store';
   /// ![](http://127.0.0.1:9527/assets/images/building_0.png)
   static final String assetsImagesBuilding0 = 'assets/images/building_0.png';
   /// ![](http://127.0.0.1:9527/assets/images/building_1.png)
@@ -165,8 +163,6 @@ class R {
   static final String assetsImagesCar6Side = 'assets/images/car_6_side.png';
   /// ![](http://127.0.0.1:9527/assets/images/car_6_side_shadow.png)
   static final String assetsImagesCar6SideShadow = 'assets/images/car_6_side_shadow.png';
-  /// ![](http://127.0.0.1:9527/assets/images/car_7__side_shadow.png)
-  static final String assetsImagesCar7SideShadow = 'assets/images/car_7__side_shadow.png';
   /// ![](http://127.0.0.1:9527/assets/images/car_7_back.png)
   static final String assetsImagesCar7Back = 'assets/images/car_7_back.png';
   /// ![](http://127.0.0.1:9527/assets/images/car_7_back_shadow.png)
@@ -177,6 +173,8 @@ class R {
   static final String assetsImagesCar7FrontShadow = 'assets/images/car_7_front_shadow.png';
   /// ![](http://127.0.0.1:9527/assets/images/car_7_side.png)
   static final String assetsImagesCar7Side = 'assets/images/car_7_side.png';
+  /// ![](http://127.0.0.1:9527/assets/images/car_7_side_shadow.png)
+  static final String assetsImagesCar7SideShadow = 'assets/images/car_7_side_shadow.png';
   /// ![](http://127.0.0.1:9527/assets/images/car_8_back.png)
   static final String assetsImagesCar8Back = 'assets/images/car_8_back.png';
   /// ![](http://127.0.0.1:9527/assets/images/car_8_back_shadow.png)
