@@ -166,13 +166,14 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
       ///如果网络加载成功了使用网络数据
       if (!_gameDataStatus.networkGotMapTile) {
         if (value != null && value.isNotEmpty) {
-          print(value);
           value.forEach((element) {
             addTile(element, saveDb: false);
+            showingMapTileIDs.add(element.id);
           });
-        } else if (_gameDataStatus.networkGotMapTile) {
-          addOriginMapTile();
         }
+        // else if (_gameDataStatus.networkGotMapTile) {
+        //   addOriginMapTile();
+        // }
       }
     });
 
@@ -182,9 +183,9 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
       ///如果网络加载成功了使用网络数据
       if (!_gameDataStatus.networkGotPerson) {
         if (value != null && value.isNotEmpty) {
-          print(value);
           value.forEach((element) {
             addPerson(element, saveDb: false);
+            showingPersonIDs.add(element.id);
           });
         }
       }
@@ -196,9 +197,9 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
       ///如果网络加载成功了使用网络数据
       if (!_gameDataStatus.networkGotCar) {
         if (value != null && value.isNotEmpty) {
-          print(value);
           value.forEach((element) {
             addCar(element, saveDb: false);
+            showingCarIDs.add(element.id);
           });
         }
       }
