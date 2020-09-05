@@ -103,15 +103,17 @@ class CarSprite extends PositionComponent {
         carSpriteComponent.x = -carSpriteComponent.width * 0.7;
         carSpriteComponent.y = -carSpriteComponent.height * 0.8;
         carSpriteComponent.overridePaint = carPaint;
+
+        double distance = carSpriteComponent.height * 0.2;
         ScaleEffect scaleEffect = ScaleEffect(
-          size: Size(carSpriteComponent.width, carSpriteComponent.height - 2),
+          size: Size(carSpriteComponent.width, carSpriteComponent.height - distance),
           speed: 10,
-          curve: Curves.linear,
+          curve: Curves.easeOut,
         );
         MoveEffect moveEffect = MoveEffect(
-          destination: carSpriteComponent.toPosition() + Position(0, 4),
+          destination: carSpriteComponent.toPosition() + Position(0, distance),
           speed: 10,
-          curve: Curves.linear,
+          curve: Curves.easeOut,
         );
         carSpriteComponent.addEffect(
           CombinedEffect(
