@@ -31,12 +31,18 @@ class _AdvertisingPageState extends State<AdvertisingPage> {
   void gotoHomePage() {
     _timer.cancel();
     streamController.close();
-    Navigator.pushAndRemoveUntil(
-        context,
-        Router.routeForPage(
-          page: HomePage(),
-        ),
-        (_) => false);
+    // Navigator.pushAndRemoveUntil(
+    //     context,
+    //     Router.routeForPage(
+    //       page: HomePage(),
+    //     ),
+    //     (_) => false);
+    Navigator.push(
+      context,
+      Router.routeForPage(
+        page: HomePage(),
+      ),
+    );
   }
 
   @override
