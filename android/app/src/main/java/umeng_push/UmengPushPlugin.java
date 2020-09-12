@@ -2,14 +2,18 @@ package umeng_push;
 
 import androidx.annotation.NonNull;
 
+import android.app.Activity;
 import android.app.Notification;
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.umeng.commonsdk.UMConfigure;
 import com.umeng.message.IUmengCallback;
 import com.umeng.message.IUmengRegisterCallback;
+import com.umeng.message.MsgConstant;
 import com.umeng.message.PushAgent;
 import com.umeng.message.UTrack;
 import com.umeng.message.UmengMessageHandler;
@@ -18,8 +22,12 @@ import com.umeng.message.common.inter.ITagManager;
 import com.umeng.message.entity.UMessage;
 import com.umeng.message.tag.TagManager;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,33 +40,37 @@ import io.flutter.plugin.common.PluginRegistry;
 public class UmengPushPlugin implements MethodChannel.MethodCallHandler {
     private static String TAG = "| UMeng | Flutter | Android | ";
     public static UmengPushPlugin instance;
-    private PushAgent pushAgent;
-    private final MethodChannel channel;
+    private final PushAgent pushAgent;
+    private  MethodChannel channel;
+    private Activity uiActivity;
 
-    public static void registerWith(@NonNull FlutterEngine flutterEngine) {
-        MethodChannel channel = new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), "umeng_push");
-        UmengPushPlugin umengPushPlugin = new UmengPushPlugin(channel);
+    public void registerWith(@NonNull FlutterEngine flutterEngine,@NonNull Activity activity) {
+        uiActivity = activity;
+         channel = new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), "umeng_push");
+        channel.setMethodCallHandler(this);
     }
 
-    private UmengPushPlugin(MethodChannel channel) {
-        this.channel = channel;
-        channel.setMethodCallHandler(this);
+    private UmengPushPlugin(PushAgent uPushAgent) {
+        this.pushAgent = uPushAgent;
+        setupMessageHandler();
+        setupNotificationOnClickHandler();
         instance = this;
     }
 
-    public void initUmengSDK(Context context){
+    public static void initUmengSDK(Context context){
         // 在此处调用基础组件包提供的初始化函数 相应信息可在应用管理 -> 应用信息 中找到 http://message.umeng.com/list/apps
 // 参数一：当前上下文context；
 // 参数二：应用申请的Appkey（需替换）；
 // 参数三：渠道名称；
 // 参数四：设备类型，必须参数，传参数为UMConfigure.DEVICE_TYPE_PHONE则表示手机；传参数为UMConfigure.DEVICE_TYPE_BOX则表示盒子；默认为手机；
 // 参数五：Push推送业务的secret 填充Umeng Message Secret对应信息（需替换）
+        // UMConfigure.init(context, "5f59808acf77fa286ea11dce", "Umeng", UMConfigure.DEVICE_TYPE_PHONE, "b569836638386b32bdede4644bd1ec21");
         UMConfigure.init(context, "5f253e41d309322154740f7b", "Umeng", UMConfigure.DEVICE_TYPE_PHONE, "0d11d95882b42b19d4a131f28c6965e6");
 
 //获取消息推送代理示例
-        pushAgent = PushAgent.getInstance(context);
+        PushAgent uPushAgent = PushAgent.getInstance(context);
 //注册推送服务，每次调用register方法都会回调该接口
-        pushAgent.register(new IUmengRegisterCallback() {
+        uPushAgent.register(new IUmengRegisterCallback() {
 
             @Override
             public void onSuccess(String deviceToken) {
@@ -71,8 +83,11 @@ public class UmengPushPlugin implements MethodChannel.MethodCallHandler {
                 Log.e(TAG,"注册失败：-------->  " + "s:" + s + ",s1:" + s1);
             }
         });
-//        setupNotificationOnClickHandler();
-        PushAgent.getInstance(context).onAppStart();
+        UmengPushPlugin umengPushPlugin = new UmengPushPlugin(uPushAgent);
+//        pushAgent.setNotificationPlaySound(MsgConstant.NOTIFICATION_PLAY_SERVER); //服务端控制声音
+//        pushAgent.setNotificationPlayLights(MsgConstant.NOTIFICATION_PLAY_SDK_ENABLE);//客户端允许呼吸灯点亮
+//        pushAgent.setNotificationPlayVibrate(MsgConstant.NOTIFICATION_PLAY_SDK_ENABLE);//客户端禁止振动
+        // PushAgent.getInstance(context).onAppStart();
 
         /**
          * 初始化厂商通道
@@ -91,10 +106,10 @@ public class UmengPushPlugin implements MethodChannel.MethodCallHandler {
 
     private void setupNotificationOnClickHandler(){
         UmengNotificationClickHandler notificationClickHandler = new UmengNotificationClickHandler() {
-
             @Override
-            public void dealWithCustomAction(Context context, UMessage msg) {
-//                Toast.makeText(context, msg.custom, Toast.LENGTH_LONG).show();
+            public void handleMessage(Context context, UMessage uMessage) {
+                super.handleMessage(context, uMessage);
+                sendMessage("onOpenNotification",uMessage.getRaw());
             }
         };
         pushAgent.setNotificationClickHandler(notificationClickHandler);
@@ -105,64 +120,87 @@ public class UmengPushPlugin implements MethodChannel.MethodCallHandler {
 
             @Override
             public Notification getNotification(Context context, UMessage msg) {
-
-                for (Map.Entry entry : msg.extra.entrySet()) {
-
-                    Object key = entry.getKey();
-                    Object value = entry.getValue();
-
-                }
+                sendMessage("onReceiveNotification",msg.getRaw());
                 return super.getNotification(context, msg);
             }
             @Override
             public void dealWithCustomMessage(final Context context, final UMessage msg) {
-
-//                msg.custom
+                sendMessage("onReceiveMessage",msg.getRaw());
             }
         };
         pushAgent.setMessageHandler(messageHandler);
     }
 
+    void sendMessage(@NonNull String method, JSONObject jsonObject){
+
+        uiActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                //此时已在主线程中，更新UI
+                try{
+                    Map<String, Object> data = new Gson().fromJson(jsonObject.toString(), HashMap.class);;
+                    channel.invokeMethod(method,data);
+                }catch (Throwable error){
+                    Log.i(TAG,error.toString());
+                }
+            }
+        });
+    }
+
     @Override
     public void onMethodCall(@NonNull MethodCall call, @NonNull MethodChannel.Result result) {
         Log.i(TAG,call.method);
-        if (call.method.equals("getPlatformVersion")) {
-            result.success("Android " + android.os.Build.VERSION.RELEASE);
+        uiActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (call.method.equals("getPlatformVersion")) {
+                    result.success("Android " + android.os.Build.VERSION.RELEASE);
 //        } else if (call.method.equals("setTags")) {
 //            setTags(call, result);
-        } else if (call.method.equals("cleanTags")) {
-            cleanTags(call, result);
-        } else if (call.method.equals("addTags")) {
-            addTags(call, result);
-        } else if (call.method.equals("deleteTags")) {
-            deleteTags(call, result);
-        } else if (call.method.equals("getAllTags")) {
-            getAllTags(call, result);
-        } else if (call.method.equals("setAlias")) {
-            setAlias(call, result);
-        } else if (call.method.equals("deleteAlias")) {
-            deleteAlias(call, result);;
-        } else if (call.method.equals("stopPush")) {
-            stopPush(call, result);
-        } else if (call.method.equals("resumePush")) {
-            resumePush(call, result);
+                } else if (call.method.equals("cleanTags")) {
+                    cleanTags(call, result);
+                } else if (call.method.equals("addTags")) {
+                    addTags(call, result);
+                } else if (call.method.equals("deleteTags")) {
+                    deleteTags(call, result);
+                } else if (call.method.equals("getAllTags")) {
+                    getAllTags(call, result);
+                } else if (call.method.equals("setAlias")) {
+                    setAlias(call, result);
+                } else if (call.method.equals("deleteAlias")) {
+                    deleteAlias(call, result);;
+                } else if (call.method.equals("stopPush")) {
+                    stopPush(call, result);
+                } else if (call.method.equals("resumePush")) {
+                    resumePush(call, result);
 //        } else if (call.method.equals("clearAllNotifications")) {
 //            clearAllNotifications(call, result);
 //        } else if (call.method.equals("clearNotification")) {
 //            clearNotification(call,result);
 //        } else if (call.method.equals("getLaunchAppNotification")) {
 //            getLaunchAppNotification(call, result);
-        } else if (call.method.equals("getRegistrationID")) {
-            getRegistrationID(call, result);
+                } else if (call.method.equals("getRegistrationID")) {
+                    getRegistrationID(call, result);
 //        } else if (call.method.equals("sendLocalNotification")) {
 //            sendLocalNotification(call, result);
 //        } else if (call.method.equals("setBadge")) {
 //            setBadge(call, result);
-        } else {
-            result.notImplemented();
-        }
+                } else {
+                    result.notImplemented();
+                }
+            }
+        });
     }
 
+
+    void resultCallback(@NonNull MethodChannel.Result result,Object value) {
+        uiActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                result.success(value);
+            }
+        });
+    }
 
 
 //    public void setTags(MethodCall call, MethodChannel.Result result) {
@@ -178,15 +216,20 @@ public class UmengPushPlugin implements MethodChannel.MethodCallHandler {
         pushAgent.getTagManager().getTags(new TagManager.TagListCallBack() {
             @Override
             public void onMessage(boolean b, List<String> list) {
-                pushAgent.getTagManager().deleteTags(new TagManager.TCallBack() {
-                    @Override
-                    public void onMessage(boolean b, ITagManager.Result tagResult) {
-                        Map<String,Object> map = new HashMap<>();
-                        map.put("result",b);
-                        map.put("tags",list.toArray(new String[0]));
-                        result.success(map);
-                    }
-                }, list.toArray(new String[0]));
+               uiActivity.runOnUiThread(new Runnable() {
+                   @Override
+                   public void run() {
+                       pushAgent.getTagManager().deleteTags(new TagManager.TCallBack() {
+                           @Override
+                           public void onMessage(boolean b, ITagManager.Result tagResult) {
+                               Map<String,Object> map = new HashMap<>();
+                               map.put("result",b);
+                               map.put("tags",list.toArray(new String[0]));
+                               resultCallback(result,map);
+                           }
+                       }, list.toArray(new String[0]));
+                   }
+               });
             }
         });
     }
@@ -203,7 +246,7 @@ public class UmengPushPlugin implements MethodChannel.MethodCallHandler {
                 Map<String,Object> map = new HashMap<>();
                 map.put("result",b);
                 map.put("tags",tags.toArray(new String[0]));
-                result.success(map);
+                resultCallback(result,map);
             }
         },tagArray);
     }
@@ -219,7 +262,7 @@ public class UmengPushPlugin implements MethodChannel.MethodCallHandler {
                 Map<String,Object> map = new HashMap<>();
                 map.put("result",b);
                 map.put("tags",tags.toArray(new String[0]));
-                result.success(map);
+                resultCallback(result,map);
             }
         }, tags.toArray(new String[0]));
     }
@@ -232,22 +275,23 @@ public class UmengPushPlugin implements MethodChannel.MethodCallHandler {
                 Map<String,Object> map = new HashMap<>();
                 map.put("result",b);
                 map.put("tags",list);
-                result.success(map);
+                resultCallback(result,map);
             }
         });
     }
 
     public void setAlias(MethodCall call, MethodChannel.Result result) {
         Log.d(TAG,"setAlias: " + call.arguments);
-
-        String alias= call.arguments();
-        pushAgent.setAlias(alias,"custom", new UTrack.ICallBack() {
+        HashMap<String, Object> map = call.arguments();
+        String alias = (String) map.get("alias");
+        String aliasType = (String) map.get("aliasType");
+        pushAgent.setAlias(alias,aliasType, new UTrack.ICallBack() {
             @Override
             public void onMessage(boolean b, String s) {
                 Map<String,Object> map = new HashMap<>();
                 map.put("result",b);
                 map.put("alias",s);
-                result.success(map);
+                resultCallback(result,map);
             }
         });
     }
@@ -255,14 +299,16 @@ public class UmengPushPlugin implements MethodChannel.MethodCallHandler {
     public void deleteAlias(MethodCall call, MethodChannel.Result result) {
         Log.d(TAG,"deleteAlias:");
 
-        String alias= call.arguments();
-        pushAgent.deleteAlias(alias,"custom", new UTrack.ICallBack() {
+        HashMap<String, Object> map = call.arguments();
+        String alias = (String) map.get("alias");
+        String aliasType = (String) map.get("aliasType");
+        pushAgent.deleteAlias(alias,aliasType, new UTrack.ICallBack() {
             @Override
             public void onMessage(boolean b, String s) {
                 Map<String,Object> map = new HashMap<>();
                 map.put("result",b);
                 map.put("alias",s);
-                result.success(map);
+                resultCallback(result,map);
             }
         });
     }
@@ -274,12 +320,12 @@ public class UmengPushPlugin implements MethodChannel.MethodCallHandler {
 
             @Override
             public void onSuccess() {
-                result.success(true);
+                resultCallback(result,true);
             }
 
             @Override
             public void onFailure(String s, String s1) {
-                result.success(false);
+                resultCallback(result,false);
             }
 
         });
@@ -292,12 +338,12 @@ public class UmengPushPlugin implements MethodChannel.MethodCallHandler {
 
             @Override
             public void onSuccess() {
-                result.success(true);
+                resultCallback(result,true);
             }
 
             @Override
             public void onFailure(String s, String s1) {
-                result.success(false);
+                resultCallback(result,false);
             }
 
         });

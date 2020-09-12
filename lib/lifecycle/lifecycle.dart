@@ -1,6 +1,6 @@
 import 'package:cityCloud/const/config.dart';
-import 'package:umeng_sdk/umeng_sdk.dart';
 import 'package:flutter/material.dart';
+import 'package:umeng_sdk/umeng_sdk.dart';
 
 class LifeCycle with WidgetsBindingObserver {
   /*
@@ -23,10 +23,10 @@ class LifeCycle with WidgetsBindingObserver {
   ///App 初始化
   static initApp() async {
     ///初始化友盟统计
-    UmengSdk.initCommon(UMENG_APP_KEY, UMENG_APP_KEY, UMENG_CHANNEL).then((value) {
-      UmengSdk.onEvent('openApp', {});
-      // UmengSdk.onPageStart('hello');
-    });
+    // UmengSdk.initCommon(UMENG_APP_KEY, UMENG_APP_KEY, UMENG_CHANNEL).then((value) {
+    //   UmengSdk.onEvent('openApp', {});
+    //   // UmengSdk.onPageStart('hello');
+    // });
   }
 
   ///请求相关权限，会弹出权限确认框

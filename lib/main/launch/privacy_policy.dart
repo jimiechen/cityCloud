@@ -1,25 +1,14 @@
+import 'package:cityCloud/expanded/umeng_push/umeng_push.dart';
 import 'package:cityCloud/main/launch/advertising.dart';
+import 'package:cityCloud/main/launch/upush_test.dart';
 import 'package:cityCloud/router/router.dart';
 import 'package:cityCloud/styles/color_helper.dart';
 import 'package:cityCloud/widgets/default_app_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:umeng_sdk/umeng_sdk.dart';
 
 class PrivacyPolicyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    MethodChannel methodChannel = MethodChannel('custom_push');
-    methodChannel.setMethodCallHandler((call) async{
-      print(call.method);
-      return true;
-    });
-
-    // EventChannel eventChannel = EventChannel('custom_push_event');
-    // eventChannel.receiveBroadcastStream().listen((event) {
-    //   print('event_channel');
-    //   print(event.toString());
-    // });
     return Scaffold(
       appBar: DefaultAppBar(
         leading: SizedBox(),
@@ -42,17 +31,28 @@ class PrivacyPolicyPage extends StatelessWidget {
               height: 44,
               child: Row(
                 children: [
-                  Spacer(),
                   SizedBox(
-                    width: 164,
-                    height: 43,
+                    width: 12,
+                  ),
+                  Expanded(
                     child: FlatButton(
                       onPressed: () {
-                        // UmengSdk.onEvent('openApp', {'key':'hello'});
-                        // UmengSdk.onEvent('hello', {'key':'hello'});
-                        // UmengSdk.onPageStart('helloworld');
-                        methodChannel.invokeMethod('hello method');
+                        Navigator.push(context, Router.routeForPage(page: UPushTestPage()));
                       },
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                      color: ColorHelper.ColorE3,
+                      child: Text(
+                        '友盟推送测试',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 12,
+                  ),
+                  Expanded(
+                    child: FlatButton(
+                      onPressed: () {},
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                       color: ColorHelper.ColorE3,
                       child: Text(
@@ -61,10 +61,10 @@ class PrivacyPolicyPage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Spacer(),
                   SizedBox(
-                    width: 164,
-                    height: 43,
+                    width: 12,
+                  ),
+                  Expanded(
                     child: FlatButton(
                       onPressed: () {
                         Navigator.push(context, Router.routeForPage(page: AdvertisingPage()));
@@ -77,7 +77,9 @@ class PrivacyPolicyPage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Spacer(),
+                  SizedBox(
+                    width: 12,
+                  ),
                 ],
               ),
             ),

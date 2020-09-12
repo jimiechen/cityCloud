@@ -4,9 +4,10 @@ import 'package:flutter/services.dart';
 import 'package:platform/platform.dart';
 
 typedef Future<dynamic> EventHandler(Map<String, dynamic> event);
+const String DefaultAliasType = 'DefaultAliasType';
 
 class UmengPush {
-  final String flutter_log = "| UMENG_PUSH | Flutter | ";
+  final String flutterLog = "| UMENG_PUSH | Flutter | ";
   factory UmengPush() => _instance;
 
   final MethodChannel _channel;
@@ -17,8 +18,7 @@ class UmengPush {
       : _channel = channel,
         _platform = platform;
 
-  static final UmengPush _instance =
-      new UmengPush.private(const MethodChannel('umeng_push'), const LocalPlatform());
+  static final UmengPush _instance = new UmengPush.private(const MethodChannel('umeng_push'), const LocalPlatform());
 
   EventHandler _onReceiveNotification;
   EventHandler _onOpenNotification;
@@ -34,7 +34,7 @@ class UmengPush {
     EventHandler onReceiveMessage,
     EventHandler onReceiveNotificationAuthorization,
   }) {
-    print(flutter_log + "addEventHandler:");
+    print(flutterLog + "addEventHandler:");
 
     _onReceiveNotification = onReceiveNotification;
     _onOpenNotification = onOpenNotification;
@@ -44,7 +44,7 @@ class UmengPush {
   }
 
   Future<Null> _handleMethod(MethodCall call) async {
-    print(flutter_log + "_handleMethod:");
+    print(flutterLog + "_handleMethod:");
 
     switch (call.method) {
       case "onReceiveNotification":
@@ -64,9 +64,8 @@ class UmengPush {
   /// iOS Only
   /// 申请推送权限，注意这个方法只会向用户弹出一次推送权限请求（如果用户不同意，之后只能用户到设置页面里面勾选相应权限），需要开发者选择合适的时机调用。
   ///
-  void applyPushAuthority(
-      [NotificationSettingsIOS iosSettings = const NotificationSettingsIOS()]) {
-    print(flutter_log + "applyPushAuthority:");
+  void applyPushAuthority([NotificationSettingsIOS iosSettings = const NotificationSettingsIOS()]) {
+    print(flutterLog + "applyPushAuthority:");
 
     if (!_platform.isIOS) {
       return;
@@ -83,7 +82,7 @@ class UmengPush {
   /// @param {Function} fail = ({"errorCode":int}) => {  }
   ///
   // Future<Map<dynamic, dynamic>> setTags(List<String> tags) async {
-  //   print(flutter_log + "setTags:");
+  //   print(flutterLog + "setTags:");
 
   //   final Map<dynamic, dynamic> result =
   //       await _channel.invokeMethod('setTags', tags);
@@ -97,10 +96,9 @@ class UmengPush {
   /// @param {Function} fail = ({"result":false,}) => {  }
   ///
   Future<Map<dynamic, dynamic>> cleanTags() async {
-    print(flutter_log + "cleanTags:");
+    print(flutterLog + "cleanTags:");
 
-    final Map<dynamic, dynamic> result =
-        await _channel.invokeMethod('cleanTags');
+    final Map<dynamic, dynamic> result = await _channel.invokeMethod('cleanTags');
     return result;
   }
 
@@ -113,10 +111,9 @@ class UmengPush {
   ///
 
   Future<Map<dynamic, dynamic>> addTags(List<String> tags) async {
-    print(flutter_log + "addTags:");
+    print(flutterLog + "addTags:");
 
-    final Map<dynamic, dynamic> result =
-        await _channel.invokeMethod('addTags', tags);
+    final Map<dynamic, dynamic> result = await _channel.invokeMethod('addTags', tags);
     return result;
   }
 
@@ -128,10 +125,9 @@ class UmengPush {
   /// @param {Function} fail = ({"result":false,}) => {  }
   ///
   Future<Map<dynamic, dynamic>> deleteTags(List<String> tags) async {
-    print(flutter_log + "deleteTags:");
+    print(flutterLog + "deleteTags:");
 
-    final Map<dynamic, dynamic> result =
-        await _channel.invokeMethod('deleteTags', tags);
+    final Map<dynamic, dynamic> result = await _channel.invokeMethod('deleteTags', tags);
     return result;
   }
 
@@ -142,10 +138,9 @@ class UmengPush {
   /// @param {Function} fail = ({"result":false,}) => {  }
   ///
   Future<Map<dynamic, dynamic>> getAllTags() async {
-    print(flutter_log + "getAllTags:");
+    print(flutterLog + "getAllTags:");
 
-    final Map<dynamic, dynamic> result =
-        await _channel.invokeMethod('getAllTags');
+    final Map<dynamic, dynamic> result = await _channel.invokeMethod('getAllTags');
     return result;
   }
 
@@ -154,14 +149,13 @@ class UmengPush {
   ///
   /// @param {String} alias
   ///
- /// @param {Function} success = ({"result":true,"alias":String}) => {  }
+  /// @param {Function} success = ({"result":true,"alias":String}) => {  }
   /// @param {Function} fail = ({"result":false,"alias":String}) => {  }
   ///
-  Future<Map<dynamic, dynamic>> setAlias(String alias) async {
-    print(flutter_log + "setAlias:");
+  Future<Map<dynamic, dynamic>> setAlias({String alias, String aliasType = DefaultAliasType}) async {
+    print(flutterLog + "setAlias:");
 
-    final Map<dynamic, dynamic> result =
-        await _channel.invokeMethod('setAlias', alias);
+    final Map<dynamic, dynamic> result = await _channel.invokeMethod('setAlias', {'alias': alias, 'aliasType': aliasType});
     return result;
   }
 
@@ -171,11 +165,10 @@ class UmengPush {
   /// @param {Function} success = ({"result":true,"alias":String}) => {  }
   /// @param {Function} fail = ({"result":false,"alias":String}) => {  }
   ///
-  Future<Map<dynamic, dynamic>> deleteAlias() async {
-    print(flutter_log + "deleteAlias:");
+  Future<Map<dynamic, dynamic>> deleteAlias({String alias, String aliasType = DefaultAliasType}) async {
+    print(flutterLog + "deleteAlias:");
 
-    final Map<dynamic, dynamic> result =
-        await _channel.invokeMethod('deleteAlias');
+    final Map<dynamic, dynamic> result = await _channel.invokeMethod('deleteAlias', {'alias': alias, 'aliasType': aliasType});
     return result;
   }
 
@@ -187,7 +180,7 @@ class UmengPush {
   /// 注意：如果是 Android 手机，目前仅支持华为手机
   ///
   Future setBadge(int badge) async {
-    print(flutter_log + "setBadge:");
+    print(flutterLog + "setBadge:");
 
     await _channel.invokeMethod('setBadge', {"badge": badge});
   }
@@ -196,7 +189,7 @@ class UmengPush {
   /// 停止接收推送，调用该方法后应用将不再受到推送，如果想要重新收到推送可以调用 resumePush。
   ///
   Future stopPush() async {
-    print(flutter_log + "stopPush:");
+    print(flutterLog + "stopPush:");
 
     await _channel.invokeMethod('stopPush');
   }
@@ -205,7 +198,7 @@ class UmengPush {
   /// 恢复推送功能。
   ///
   Future resumePush() async {
-    print(flutter_log + "resumePush:");
+    print(flutterLog + "resumePush:");
 
     await _channel.invokeMethod('resumePush');
   }
@@ -214,7 +207,7 @@ class UmengPush {
   /// 清空通知栏上的所有通知。
   ///
   Future clearAllNotifications() async {
-    print(flutter_log + "clearAllNotifications:");
+    print(flutterLog + "clearAllNotifications:");
 
     await _channel.invokeMethod('clearAllNotifications');
   }
@@ -224,8 +217,8 @@ class UmengPush {
   /// @param notificationId 通知 id，即：LocalNotification id
   ///
   void clearNotification({@required int notificationId}) {
-    print(flutter_log + "clearNotification:");
-    _channel.invokeListMethod("clearNotification",notificationId);
+    print(flutterLog + "clearNotification:");
+    _channel.invokeListMethod("clearNotification", notificationId);
   }
 
   ///
@@ -234,7 +227,7 @@ class UmengPush {
   /// @param {Function} callback = (String) => {}
   ///
   Future<String> getRegistrationID() async {
-    print(flutter_log + "getRegistrationID:");
+    print(flutterLog + "getRegistrationID:");
 
     final String rid = await _channel.invokeMethod('getRegistrationID');
     return rid;
@@ -245,13 +238,12 @@ class UmengPush {
   /// @param {Notification} notification
   ///
   Future<String> sendLocalNotification(LocalNotification notification) async {
-    print(flutter_log + "sendLocalNotification:");
+    print(flutterLog + "sendLocalNotification:");
 
     await _channel.invokeMethod('sendLocalNotification', notification.toMap());
 
     return notification.toMap().toString();
   }
-
 
   // /// 调用此 API 检测通知授权状态是否打开
   // Future<bool> isNotificationEnabled() async {
@@ -301,15 +293,7 @@ class LocalNotification {
   final String subtitle; //?
 
   const LocalNotification(
-      {@required this.id,
-      @required this.title,
-      @required this.content,
-      @required this.fireTime,
-      this.buildId,
-      this.extra,
-      this.badge = 0,
-      this.soundName,
-      this.subtitle})
+      {@required this.id, @required this.title, @required this.content, @required this.fireTime, this.buildId, this.extra, this.badge = 0, this.soundName, this.subtitle})
       : assert(id != null),
         assert(title != null),
         assert(content != null),
