@@ -1,5 +1,9 @@
+import 'package:cityCloud/const/const.dart';
+import 'package:cityCloud/expanded/network_api/network_api.dart';
 import 'package:cityCloud/expanded/umeng_push/umeng_push.dart';
+import 'package:cityCloud/util/util.dart';
 import 'package:cityCloud/widgets/default_app_bar.dart';
+import 'package:cityCloud/widgets/toast.dart';
 import 'package:flutter/material.dart';
 
 class UPushTestPage extends StatefulWidget {
@@ -22,6 +26,7 @@ class _UPushTestPageState extends State<UPushTestPage> {
         setState(() {
           _deviceToken = value;
         });
+        uploadDeviceToken(value);
       }
     });
     UmengPush().addEventHandler(
@@ -41,6 +46,22 @@ class _UPushTestPageState extends State<UPushTestPage> {
         setState(() {});
       },
     );
+  }
+
+  void uploadDeviceToken(String deviceToken) {
+    NetworkDio.post(
+      url: API_CREATE_OBJECT,
+      body: {
+        'data': deviceToken,
+        'uid': 'cc',
+        'data_type': NetworkDataType.umengToken,
+        'data_format': NetworkDataFormat.string,
+        'source': Util.deviceStrType,
+        'create_time': DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      },
+    ).then((value) {
+      CustomToast.showShort('上传友盟token成功');
+    });
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'package:cityCloud/const/config.dart';
 import 'package:flutter/material.dart';
 import 'package:umeng_sdk/umeng_sdk.dart';
+import 'package:pangolin/pangolin.dart' as Pangolin;
 
 class LifeCycle with WidgetsBindingObserver {
   /*
@@ -27,6 +28,16 @@ class LifeCycle with WidgetsBindingObserver {
     //   UmengSdk.onEvent('openApp', {});
     //   // UmengSdk.onPageStart('hello');
     // });
+
+    Pangolin.registerPangolin(
+        appId: PangolinAppID,
+        useTextureView: true,
+        appName:PangolinAppName,
+        allowShowNotify: true,
+        allowShowPageWhenScreenLock: true,
+        debug: true,
+        supportMultiProcess: true
+    );
   }
 
   ///请求相关权限，会弹出权限确认框

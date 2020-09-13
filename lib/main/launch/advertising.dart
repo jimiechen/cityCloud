@@ -4,6 +4,7 @@ import 'package:cityCloud/main/home/home_page.dart';
 import 'package:cityCloud/router/router.dart';
 import 'package:cityCloud/styles/color_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:pangolin/pangolin.dart' as Pangolin;
 
 class AdvertisingPage extends StatefulWidget {
   @override
@@ -18,14 +19,18 @@ class _AdvertisingPageState extends State<AdvertisingPage> {
   void initState() {
     super.initState();
     streamController.add(_count);
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      _count--;
-      if (_count <= 0) {
-        gotoHomePage();
-      } else {
-        streamController.add(_count);
-      }
-    });
+    // _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    //   _count--;
+    //   if (_count <= 0) {
+    //     gotoHomePage();
+    //   } else {
+    //     streamController.add(_count);
+    //   }
+    // });
+
+    Pangolin.loadSplashAd(
+            mCodeId: "887359684",
+            debug: false);
   }
 
   void gotoHomePage() {

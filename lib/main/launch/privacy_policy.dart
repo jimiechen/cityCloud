@@ -1,10 +1,12 @@
 import 'package:cityCloud/expanded/umeng_push/umeng_push.dart';
+import 'package:cityCloud/main/home/home_page.dart';
 import 'package:cityCloud/main/launch/advertising.dart';
 import 'package:cityCloud/main/launch/upush_test.dart';
 import 'package:cityCloud/router/router.dart';
 import 'package:cityCloud/styles/color_helper.dart';
 import 'package:cityCloud/widgets/default_app_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:pangolin/pangolin.dart' as Pangolin;
 
 class PrivacyPolicyPage extends StatelessWidget {
   @override
@@ -67,7 +69,18 @@ class PrivacyPolicyPage extends StatelessWidget {
                   Expanded(
                     child: FlatButton(
                       onPressed: () {
-                        Navigator.push(context, Router.routeForPage(page: AdvertisingPage()));
+                        Navigator.push(
+                            context,
+                            Router.routeForPage(
+                              page: HomePage(),
+                            ),
+                          );
+                        // Navigator.push(context, Router.routeForPage(page: AdvertisingPage()));
+                        Pangolin.loadSplashAd(mCodeId: "887359684", debug: false).then((value) {
+                          
+                        }).whenComplete((){
+                          print('conplete');
+                        });
                       },
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(21)),
                       color: Colors.red,
