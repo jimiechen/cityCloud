@@ -1,0 +1,84 @@
+PODS:
+  - audioplayers (0.0.1):
+    - Flutter
+  - Bytedance-UnionAD (3.2.6.2)
+  - Flutter (1.0.0)
+  - pangolin (0.0.1):
+    - Bytedance-UnionAD
+    - Flutter
+  - path_provider (0.0.1):
+    - Flutter
+  - sqlite3 (3.32.3):
+    - sqlite3/common (= 3.32.3)
+  - sqlite3/common (3.32.3)
+  - sqlite3/fts5 (3.32.3):
+    - sqlite3/common
+  - sqlite3/json1 (3.32.3):
+    - sqlite3/common
+  - sqlite3/perf-threadsafe (3.32.3):
+    - sqlite3/common
+  - sqlite3/rtree (3.32.3):
+    - sqlite3/common
+  - sqlite3_flutter_libs (0.0.1):
+    - Flutter
+    - sqlite3 (~> 3.32.3)
+    - sqlite3/fts5
+    - sqlite3/json1
+    - sqlite3/perf-threadsafe
+    - sqlite3/rtree
+  - UMCAnalytics (6.1.0):
+    - UMCCommon
+  - UMCCommon (2.1.4)
+  - UMCCommonLog (2.0.0)
+  - umeng_sdk (0.0.1):
+    - Flutter
+    - UMCAnalytics (= 6.1.0)
+    - UMCCommon (= 2.1.4)
+    - UMCCommonLog
+
+DEPENDENCIES:
+  - audioplayers (from `.symlinks/plugins/audioplayers/ios`)
+  - Flutter (from `Flutter`)
+  - pangolin (from `.symlinks/plugins/pangolin/ios`)
+  - path_provider (from `.symlinks/plugins/path_provider/ios`)
+  - sqlite3_flutter_libs (from `.symlinks/plugins/sqlite3_flutter_libs/ios`)
+  - umeng_sdk (from `.symlinks/plugins/umeng_sdk/ios`)
+
+SPEC REPOS:
+  trunk:
+    - Bytedance-UnionAD
+    - sqlite3
+    - UMCAnalytics
+    - UMCCommon
+    - UMCCommonLog
+
+EXTERNAL SOURCES:
+  audioplayers:
+    :path: ".symlinks/plugins/audioplayers/ios"
+  Flutter:
+    :path: Flutter
+  pangolin:
+    :path: ".symlinks/plugins/pangolin/ios"
+  path_provider:
+    :path: ".symlinks/plugins/path_provider/ios"
+  sqlite3_flutter_libs:
+    :path: ".symlinks/plugins/sqlite3_flutter_libs/ios"
+  umeng_sdk:
+    :path: ".symlinks/plugins/umeng_sdk/ios"
+
+SPEC CHECKSUMS:
+  audioplayers: 84f968cea3f2deab00ec4f8ff53358b3c0b3992c
+  Bytedance-UnionAD: ee419a461654e1c2338b5f6b0b2224617b230640
+  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  pangolin: 3ed0f5bb9642f63eb9323c94315b6b3301edde52
+  path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
+  sqlite3: 8f7d2078ae27778699a622a94b853285793422a2
+  sqlite3_flutter_libs: 5651f8ff48e3b44d910863c4ea5916085b1b245f
+  UMCAnalytics: 3503f179f7af932b30af9ac161ac11fb48fa72b6
+  UMCCommon: b0703b0053323f598e01670ea702b8eb1e66e611
+  UMCCommonLog: 9b7ddde5d14a52fc1986ba5ac3121b8b2f433638
+  umeng_sdk: 8a8ec64b50bbf5e6bdc0bdae73a5c330051312a8
+
+PODFILE CHECKSUM: 5f71eaae7b9b89ee0cb502833ac4162e31615ae9
+
+COCOAPODS: 1.9.3

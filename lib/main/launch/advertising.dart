@@ -44,7 +44,7 @@ class _AdvertisingPageState extends State<AdvertisingPage> {
     //     (_) => false);
     Navigator.push(
       context,
-      Router.routeForPage(
+      RouterManager.routeForPage(
         page: HomePage(),
       ),
     );

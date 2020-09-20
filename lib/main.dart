@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
           const Locale('zh', 'CN'),
         ],
         title: '',
-        routes: {Router.root: Router.rootPageBuilder},
+        routes: {RouterManager.root: RouterManager.rootPageBuilder},
         theme: ThemeData(
           // fontFamily: PingFangType.medium,
           // textTheme: TextTheme(

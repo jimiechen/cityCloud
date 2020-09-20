@@ -1,6 +1,6 @@
 import 'package:cityCloud/const/config.dart';
 import 'package:flutter/material.dart';
-import 'package:umeng_sdk/umeng_sdk.dart';
+// import 'package:umeng_sdk/umeng_sdk.dart';
 import 'package:pangolin/pangolin.dart' as Pangolin;
 
 class LifeCycle with WidgetsBindingObserver {

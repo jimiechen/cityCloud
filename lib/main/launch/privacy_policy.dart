@@ -1,6 +1,7 @@
 import 'package:cityCloud/expanded/umeng_push/umeng_push.dart';
 import 'package:cityCloud/main/home/home_page.dart';
 import 'package:cityCloud/main/launch/advertising.dart';
+import 'package:cityCloud/main/launch/router_list.dart';
 import 'package:cityCloud/main/launch/upush_test.dart';
 import 'package:cityCloud/router/router.dart';
 import 'package:cityCloud/styles/color_helper.dart';
@@ -26,7 +27,7 @@ class PrivacyPolicyPage extends StatelessWidget {
             ],
           ),
           Positioned(
-            bottom: 36 + MediaQuery.of(context).padding.bottom,
+            bottom: 90 + MediaQuery.of(context).padding.bottom,
             left: 0,
             right: 0,
             child: Container(
@@ -39,7 +40,7 @@ class PrivacyPolicyPage extends StatelessWidget {
                   Expanded(
                     child: FlatButton(
                       onPressed: () {
-                        Navigator.push(context, Router.routeForPage(page: UPushTestPage()));
+                        Navigator.push(context, RouterManager.routeForPage(page: UPushTestPage()));
                       },
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                       color: ColorHelper.ColorE3,
@@ -49,6 +50,37 @@ class PrivacyPolicyPage extends StatelessWidget {
                       ),
                     ),
                   ),
+                  SizedBox(
+                    width: 12,
+                  ),
+                  Expanded(
+                    child: FlatButton(
+                      onPressed: () {
+                        Navigator.push(context, RouterManager.routeForPage(page: RouterListPage()));
+                      },
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                      color: ColorHelper.ColorE3,
+                      child: Text(
+                        '路由',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 12,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 36 + MediaQuery.of(context).padding.bottom,
+            left: 0,
+            right: 0,
+            child: Container(
+              height: 44,
+              child: Row(
+                children: [
                   SizedBox(
                     width: 12,
                   ),
@@ -71,7 +103,7 @@ class PrivacyPolicyPage extends StatelessWidget {
                       onPressed: () {
                         Navigator.push(
                             context,
-                            Router.routeForPage(
+                            RouterManager.routeForPage(
                               page: HomePage(),
                             ),
                           );
