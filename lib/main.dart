@@ -16,7 +16,7 @@ void main() {
   ]);
   WidgetsBinding.instance.addObserver(LifeCycle());
   runApp(MyApp());
-  LifeCycle.initApp();
+  
 }
 
 class MyApp extends StatelessWidget {
@@ -42,7 +42,12 @@ class MyApp extends StatelessWidget {
           const Locale('zh', 'CN'),
         ],
         title: '',
-        routes: {RouterManager.root: RouterManager.rootPageBuilder},
+        routes: {
+          RouterManager.root: (ctx) {
+            LifeCycle.initApp(ctx);
+            return RouterManager.rootPageBuilder(ctx);
+          }
+        },
         theme: ThemeData(
           // fontFamily: PingFangType.medium,
           // textTheme: TextTheme(

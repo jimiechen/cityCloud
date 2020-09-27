@@ -1,4 +1,5 @@
 import 'package:cityCloud/const/config.dart';
+import 'package:cityCloud/router/general_router_manager.dart';
 import 'package:flutter/material.dart';
 // import 'package:umeng_sdk/umeng_sdk.dart';
 import 'package:pangolin/pangolin.dart' as Pangolin;
@@ -22,7 +23,8 @@ class LifeCycle with WidgetsBindingObserver {
   }
 
   ///App 初始化
-  static initApp() async {
+  static initApp(BuildContext context) async {
+    GeneralRouterManager.init(context);
     ///初始化友盟统计
     // UmengSdk.initCommon(UMENG_APP_KEY, UMENG_APP_KEY, UMENG_CHANNEL).then((value) {
     //   UmengSdk.onEvent('openApp', {});

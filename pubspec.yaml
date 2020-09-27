@@ -48,6 +48,12 @@ dependencies:
   # 仿微博ui，https://github.com/huangruiLearn/flutter_hrlweibo
   flutter_hrlweibo:
     path: ./local_packages/flutter_hrlweibo/
+  # webview插件
+  webview_flutter: ^0.3.24
+  #加密
+  # steel_crypt: ^2.2.2+1
+  steel_crypt: ^1.5.3
+  # encrypt: ^4.0.3
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

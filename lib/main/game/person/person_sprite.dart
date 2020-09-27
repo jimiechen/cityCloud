@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:cityCloud/dart_class/extension/Iterable_extension.dart';
-import 'package:cityCloud/expanded/cubit/global_cubit.dart';
+import 'package:cityCloud/expanded/global_cubit/global_cubit.dart';
 import 'package:cityCloud/expanded/database/database.dart';
 import 'package:cityCloud/main/game/person/model/person_model.dart';
 import 'package:cityCloud/main/game/person/part_of_person/body.dart';

@@ -22,24 +22,28 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>SKAdNetworkItems</key>
-  	<array>
-    	<dict>
-      		<key>SKAdNetworkIdentifier</key>
-      		<string>238da6jt44.skadnetwork</string>
-    	</dict>
-    	<dict>
-      		<key>SKAdNetworkIdentifier</key>
-      		<string>22mmun2rn5.skadnetwork</string>
-    	</dict>
-  	</array>
-	<key>NSUserTrackingUsageDescription</key>
-		<string>该标识符将用于向您投放个性化广告</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
+		<key>NSAllowsArbitraryLoadsInWebContent</key>
+		<true/>
+		<key>NSAllowsArbitraryLoadsUsageDescription</key>
+		<dict/>
 	</dict>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>该标识符将用于向您投放个性化广告</string>
+	<key>SKAdNetworkItems</key>
+	<array>
+		<dict>
+			<key>SKAdNetworkIdentifier</key>
+			<string>238da6jt44.skadnetwork</string>
+		</dict>
+		<dict>
+			<key>SKAdNetworkIdentifier</key>
+			<string>22mmun2rn5.skadnetwork</string>
+		</dict>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -59,5 +63,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>io.flutter.embedded_views_preview</key>
+	<true/>
 </dict>
 </plist>

@@ -95,7 +95,7 @@ class _TabBarWidgetState extends State<TabBarWidget> {
               new Align(
                 alignment: Alignment.topRight,
                 child: new IconButton(
-                  icon: new Image.asset("assets/images/ic_main_add.png",
+                  icon: new Image.asset(Constant.ASSETS_IMG + "ic_main_add.png",
                       width: 40.0, height: 40.0),
                   onPressed: () {
                     Routes.navigateTo(context, '${Routes.weiboPublishPage}');

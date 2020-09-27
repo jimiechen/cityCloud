@@ -1,3 +1,4 @@
+import 'package:cityCloud/const/config.dart';
 import 'package:cityCloud/expanded/umeng_push/umeng_push.dart';
 import 'package:cityCloud/main/home/home_page.dart';
 import 'package:cityCloud/main/launch/advertising.dart';
@@ -102,15 +103,13 @@ class PrivacyPolicyPage extends StatelessWidget {
                     child: FlatButton(
                       onPressed: () {
                         Navigator.push(
-                            context,
-                            RouterManager.routeForPage(
-                              page: HomePage(),
-                            ),
-                          );
+                          context,
+                          RouterManager.routeForPage(
+                            page: HomePage(),
+                          ),
+                        );
                         // Navigator.push(context, Router.routeForPage(page: AdvertisingPage()));
-                        Pangolin.loadSplashAd(mCodeId: "887359684", debug: false).then((value) {
-                          
-                        }).whenComplete((){
+                        Pangolin.loadSplashAd(mCodeId: PangolinSplashAdCodeID, debug: false).then((value) {}).whenComplete(() {
                           print('conplete');
                         });
                       },

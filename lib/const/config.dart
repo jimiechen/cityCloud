@@ -8,4 +8,5 @@ const String UMENG_CHANNEL = '';
 ///穿山甲
 const String PangolinAppName = '云小酱';
 const String PangolinAppID = '5094899';
-const String PangolinSplashAdCodeID = '887359684';
+const String PangolinSplashAdCodeID = '887359684';//闪屏广告ID
+const String PangolinInterstitialAd = '945366184';//插屏广告ID

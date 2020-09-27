@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:isolate';
 import 'dart:math';
 
-import 'package:cityCloud/expanded/cubit/global_cubit.dart';
+import 'package:cityCloud/expanded/global_cubit/global_cubit.dart';
 import 'package:cityCloud/r.dart';
 import 'package:cityCloud/styles/color_helper.dart';
 import 'package:cityCloud/styles/custom_style.dart';

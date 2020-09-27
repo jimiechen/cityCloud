@@ -1,4 +1,4 @@
-import 'package:cityCloud/expanded/cubit/global_cubit.dart';
+import 'package:cityCloud/expanded/global_cubit/global_cubit.dart';
 import 'package:cityCloud/main/game/custom_game.dart';
 import 'package:cityCloud/main/home/bloc/home_page_bloc.dart';
 import 'package:cityCloud/main/home/cubit/home_page_cubit.dart';
