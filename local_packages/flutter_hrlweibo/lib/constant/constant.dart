@@ -4,7 +4,7 @@ class Constant {
   //  static const baseUrl ='http://192.168.56.1:8080/hrlweibo/';
   static const baseUrl = 'http://212.64.95.5:8080/hrlweibo/';
 
-  static const String ASSETS_IMG = 'assets/images/';
+  static const String ASSETS_IMG = 'packages/$PackageName/assets/images/';
 
   static const bool ISDEBUG = true;
 

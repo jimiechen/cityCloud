@@ -414,7 +414,6 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
                                           'home_vertify2.webp',
                                   width: 15.0,
                                   height: 15.0,
-                                  package: Constant.PackageName,
                                 ),
                               ),
                             ),
@@ -452,7 +451,6 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
                                 Constant.ASSETS_IMG + 'home_memeber.webp',
                                 width: 15.0,
                                 height: 13.0,
-                                package: Constant.PackageName,
                               ),
                             ),
                     )
@@ -510,7 +508,6 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
                   Constant.ASSETS_IMG + 'weibo_comment_shaixuan.png',
                   width: 15.0,
                   height: 17.0,
-                  package: Constant.PackageName,
                 ),
                 Container(
                   child: Text('按热度',
@@ -689,7 +686,6 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
                                           'home_vertify2.webp',
                                   width: 15.0,
                                   height: 15.0,
-                                  package: Constant.PackageName,
                                 ),
                               ),
                             ),
@@ -728,7 +724,6 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
                                 Constant.ASSETS_IMG + 'home_memeber.webp',
                                 width: 15.0,
                                 height: 13.0,
-                                package: Constant.PackageName,
                               ),
                             ),
                     )
@@ -799,7 +794,6 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
                               Constant.ASSETS_IMG + 'icon_retweet.png',
                               width: 15.0,
                               height: 15.0,
-                              package: Constant.PackageName,
                             ),
                           ),
                           Container(
@@ -808,7 +802,6 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
                               Constant.ASSETS_IMG + 'icon_comment.png',
                               width: 15.0,
                               height: 15.0,
-                              package: Constant.PackageName,
                             ),
                           ),
                           Container(
@@ -817,7 +810,6 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
                               Constant.ASSETS_IMG + 'icon_like.png',
                               width: 15.0,
                               height: 15.0,
-                              package: Constant.PackageName,
                             ),
                           ),
                         ],
@@ -940,7 +932,6 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
                   Constant.ASSETS_IMG + 'icon_retweet.png',
                   width: 20.0,
                   height: 20.0,
-                  package: Constant.PackageName,
                 ),
                 Container(
                   child: Text('转发',
@@ -980,7 +971,6 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
                   Constant.ASSETS_IMG + 'icon_comment.png',
                   width: 20.0,
                   height: 20.0,
-                  package: Constant.PackageName,
                 ),
                 Container(
                   child: Text('评论',
@@ -1022,7 +1012,6 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
                     : Constant.ASSETS_IMG + 'ic_home_like.webp',
                 width: 21.0,
                 height: 21.0,
-                package: Constant.PackageName,
               );
             },
             likeCount: weiboItem.likeNum,

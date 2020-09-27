@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hrlweibo/constant/constant.dart';
 
 import 'message/message_dynamic_page.dart';
 import 'message/message_msg_page.dart';
@@ -8,8 +9,7 @@ class MessagePage extends StatefulWidget {
   _MessagePageState createState() => _MessagePageState();
 }
 
-class _MessagePageState extends State<MessagePage>
-    with AutomaticKeepAliveClientMixin {
+class _MessagePageState extends State<MessagePage> with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,14 +79,10 @@ class _TabBarWidgetState extends State<TabBarWidget> {
                 child: TabBar(
                     isScrollable: true,
                     indicatorColor: Color(0xffFF3700),
-                    indicator: UnderlineTabIndicator(
-                        borderSide:
-                            BorderSide(color: Color(0xffFF3700), width: 2),
-                        insets: EdgeInsets.only(bottom: 7)),
+                    indicator: UnderlineTabIndicator(borderSide: BorderSide(color: Color(0xffFF3700), width: 2), insets: EdgeInsets.only(bottom: 7)),
                     labelColor: Color(0xff333333),
                     unselectedLabelColor: Color(0xff666666),
-                    labelStyle:
-                        TextStyle(fontSize: 16.0, fontWeight: FontWeight.w700),
+                    labelStyle: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w700),
                     unselectedLabelStyle: TextStyle(fontSize: 16.0),
                     indicatorSize: TabBarIndicatorSize.label,
                     controller: _tabController,
@@ -114,8 +110,7 @@ class _TabBarWidgetState extends State<TabBarWidget> {
               new Align(
                 alignment: Alignment.centerRight,
                 child: new IconButton(
-                  icon: new Image.asset("assets/images/message_setting.webp",
-                      width: 30.0, height: 30.0),
+                  icon: new Image.asset(Constant.ASSETS_IMG + "message_setting.webp", width: 30.0, height: 30.0),
                   onPressed: () {
                     // Routes .navigateTo(context, '${Routes.weiboPublishPage}');
                   },
@@ -126,10 +121,7 @@ class _TabBarWidgetState extends State<TabBarWidget> {
           new Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: <Widget>[
-                new MessageDynamicPage(),
-                new MessageMsgPage()
-              ],
+              children: <Widget>[new MessageDynamicPage(), new MessageMsgPage()],
             ),
           )
         ],
