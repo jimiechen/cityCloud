@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Amaze UI 在线调试</title>
+  <link rel="stylesheet" href="http://cdn.amazeui.org/amazeui/2.5.0/css/amazeui.min.css"/>
+</head>
+<body>
+  <button onclick="navigationDelegate()">navigationDelegate</button>
+  <button onclick="callFlutter()">callFlutter</button>
+   <button onclick="callJS('hidden')">hide</button>
+  <p id="p1" style="visibility:hidden;">
+    Flutter 调用了 JS.
+    Flutter 调用了 JS.
+    Flutter 调用了 JS.
+  </p>
+<script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="http://cdn.amazeui.org/amazeui/2.5.0/js/amazeui.min.js"></script>
+</body>
+</html>
+
+
+<script>
+function callJS(message){
+  document.getElementById("p1").style.visibility = message;
+}
+
+function callFlutter(){
+  /*约定的url协议为：js://webview?arg1=111&arg2=222*/
+  Toast.postMessage("JS调用了Flutter");
+}
+
+function navigationDelegate(){
+  /*约定的url协议为：js://webview?arg1=111&arg2=222*/
+  document.location = "js://webview?arg1=111&args2=222";
+//   Toast.postMessage("JS调用了Flutter");
+}
+</script>

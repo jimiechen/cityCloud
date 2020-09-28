@@ -1,9 +1,9 @@
 import 'package:cityCloud/const/config.dart';
 import 'package:cityCloud/expanded/puzzle_captcha/captcha/block_puzzle_captcha.dart';
 import 'package:cityCloud/main/launch/database_data_show.dart';
+import 'package:cityCloud/main/launch/js_interation.dart';
 import 'package:cityCloud/router/router.dart';
 import 'package:cityCloud/util/util.dart';
-import 'package:cityCloud/widgets/default_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hrlweibo/flutter_hrlweibo.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -118,15 +118,16 @@ class GeneralRouterManager {
     Navigator.push(
       buildContext,
       RouterManager.routeForPage(
-        page: Scaffold(
-          appBar: DefaultAppBar(
-            titleText: title,
-          ),
-          body: WebView(
-              initialUrl: url,
-              //JS执行模式 是否允许JS执行
-              javascriptMode: JavascriptMode.unrestricted),
-        ),
+        page: JSInterationPage(),
+        // page: Scaffold(
+        //   appBar: DefaultAppBar(
+        //     titleText: title,
+        //   ),
+        //   body: WebView(
+        //       initialUrl: url,
+        //       //JS执行模式 是否允许JS执行
+        //       javascriptMode: JavascriptMode.unrestricted),
+        // ),
       ),
     );
   }

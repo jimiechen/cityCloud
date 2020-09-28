@@ -90,6 +90,8 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     # assets-generator-begin
+    # assets/files/*
+    - assets/files/test.html
     # assets/images/icon/*
     - assets/images/icon/icon_coin.png
     - assets/images/icon/icon_cube.png
