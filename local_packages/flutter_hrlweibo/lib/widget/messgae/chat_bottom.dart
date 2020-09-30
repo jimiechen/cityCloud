@@ -2,7 +2,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hrlweibo/public.dart';
-import 'package:keyboard_visibility/keyboard_visibility.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'emoji_widget.dart';
@@ -37,8 +37,7 @@ class ChatBottomInputWidget extends StatefulWidget {
   _ChatBottomInputWidgetState createState() => _ChatBottomInputWidgetState();
 }
 
-class _ChatBottomInputWidgetState extends State<ChatBottomInputWidget>
-    with WidgetsBindingObserver, TickerProviderStateMixin {
+class _ChatBottomInputWidgetState extends State<ChatBottomInputWidget> with WidgetsBindingObserver, TickerProviderStateMixin {
   String mCurrentType = _initType;
 
   FocusNode focusNode = FocusNode();
@@ -47,8 +46,7 @@ class _ChatBottomInputWidgetState extends State<ChatBottomInputWidget>
 
   TextEditingController mEditController = TextEditingController();
 
-  StreamController<String> inputContentStreamController =
-      StreamController.broadcast();
+  StreamController<String> inputContentStreamController = StreamController.broadcast();
 
   Stream<String> get inputContentStream => inputContentStreamController.stream;
 
@@ -61,9 +59,6 @@ class _ChatBottomInputWidgetState extends State<ChatBottomInputWidget>
   bool mAddLayoutShow = false;
 
   bool mEmojiLayoutShow = false;
-
-  KeyboardVisibilityNotification _keyboardVisibility =
-      new KeyboardVisibilityNotification();
 
   StreamSubscription streamSubscription;
 
@@ -88,8 +83,7 @@ class _ChatBottomInputWidgetState extends State<ChatBottomInputWidget>
     super.didUpdateWidget(old);
     if (widget.shouldTriggerChange != old.shouldTriggerChange) {
       streamSubscription.cancel();
-      streamSubscription =
-          widget.shouldTriggerChange.listen((_) => hideBottomLayout());
+      streamSubscription = widget.shouldTriggerChange.listen((_) => hideBottomLayout());
     }
   }
 
@@ -111,9 +105,8 @@ class _ChatBottomInputWidgetState extends State<ChatBottomInputWidget>
   @override
   void initState() {
     super.initState();
-    streamSubscription =
-        widget.shouldTriggerChange.listen((_) => hideBottomLayout());
-     WidgetsBinding.instance.addObserver(this);
+    streamSubscription = widget.shouldTriggerChange.listen((_) => hideBottomLayout());
+    WidgetsBinding.instance.addObserver(this);
     //   focusNode.addListener(onFocus);
 //    widget.controller.addListener(_onInputChange);
     mEditController.addListener(() {
@@ -126,14 +119,9 @@ class _ChatBottomInputWidgetState extends State<ChatBottomInputWidget>
       ),
     );
 
-    _keyboardVisibility.addNewListener(
-      onChange: (bool visible) {
-        print("mBottomLayoutShow:" +
-            mBottomLayoutShow.toString() +
-            "mEmojiLayoutShow:" +
-            mEmojiLayoutShow.toString() +
-            "mAddLayoutShow:" +
-            mAddLayoutShow.toString());
+    KeyboardVisibility.onChange.listen(
+      (bool visible) {
+        print("mBottomLayoutShow:" + mBottomLayoutShow.toString() + "mEmojiLayoutShow:" + mEmojiLayoutShow.toString() + "mAddLayoutShow:" + mAddLayoutShow.toString());
         if (visible) {
           mBottomLayoutShow = true;
 
@@ -162,14 +150,11 @@ class _ChatBottomInputWidgetState extends State<ChatBottomInputWidget>
   Future requestPermission() async {
     // 申请权限
 
-    Map<PermissionGroup, PermissionStatus> permissions =
-        await PermissionHandler().requestPermissions(
-            [PermissionGroup.storage, PermissionGroup.microphone]);
+    Map<PermissionGroup, PermissionStatus> permissions = await PermissionHandler().requestPermissions([PermissionGroup.storage, PermissionGroup.microphone]);
 
     // 申请结果
 
-    PermissionStatus permission = await PermissionHandler()
-        .checkPermissionStatus(PermissionGroup.storage);
+    PermissionStatus permission = await PermissionHandler().checkPermissionStatus(PermissionGroup.storage);
 
     if (permission == PermissionStatus.granted) {
       //  Fluttertoast.showToast(msg: "权限申请通过");
@@ -261,8 +246,7 @@ class _ChatBottomInputWidgetState extends State<ChatBottomInputWidget>
           isDense: true,
           filled: true,
           fillColor: Colors.white,
-          contentPadding:
-              EdgeInsets.only(top: 10, bottom: 10, left: 10, right: 10),
+          contentPadding: EdgeInsets.only(top: 10, bottom: 10, left: 10, right: 10),
           enabledBorder: const OutlineInputBorder(
             borderSide: const BorderSide(color: Colors.white, width: 0.0),
             borderRadius: const BorderRadius.all(const Radius.circular(5.0)),
@@ -373,10 +357,7 @@ class _ChatBottomInputWidgetState extends State<ChatBottomInputWidget>
                 }
               }
             });
-        CrossFadeState crossFadeState =
-            checkShowSendButton(mEditController.text)
-                ? CrossFadeState.showFirst
-                : CrossFadeState.showSecond;
+        CrossFadeState crossFadeState = checkShowSendButton(mEditController.text) ? CrossFadeState.showFirst : CrossFadeState.showSecond;
         return AnimatedCrossFade(
           duration: const Duration(milliseconds: 0),
           crossFadeState: crossFadeState,
@@ -460,11 +441,10 @@ class _ChatBottomInputWidgetState extends State<ChatBottomInputWidget>
       return Visibility(
         visible: mEmojiLayoutShow,
         child: EmojiWidget(onEmojiClockBack: (value) {
-           if (0 == value) {
+          if (0 == value) {
             mEditController.clear();
           } else {
-            mEditController.text =
-                mEditController.text + String.fromCharCode(value);
+            mEditController.text = mEditController.text + String.fromCharCode(value);
           }
         }),
       );

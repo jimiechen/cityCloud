@@ -27,7 +27,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   #flutter 游戏框架
-  flame: ^0.24.0
+  flame: ^0.27.0
   #下拉刷新，上拉加载更多
   pull_to_refresh: ^1.6.0
   #toast

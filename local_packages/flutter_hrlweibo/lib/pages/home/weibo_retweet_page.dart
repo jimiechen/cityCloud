@@ -8,7 +8,7 @@ import 'package:flutter_hrlweibo/widget/extend_textfield/my_special_text_span_bu
 import 'package:flutter_hrlweibo/widget/messgae/emoji_widget.dart';
 import 'package:flutter_hrlweibo/widget/weibo/match_text.dart';
 import 'package:flutter_hrlweibo/widget/weibo/parsed_text.dart';
-import 'package:keyboard_visibility/keyboard_visibility.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 
 //转发界面
 class RetWeetPage extends StatefulWidget {
@@ -27,8 +27,6 @@ class _RetWeetPageState extends State<RetWeetPage> {
   bool mBottomLayoutShow = false;
   FocusNode mfocusNode = FocusNode();
   double mSoftKeyHeight = SpUtil.getDouble(Constant.SP_KEYBOARD_HEGIHT, 200);
-  KeyboardVisibilityNotification mKeyboardVisibility =
-      new KeyboardVisibilityNotification();
   MySpecialTextSpanBuilder mSpecialTextSpanBuilder = MySpecialTextSpanBuilder();
   final GlobalKey mGlobalKey = GlobalKey();
 
@@ -73,8 +71,7 @@ class _RetWeetPageState extends State<RetWeetPage> {
     // TODO: implement initState
     super.initState();
 
-    mKeyboardVisibility.addNewListener(
-      onChange: (bool visible) {
+    KeyboardVisibility.onChange.listen((bool visible) {
         final keyHeight = MediaQuery.of(context).viewInsets.bottom;
         if (keyHeight != 0) {
           SpUtil.putDouble(Constant.SP_KEYBOARD_HEGIHT, keyHeight);

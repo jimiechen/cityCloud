@@ -6,7 +6,7 @@ import 'package:flutter_hrlweibo/model/WeiboAtUser.dart';
 import 'package:flutter_hrlweibo/public.dart';
 import 'package:flutter_hrlweibo/widget/extend_textfield/my_special_text_span_builder.dart';
 import 'package:flutter_hrlweibo/widget/messgae/emoji_widget.dart';
-import 'package:keyboard_visibility/keyboard_visibility.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:path/path.dart' as path;
 
 //发布微博界面
@@ -29,39 +29,34 @@ class _WeiBoPublishPageState extends State<WeiBoPublishPage> {
   FocusNode focusNode = FocusNode();
   final GlobalKey globalKey = GlobalKey();
   double _softKeyHeight = SpUtil.getDouble(Constant.SP_KEYBOARD_HEGIHT, 200);
-  KeyboardVisibilityNotification _keyboardVisibility =
-      new KeyboardVisibilityNotification();
   List<File> mFileList = List();
   File mSelectedImageFile;
   List<MultipartFile> mSubmitFileList = List();
 
-  MySpecialTextSpanBuilder _mySpecialTextSpanBuilder =
-      MySpecialTextSpanBuilder();
+  MySpecialTextSpanBuilder _mySpecialTextSpanBuilder = MySpecialTextSpanBuilder();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
 
-    _keyboardVisibility.addNewListener(
-      onChange: (bool visible) {
-        if (visible) {
-          mEmojiLayoutShow = false;
+    KeyboardVisibility.onChange.listen((bool visible) {
+      if (visible) {
+        mEmojiLayoutShow = false;
 
-          if (!mBottomLayoutShow) {
-            setState(() {
-              mBottomLayoutShow = true;
-            });
-          }
-        } else {
-          if (!mEmojiLayoutShow) {
-            setState(() {
-              mBottomLayoutShow = false;
-            });
-          }
+        if (!mBottomLayoutShow) {
+          setState(() {
+            mBottomLayoutShow = true;
+          });
         }
-      },
-    );
+      } else {
+        if (!mEmojiLayoutShow) {
+          setState(() {
+            mBottomLayoutShow = false;
+          });
+        }
+      }
+    });
 
     _mEtController.addListener(_printLatestValue);
   }
@@ -125,8 +120,7 @@ class _WeiBoPublishPageState extends State<WeiBoPublishPage> {
                     onTap: () {
                       Navigator.pop(context);
                     },
-                    child: Text('取消',
-                        style: TextStyle(fontSize: 15, color: Colors.black)),
+                    child: Text('取消', style: TextStyle(fontSize: 15, color: Colors.black)),
                   ))),
           Align(
             alignment: Alignment.center,
@@ -134,10 +128,8 @@ class _WeiBoPublishPageState extends State<WeiBoPublishPage> {
               margin: EdgeInsets.only(top: 5, bottom: 5),
               child: Column(
                 children: <Widget>[
-                  Text('发微博',
-                      style: TextStyle(fontSize: 16, color: Colors.black)),
-                  Text(UserUtil.getUserInfo().nick,
-                      style: TextStyle(fontSize: 12, color: Colors.grey))
+                  Text('发微博', style: TextStyle(fontSize: 16, color: Colors.black)),
+                  Text(UserUtil.getUserInfo().nick, style: TextStyle(fontSize: 12, color: Colors.grey))
                 ],
               ),
             ),
@@ -152,16 +144,10 @@ class _WeiBoPublishPageState extends State<WeiBoPublishPage> {
                   }
                   mSubmitFileList.clear();
                   for (int i = 0; i < mFileList.length; i++) {
-                    mSubmitFileList.add(MultipartFile.fromFileSync(
-                        mFileList.elementAt(i).path));
+                    mSubmitFileList.add(MultipartFile.fromFileSync(mFileList.elementAt(i).path));
                   }
-                  FormData formData = FormData.fromMap({
-                    "userId": "1",
-                    "content": _mEtController.text,
-                    "files": mSubmitFileList
-                  });
-                  DioManager.getInstance()
-                      .post(ServiceUrl.publishWeiBo, formData, (data) {
+                  FormData formData = FormData.fromMap({"userId": "1", "content": _mEtController.text, "files": mSubmitFileList});
+                  DioManager.getInstance().post(ServiceUrl.publishWeiBo, formData, (data) {
                     ToastUtil.show('提交成功!');
                     setState(() {
                       mFileList.clear();
@@ -174,13 +160,9 @@ class _WeiBoPublishPageState extends State<WeiBoPublishPage> {
                 },
                 child: Container(
                   margin: EdgeInsets.only(right: 15.0),
-                  padding: EdgeInsets.only(
-                      left: 8.0, right: 8.0, top: 3.0, bottom: 3.0),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                      color: Color(0xFFFF8200)),
-                  child: Text('发送',
-                      style: TextStyle(fontSize: 15, color: Colors.white)),
+                  padding: EdgeInsets.only(left: 8.0, right: 8.0, top: 3.0, bottom: 3.0),
+                  decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10.0)), color: Color(0xFFFF8200)),
+                  child: Text('发送', style: TextStyle(fontSize: 15, color: Colors.white)),
                 ),
               )),
         ],
@@ -202,8 +184,7 @@ class _WeiBoPublishPageState extends State<WeiBoPublishPage> {
       child: ListView(
         children: <Widget>[
           Container(
-            padding:
-                EdgeInsets.only(top: 10.0, left: 10.0, right: 10, bottom: 20),
+            padding: EdgeInsets.only(top: 10.0, left: 10.0, right: 10, bottom: 20),
             constraints: new BoxConstraints(minHeight: 50.0),
             child:
                 /*TextSpanField(
@@ -225,9 +206,7 @@ class _WeiBoPublishPageState extends State<WeiBoPublishPage> {
               maxLines: 5,
               focusNode: focusNode,
               style: TextStyle(color: Colors.black, fontSize: 15),
-              decoration: InputDecoration.collapsed(
-                  hintText: "分享新鲜事",
-                  hintStyle: TextStyle(color: Color(0xff919191), fontSize: 15)),
+              decoration: InputDecoration.collapsed(hintText: "分享新鲜事", hintStyle: TextStyle(color: Color(0xff919191), fontSize: 15)),
             ),
           ),
           GridView.count(
@@ -255,8 +234,7 @@ class _WeiBoPublishPageState extends State<WeiBoPublishPage> {
                       ));
                       return;
                     }
-                    ImagePicker.pickImage(source: ImageSource.gallery)
-                        .then((result) {
+                    ImagePicker.pickImage(source: ImageSource.gallery).then((result) {
                       setState(() {
                         mSelectedImageFile = result;
                       });
@@ -344,8 +322,7 @@ class _WeiBoPublishPageState extends State<WeiBoPublishPage> {
                       height: 25.0,
                     ),
                     onTap: () {
-                      ImagePicker.pickImage(source: ImageSource.gallery)
-                          .then((result) {
+                      ImagePicker.pickImage(source: ImageSource.gallery).then((result) {
                         setState(() {
                           mSelectedImageFile = result;
                         });
@@ -362,26 +339,14 @@ class _WeiBoPublishPageState extends State<WeiBoPublishPage> {
                       height: 25.0,
                     ),
                     onTap: () {
-                      Routes.navigateTo(
-                              context, '${Routes.weiboPublishAtUsrPage}')
-                          .then((result) {
+                      Routes.navigateTo(context, '${Routes.weiboPublishAtUsrPage}').then((result) {
                         WeiboAtUser mAtUser = result as WeiboAtUser;
                         if (mAtUser != null) {
-                          mWeiBoSubmitText = mWeiBoSubmitText +
-                              "[@" +
-                              mAtUser.nick +
-                              ":" +
-                              mAtUser.id +
-                              "]";
+                          mWeiBoSubmitText = mWeiBoSubmitText + "[@" + mAtUser.nick + ":" + mAtUser.id + "]";
                           //   _mEtController.text = _mEtController.text + "@" + mAtUser.nick+" ";
                           //   print("_mEtControllerfield的值:" + mWeiBoSubmitText);
 
-                          _mEtController.text = _mEtController.text +
-                              "[@" +
-                              mAtUser.nick +
-                              ":" +
-                              mAtUser.id +
-                              "]";
+                          _mEtController.text = _mEtController.text + "[@" + mAtUser.nick + ":" + mAtUser.id + "]";
                           //   _mEtController.buildTextSpan()
                           // _mEtController.text=_mEtController.text+"#aaaa#" ;
                         }
@@ -398,20 +363,13 @@ class _WeiBoPublishPageState extends State<WeiBoPublishPage> {
                       height: 25.0,
                     ),
                     onTap: () {
-                      Routes.navigateTo(
-                              context, '${Routes.weiboPublishTopicPage}')
-                          .then((result) {
+                      Routes.navigateTo(context, '${Routes.weiboPublishTopicPage}').then((result) {
                         WeiBoTopic mTopic = result;
 
                         if (mTopic != null) {
                           // _mEtController.text = _mEtController.text +  "#" +   mTopic.topicdesc +  "#"+"";
 
-                          _mEtController.text = _mEtController.text +
-                              "#" +
-                              mTopic.topicdesc +
-                              ":" +
-                              mTopic.topicid +
-                              "#";
+                          _mEtController.text = _mEtController.text + "#" + mTopic.topicdesc + ":" + mTopic.topicid + "#";
 
                           //   _mEtController.buildTextSpan()
                           // _mEtController.text=_mEtController.text+"#aaaa#" ;
@@ -480,8 +438,7 @@ class _WeiBoPublishPageState extends State<WeiBoPublishPage> {
                 if (value == 0) {
                   _mEtController.clear();
                 } else {
-                  _mEtController.text =
-                      _mEtController.text + "[/" + value.toString() + "]";
+                  _mEtController.text = _mEtController.text + "[/" + value.toString() + "]";
                 }
               }),
             ),
