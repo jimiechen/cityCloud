@@ -7,7 +7,25 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		06A98D952524867200581C36 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06A98D942524867200581C36 /* StoreKit.framework */; };
+		06A98D972524867900581C36 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06A98D962524867900581C36 /* MobileCoreServices.framework */; };
+		06A98D992524868B00581C36 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06A98D982524868B00581C36 /* WebKit.framework */; };
+		06A98D9B2524869800581C36 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06A98D9A2524869800581C36 /* MediaPlayer.framework */; };
+		06A98D9D252486A000581C36 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06A98D9C252486A000581C36 /* CoreMedia.framework */; };
+		06A98D9F252486A600581C36 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06A98D9E252486A600581C36 /* AVFoundation.framework */; };
+		06A98DA1252486AE00581C36 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06A98DA0252486AE00581C36 /* CoreTelephony.framework */; };
+		06A98DA3252486BD00581C36 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06A98DA2252486BD00581C36 /* SystemConfiguration.framework */; };
+		06A98DA5252486C500581C36 /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06A98DA4252486C500581C36 /* AdSupport.framework */; };
+		06A98DA7252486CE00581C36 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06A98DA6252486CD00581C36 /* CoreMotion.framework */; };
+		06A98DA9252486D600581C36 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06A98DA8252486D600581C36 /* Accelerate.framework */; };
+		06A98DAB252486E100581C36 /* libresolv.9.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 06A98DAA252486E100581C36 /* libresolv.9.tbd */; };
+		06A98DAD252486ED00581C36 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 06A98DAC252486ED00581C36 /* libc++.tbd */; };
+		06A98DAF252486F600581C36 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 06A98DAE252486F600581C36 /* libz.tbd */; };
+		06A98DB12524870800581C36 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 06A98DB02524870800581C36 /* libsqlite3.tbd */; };
+		06A98DB32524871300581C36 /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 06A98DB22524871200581C36 /* libbz2.tbd */; };
+		06A98DB52524871E00581C36 /* libxml2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 06A98DB42524871E00581C36 /* libxml2.tbd */; };
 		06AA63FB250486DD0042FDD7 /* UmengPushRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 06AA63FA250486DD0042FDD7 /* UmengPushRegistrant.m */; };
+		06BE89E22525C868006FC70E /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06BE89E12525C868006FC70E /* ImageIO.framework */; };
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
@@ -31,8 +49,28 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		06A98D942524867200581C36 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		06A98D962524867900581C36 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		06A98D982524868B00581C36 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		06A98D9A2524869800581C36 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
+		06A98D9C252486A000581C36 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		06A98D9E252486A600581C36 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		06A98DA0252486AE00581C36 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
+		06A98DA2252486BD00581C36 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		06A98DA4252486C500581C36 /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
+		06A98DA6252486CD00581C36 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
+		06A98DA8252486D600581C36 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		06A98DAA252486E100581C36 /* libresolv.9.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.9.tbd; path = usr/lib/libresolv.9.tbd; sourceTree = SDKROOT; };
+		06A98DAC252486ED00581C36 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
+		06A98DAE252486F600581C36 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		06A98DB02524870800581C36 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		06A98DB22524871200581C36 /* libbz2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.tbd; path = usr/lib/libbz2.tbd; sourceTree = SDKROOT; };
+		06A98DB42524871E00581C36 /* libxml2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.tbd; path = usr/lib/libxml2.tbd; sourceTree = SDKROOT; };
+		06A98DB6252487A900581C36 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
+		06A98DB7252487A900581C36 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
 		06AA63F9250486DD0042FDD7 /* UmengPushRegistrant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UmengPushRegistrant.h; sourceTree = "<group>"; };
 		06AA63FA250486DD0042FDD7 /* UmengPushRegistrant.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UmengPushRegistrant.m; sourceTree = "<group>"; };
+		06BE89E12525C868006FC70E /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneratedPluginRegistrant.h; sourceTree = "<group>"; };
 		1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
 		1BC0ED2D1FB4559F53270A35 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
@@ -57,6 +95,24 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				06BE89E22525C868006FC70E /* ImageIO.framework in Frameworks */,
+				06A98DB52524871E00581C36 /* libxml2.tbd in Frameworks */,
+				06A98DB32524871300581C36 /* libbz2.tbd in Frameworks */,
+				06A98DB12524870800581C36 /* libsqlite3.tbd in Frameworks */,
+				06A98DAF252486F600581C36 /* libz.tbd in Frameworks */,
+				06A98DAD252486ED00581C36 /* libc++.tbd in Frameworks */,
+				06A98DAB252486E100581C36 /* libresolv.9.tbd in Frameworks */,
+				06A98DA9252486D600581C36 /* Accelerate.framework in Frameworks */,
+				06A98DA7252486CE00581C36 /* CoreMotion.framework in Frameworks */,
+				06A98DA5252486C500581C36 /* AdSupport.framework in Frameworks */,
+				06A98DA3252486BD00581C36 /* SystemConfiguration.framework in Frameworks */,
+				06A98DA1252486AE00581C36 /* CoreTelephony.framework in Frameworks */,
+				06A98D9F252486A600581C36 /* AVFoundation.framework in Frameworks */,
+				06A98D9D252486A000581C36 /* CoreMedia.framework in Frameworks */,
+				06A98D9B2524869800581C36 /* MediaPlayer.framework in Frameworks */,
+				06A98D992524868B00581C36 /* WebKit.framework in Frameworks */,
+				06A98D972524867900581C36 /* MobileCoreServices.framework in Frameworks */,
+				06A98D952524867200581C36 /* StoreKit.framework in Frameworks */,
 				89DEA6CFCAC119E0047AF5B5 /* libPods-Runner.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -77,6 +133,24 @@
 		618B0513DE03F453720ED823 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				06BE89E12525C868006FC70E /* ImageIO.framework */,
+				06A98DB42524871E00581C36 /* libxml2.tbd */,
+				06A98DB22524871200581C36 /* libbz2.tbd */,
+				06A98DB02524870800581C36 /* libsqlite3.tbd */,
+				06A98DAE252486F600581C36 /* libz.tbd */,
+				06A98DAC252486ED00581C36 /* libc++.tbd */,
+				06A98DAA252486E100581C36 /* libresolv.9.tbd */,
+				06A98DA8252486D600581C36 /* Accelerate.framework */,
+				06A98DA6252486CD00581C36 /* CoreMotion.framework */,
+				06A98DA4252486C500581C36 /* AdSupport.framework */,
+				06A98DA2252486BD00581C36 /* SystemConfiguration.framework */,
+				06A98DA0252486AE00581C36 /* CoreTelephony.framework */,
+				06A98D9E252486A600581C36 /* AVFoundation.framework */,
+				06A98D9C252486A000581C36 /* CoreMedia.framework */,
+				06A98D9A2524869800581C36 /* MediaPlayer.framework */,
+				06A98D982524868B00581C36 /* WebKit.framework */,
+				06A98D962524867900581C36 /* MobileCoreServices.framework */,
+				06A98D942524867200581C36 /* StoreKit.framework */,
 				40705E3C4A5BEE830BC7C60A /* libPods-Runner.a */,
 			);
 			name = Frameworks;
@@ -185,6 +259,7 @@
 			knownRegions = (
 				en,
 				Base,
+				"zh-Hans",
 			);
 			mainGroup = 97C146E51CF9000F007C117D;
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
@@ -315,6 +390,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				97C146FB1CF9000F007C117D /* Base */,
+				06A98DB6252487A900581C36 /* zh-Hans */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -323,6 +399,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				97C147001CF9000F007C117D /* Base */,
+				06A98DB7252487A900581C36 /* zh-Hans */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -334,6 +411,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -386,6 +464,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = DBA4764K4P;
 				ENABLE_BITCODE = NO;
@@ -402,8 +482,15 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.lbx.cityCloud;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					Flutter,
+					"-ObjC",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.citycloud.cclbx;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -414,6 +501,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -469,6 +557,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -523,6 +612,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = DBA4764K4P;
 				ENABLE_BITCODE = NO;
@@ -539,8 +630,15 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.lbx.cityCloud;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					Flutter,
+					"-ObjC",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.citycloud.cclbx;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -554,6 +652,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = DBA4764K4P;
 				ENABLE_BITCODE = NO;
@@ -570,8 +670,15 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.lbx.cityCloud;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					Flutter,
+					"-ObjC",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.citycloud.cclbx;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
