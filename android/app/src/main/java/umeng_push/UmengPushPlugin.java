@@ -66,7 +66,7 @@ public class UmengPushPlugin implements MethodChannel.MethodCallHandler {
 // 参数五：Push推送业务的secret 填充Umeng Message Secret对应信息（需替换）
         // UMConfigure.init(context, "5f59808acf77fa286ea11dce", "Umeng", UMConfigure.DEVICE_TYPE_PHONE, "b569836638386b32bdede4644bd1ec21");
         UMConfigure.init(context, "5f253e41d309322154740f7b", "Umeng", UMConfigure.DEVICE_TYPE_PHONE, "0d11d95882b42b19d4a131f28c6965e6");
-
+        UMConfigure.setLogEnabled(true);
 //获取消息推送代理示例
         PushAgent uPushAgent = PushAgent.getInstance(context);
 //注册推送服务，每次调用register方法都会回调该接口
