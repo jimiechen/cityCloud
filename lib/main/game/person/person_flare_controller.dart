@@ -1,13 +1,16 @@
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:cityCloud/expanded/database/database.dart';
 import 'package:cityCloud/main/game/person/person_const_data.dart';
+import 'package:cityCloud/styles/color_helper.dart';
 import 'package:cityCloud/util/image_helper.dart';
 import 'package:flame/flame.dart';
 import 'package:flare_flutter/flare.dart';
 import 'package:flare_flutter/flare_controller.dart';
 import 'package:flare_dart/math/mat2d.dart';
 import 'package:flare_flutter/flare_actor.dart';
+import 'package:flare_dart/actor_color.dart';
 import 'package:flutter/material.dart';
 
 class PersonSpriteFlareController extends FlareController {
@@ -75,11 +78,37 @@ class PersonSpriteFlareController extends FlareController {
       });
     }
 
+    if (_personModel.hairID != null && _personModel.hairID != 0 && _personModel.hairID < ImageHelper.hairs.length) {
+      Flame.images.load(ImageHelper.hairs[_personModel.hairID]).then((image) {
+        (_artboard.getNode('hair') as FlutterActorImage)?.changeImage(image);
+      });
+    }
+
+    if (_personModel.noseID != null && _personModel.noseID != 0 && _personModel.noseID < ImageHelper.noses.length) {
+      Flame.images.load(ImageHelper.noses[_personModel.noseID]).then((image) {
+        (_artboard.getNode('nose') as FlutterActorImage)?.changeImage(image);
+      });
+    }
+
     if (_personModel.footID != null && _personModel.footID != 0 && _personModel.footID < ImageHelper.foots.length) {
       Flame.images.load(ImageHelper.foots[_personModel.footID]).then((image) {
         (_artboard.getNode('left_foot') as FlutterActorImage)?.changeImage(image);
         (_artboard.getNode('right_foot') as FlutterActorImage)?.changeImage(image);
       });
+    }
+
+    if (_personModel.handID != null && _personModel.handID != 0 && _personModel.handID < ImageHelper.hands.length) {
+      Flame.images.load(ImageHelper.hands[_personModel.handID]).then((image) {
+        (_artboard.getNode('left_hand_image') as FlutterActorImage)?.changeImage(image);
+        (_artboard.getNode('right_hand_image') as FlutterActorImage)?.changeImage(image);
+      });
+    }
+
+    if (_personModel.faceColorValue != null && _personModel.faceColorValue != ColorHelper.faces.first.value) {
+      try {
+        Color faceColor = Color(_personModel.faceColorValue);
+        _artboard.overrideColor = Float32List.fromList([faceColor.red / 255, faceColor.green / 255, faceColor.blue / 255, faceColor.opacity]);
+      } catch (error) {}
     }
   }
 
