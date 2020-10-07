@@ -28,6 +28,8 @@ dependencies:
     sdk: flutter
   #flutter 游戏框架
   flame: ^0.27.0
+  #flame的flare插件
+  flame_flare: ^0.1.0
   #下拉刷新，上拉加载更多
   pull_to_refresh: ^1.6.0
   #toast
@@ -201,6 +203,7 @@ flutter:
     - assets/images/cloud_3.png
     - assets/images/cloud_4.png
     - assets/images/icon_mail.png
+    - assets/images/little_people.flr
     - assets/images/map_tile_view_0.png
     - assets/images/map_tile_view_1.png
     - assets/images/map_tile_view_2.png

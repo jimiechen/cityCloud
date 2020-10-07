@@ -17,7 +17,7 @@ import 'package:flutter/material.dart';
 import '../map_tile/model/tile_path_node_info.dart';
 
 class CarSprite extends PositionComponent {
-  double _scale = 0.1;
+  double _scale = 0.07;
   List<SpriteComponent> _backComponents = [];
   List<SpriteComponent> _frontComponents = [];
   List<SpriteComponent> _leftComponents = [];
@@ -170,8 +170,6 @@ class CarSprite extends PositionComponent {
     return y.toInt();
   }
 
-  @override
-  Rect toRect() => Rect.fromLTWH(x - 10, y - FootHeight - BodyHeight - HeadHeight - 20, 20, 20);
   @override
   void update(double dt) {
     super.update(dt);

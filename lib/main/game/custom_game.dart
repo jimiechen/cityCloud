@@ -7,6 +7,7 @@ import 'package:cityCloud/expanded/database/database.dart';
 import 'package:cityCloud/main/game/model/component_linked_list_entry.dart';
 import 'package:cityCloud/main/game/map_tile/model/tile_location.dart';
 import 'package:cityCloud/main/game/model/game_data_status.dart';
+import 'package:cityCloud/main/game/person/person_flare_controller.dart';
 import 'package:cityCloud/main/game/person/person_sprite.dart';
 import 'package:cityCloud/main/game/map_tile/tile_component.dart';
 import 'package:cityCloud/main/game/map_tile/model/tile_path_node_info.dart';
@@ -42,7 +43,7 @@ enum _GestureType {
 }
 
 ///最大放大倍数
-const double MaxScale = 2;
+const double MaxScale = 1.8;
 
 ///两点之间随机选一个点
 Position positionAmong({@required Position beginPosition, @required Position endPosition, @required int movePercent}) {
@@ -476,6 +477,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
         endPathNode: endNode,
         initialPosition: position,
         model: model,
+        animationController: PersonSpriteFlareController()
       );
       add(personSprite);
       personSprite.enter(targetEndNode: endNode, targetPosition: position);
@@ -507,11 +509,6 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     });
   }
 
-  void jumpInplace() {
-    List<PersonSprite> personSprite = List<PersonSprite>.from(_components.where((element) => element is PersonSprite));
-    personSprite.randomItem?.jumpInPlace();
-  }
-
   void showRemider() {
     List<PersonSprite> personSprite = List<PersonSprite>.from(_components.where((element) => element is PersonSprite));
     personSprite.randomItem?.showRemider();
@@ -519,7 +516,6 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
 
   double showRemiderTimeCount = 0;
   double jumpTimeCount = 0;
-  double jumpInPlaceTimeCount = 0;
   @override
   void update(double t) {
     // _components.forEach((c) => c.gameComponent.update(t));
@@ -556,12 +552,6 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     if (jumpTimeCount > 7) {
       jumpTimeCount = 0;
       jump();
-    }
-
-    jumpInPlaceTimeCount += t;
-    if (jumpInPlaceTimeCount > (_components.length > 15 ? 3 : 7)) {
-      jumpInPlaceTimeCount = 0;
-      jumpInplace();
     }
 
     _translateAnimation?.update(t);

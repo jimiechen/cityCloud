@@ -213,6 +213,8 @@ class R {
   static final String assetsImagesCloud4 = 'assets/images/cloud_4.png';
   /// ![](http://127.0.0.1:9527/assets/images/icon_mail.png)
   static final String assetsImagesIconMail = 'assets/images/icon_mail.png';
+  /// ![](http://127.0.0.1:9527/assets/images/little_people.flr)
+  static final String assetsImagesLittlePeople = 'assets/images/little_people.flr';
   /// ![](http://127.0.0.1:9527/assets/images/map_tile_view_0.png)
   static final String assetsImagesMapTileView0 = 'assets/images/map_tile_view_0.png';
   /// ![](http://127.0.0.1:9527/assets/images/map_tile_view_1.png)

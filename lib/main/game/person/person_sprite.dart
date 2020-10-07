@@ -1,58 +1,26 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:cityCloud/dart_class/extension/Iterable_extension.dart';
 import 'package:cityCloud/expanded/global_cubit/global_cubit.dart';
 import 'package:cityCloud/expanded/database/database.dart';
-import 'package:cityCloud/main/game/person/model/person_model.dart';
-import 'package:cityCloud/main/game/person/part_of_person/body.dart';
-import 'package:cityCloud/main/game/person/part_of_person/foot.dart';
-import 'package:cityCloud/main/game/person/part_of_person/hand.dart';
-import 'package:cityCloud/main/game/person/part_of_person/head.dart';
 import 'package:cityCloud/main/game/person/part_of_person/remider.dart';
 import 'package:cityCloud/main/game/person/person_const_data.dart';
 import 'package:cityCloud/main/game/person/person_effect/enter_effect.dart';
 import 'package:cityCloud/main/game/person/person_effect/go_out_effect.dart';
-import 'package:cityCloud/main/game/person/person_effect/jump_in_place_effect.dart';
-import 'package:cityCloud/util/image_helper.dart';
-import 'package:flame/components/component.dart';
-
+import 'package:cityCloud/main/game/person/person_flare_controller.dart';
 import 'package:flame/position.dart';
+import 'package:flame_flare/flame_flare.dart';
 import 'package:flutter/material.dart';
-
-import '../callback_pre_render_layer.dart';
 import '../map_tile/model/tile_path_node_info.dart';
-import 'package:ordered_set/ordered_set.dart';
-import 'package:ordered_set/comparing.dart';
-
 import 'person_effect/person_move_effect.dart';
 
-class PersonSprite extends PositionComponent {
-  ///动态的部分，如手脚一直在动的就放在_dynamicComponents中
-  OrderedSet<Component> _dynamicComponents = OrderedSet(Comparing.on((c) => c.priority()));
-
-  ///静态的部分，如身体和头这些随人物整体移动，没有自身动画的就放在_quietComponents中，然后渲染到_quietLayer缓存
-  OrderedSet<Component> _quietComponents = OrderedSet(Comparing.on((c) => c.priority()));
-
-  ///用于判断是否所有_quietComponents都已经loaded
-  bool _isQuietcomponentsAllLoaded = false;
-  CallbackPreRenderedLayer _quietLayer;
-
+class PersonSprite extends FlareActorComponent {
   ///小人面朝向
   HorizontalOrigentation _faceOrigentation;
 
-  ///小人各部位的sprite
-  FootSprite _leftFootSprite;
-  FootSprite _rightFootSprite;
-  HandSprite _leftHandSprite;
-  HandSprite _rightHandSprite;
-  BodySprite _bodySprite;
-  HeadSprite _headSprite;
-
   ///头顶提示sprite
   RemiderSprite _remiderSprite;
-
-  ///隐藏提示定时器
-  double _hideRemiderTimerCount;
 
   ///运动的终点
   PathNode _endPathNode;
@@ -66,56 +34,40 @@ class PersonSprite extends PositionComponent {
   ///从游戏中消失效果
   GoOutEffect _goOutEffect;
 
-  ///原地跳效果
-  JumpInPlaceEffect _jumpInPlaceEffect;
-
   ///小人身体各部位信息
   final PersonModel model;
 
-  PersonSprite({
-    @required this.model,
-    @required Position initialPosition,
-    @required PathNode endPathNode,
-  }) : assert(initialPosition != null && endPathNode != null) {
+  ///小人flare动画控制
+  final PersonSpriteFlareController animationController;
+
+  ///定时倒数改变小人当前动作，走、站立、跳三个动作
+  double _randomActionTimeCount = 5;
+
+  Timer _closeEyeTimer;
+
+  PersonSprite(
+      {@required this.animationController,
+      @required this.model,
+      @required Position initialPosition,
+      @required PathNode endPathNode,
+      double width = PersonSize,
+      double height = PersonSize})
+      : super(
+          FlareActorAnimation(
+            'assets/images/little_people.flr',
+            controller: animationController,
+            fit: BoxFit.contain,
+            alignment: Alignment.bottomCenter,
+          ),
+          width: width,
+          height: height,
+        ) {
     _endPathNode = endPathNode;
     x = initialPosition.x;
     y = initialPosition.y;
-    resetMoveEffect();
-    Color faceColor = Color(model.faceColorValue);
-    _leftFootSprite = FootSprite(
-        origentation: HorizontalOrigentation.Left, footImage: ImageHelper.foots[model.footID], color: faceColor);
-    _rightFootSprite = FootSprite(
-        origentation: HorizontalOrigentation.Right, footImage: ImageHelper.foots[model.footID], color: faceColor);
-    _bodySprite = BodySprite(origentation: HorizontalOrigentation.Left, bodyImage: ImageHelper.bodys[model.bodyID]);
-    _leftHandSprite = HandSprite(
-        origentation: HorizontalOrigentation.Left, handImage: ImageHelper.hands[model.handID], color: faceColor);
-    _rightHandSprite = HandSprite(
-        origentation: HorizontalOrigentation.Right, handImage: ImageHelper.hands[model.handID], color: faceColor);
-
-    _headSprite = HeadSprite(
-      origentation: HorizontalOrigentation.Right,
-      faceColor: faceColor,
-      hairImage: ImageHelper.hairs[model.hairID],
-      eyeImage: ImageHelper.eyes[model.eyeID],
-      noseImage: ImageHelper.noses[model.noseID],
-    );
-
-    _dynamicComponents.add(_leftFootSprite);
-    _dynamicComponents.add(_rightFootSprite);
-    _dynamicComponents.add(_leftHandSprite);
-    _dynamicComponents.add(_rightHandSprite);
-
-    _quietComponents.add(_bodySprite);
-    // _quietComponents.add(_headSprite);
-
-    _quietLayer = CallbackPreRenderedLayer(drawLayerCallback: (canvas) {
-      canvas.save();
-      _quietComponents?.forEach((value) {
-        if (value.loaded()) {
-          value.render(canvas);
-          canvas.restore();
-        }
-      });
+    animationController.resetImage(model);
+    _closeEyeTimer = Timer.periodic(Duration(milliseconds: Random().nextInt(1500) + 2500), (timer) {
+      animationController.play(PersonAction_CloseEye);
     });
   }
 
@@ -140,29 +92,18 @@ class PersonSprite extends PositionComponent {
     addEffect(_moveEffect);
     if (_moveEffect.endPosition.x > x) {
       _faceOrigentation = HorizontalOrigentation.Right;
+      renderFlipX = true;
     } else if (_moveEffect.endPosition.x < x) {
       _faceOrigentation = HorizontalOrigentation.Left;
+      renderFlipX = false;
     } else if (_faceOrigentation == null) {
       _faceOrigentation = HorizontalOrigentation.values.randomItem;
     }
   }
 
-  ///原地跳
-  void jumpInPlace() {
-    if (_goOutEffect == null && _enterEffect == null && _jumpInPlaceEffect == null) {
-      removeEffect(_moveEffect);
-      _jumpInPlaceEffect = JumpInPlaceEffect(
-          personPosition: toPosition(),
-          onComplete: () {
-            _jumpInPlaceEffect = null;
-            resetMoveEffect();
-          });
-    }
-  }
-
   ///从一个位置跳到另一个位置
   void jumpto({@required PathNode targetEndNode, @required Position targetCenter}) {
-    if (_goOutEffect == null && _enterEffect == null && _jumpInPlaceEffect == null) {
+    if (_goOutEffect == null && _enterEffect == null) {
       goOut(() {
         Timer.run(() {
           enter(targetEndNode: targetEndNode, targetPosition: targetCenter);
@@ -174,7 +115,7 @@ class PersonSprite extends PositionComponent {
   ///小人进入游戏界面
   void enter({@required PathNode targetEndNode, @required Position targetPosition}) {
     assert(targetEndNode != null && targetPosition != null);
-    if (_goOutEffect == null && _enterEffect == null && _jumpInPlaceEffect == null) {
+    if (_goOutEffect == null && _enterEffect == null) {
       _endPathNode = targetEndNode;
       x = targetPosition.x;
       y = targetPosition.y;
@@ -191,7 +132,7 @@ class PersonSprite extends PositionComponent {
 
   ///小人从游戏界面消失
   void goOut(VoidCallback onComplete) {
-    if (_goOutEffect == null && _enterEffect == null && _jumpInPlaceEffect == null) {
+    if (_goOutEffect == null && _enterEffect == null) {
       _goOutEffect = GoOutEffect(
           personPosition: toPosition(),
           onComplete: () {
@@ -203,16 +144,12 @@ class PersonSprite extends PositionComponent {
 
   ///显示头顶提示
   void showRemider() {
-    if (_remiderSprite == null) {
-      _remiderSprite = RemiderSprite.fromSprite(
-        20,
-        20,
-      );
-      _remiderSprite.x = -10;
-      _remiderSprite.y = -FootHeight - BodyHeight - HeadHeight - 20;
-      _dynamicComponents.add(_remiderSprite);
-      _hideRemiderTimerCount = 0;
-    }
+    _remiderSprite = RemiderSprite.fromSprite(
+      20,
+      20,
+    );
+    _remiderSprite.x = -width / 2;
+    _remiderSprite.y = -height;
   }
 
   @override
@@ -237,46 +174,48 @@ class PersonSprite extends PositionComponent {
     return _remiderSprite != null && toRect().contains(o);
   }
 
+  ///改变小人动作，走、跳、立定
+  void changeAction() {
+    String animationName;
+    switch (Random().nextInt(3)) {
+      case 0:
+        animationName = PersonAction_Jump;
+        _moveEffect?.dispose();
+        _randomActionTimeCount = 1;
+        break;
+      case 1:
+        animationName = PersonAction_Stand;
+        _moveEffect?.dispose();
+        _randomActionTimeCount = 2;
+        break;
+      default:
+        animationName = PersonAction_Walk;
+        _randomActionTimeCount = 5;
+        resetMoveEffect();
+    }
+    animationController.clearAllAnimation();
+    animationController.play(animationName);
+  }
+
   @override
-  Rect toRect() => Rect.fromLTWH(x - 10, y - FootHeight - BodyHeight - HeadHeight - 20, 20, 20);
+  bool destroy() {
+    _closeEyeTimer?.cancel();
+    return super.destroy();
+  }
 
   @override
   void update(double dt) {
-    if(_remiderSprite != null) {
-      _hideRemiderTimerCount ??= 0;
-      _hideRemiderTimerCount += dt;
-      if(_hideRemiderTimerCount > 5) {
-        _hideRemiderTimerCount = 0;
-        _remiderSprite = null;
-      }
-    }
     if (_enterEffect != null || _goOutEffect != null) {
+      _remiderSprite = null;
       _enterEffect?.update(dt);
       _goOutEffect?.update(dt);
     } else {
+      _remiderSprite?.update(dt);
+      _randomActionTimeCount -= dt;
+      if (_randomActionTimeCount < 0) {
+        changeAction();
+      }
       super.update(dt);
-      _jumpInPlaceEffect?.update(dt);
-      _headSprite.update(dt);
-      _dynamicComponents.forEach((c) {
-        c.update(dt);
-      });
-      _dynamicComponents.removeWhere((c) => c.destroy());
-    }
-
-    if (!_isQuietcomponentsAllLoaded) {
-      _isQuietcomponentsAllLoaded = true;
-      Timer.run(() {
-        _quietComponents?.firstWhere((value) {
-          if (!value.loaded()) {
-            _isQuietcomponentsAllLoaded = false;
-            return true;
-          }
-          return false;
-        }, orElse: () => null);
-        if (_isQuietcomponentsAllLoaded) {
-          _quietLayer.reRender();
-        }
-      });
     }
   }
 
@@ -288,49 +227,9 @@ class PersonSprite extends PositionComponent {
       Paint()..color = Colors.grey.withOpacity(0.5),
     );
     canvas.save();
-    _enterEffect?.setEffectToCanvas(canvas);
-    _goOutEffect?.setEffectToCanvas(canvas);
-    _jumpInPlaceEffect?.setEffectToCanvas(canvas);
-    _render(canvas);
+    canvas.translate(-width / 2, -height);
+    _remiderSprite?.render(canvas);
+    super.render(canvas);
     canvas.restore();
-  }
-
-  void _render(Canvas canvas) {
-    ///身体
-    canvas.save();
-    canvas.translate(x, y);
-    if (_faceOrigentation == HorizontalOrigentation.Right) {
-      ///小人往右
-      canvas.scale(-1.0, 1.0);
-    }
-    _quietLayer?.render(
-      canvas,
-    );
-    canvas.restore();
-
-    ///手脚
-    canvas.save();
-    _dynamicComponents.forEach((comp) => _renderComponent(canvas, comp));
-    canvas.restore();
-
-    ///头
-    canvas.save();
-    canvas.translate(x, y);
-    if (_faceOrigentation == HorizontalOrigentation.Right) {
-      ///小人往右
-      canvas.scale(-1.0, 1.0);
-    }
-    _headSprite.render(canvas);
-    canvas.restore();
-  }
-
-  void _renderComponent(Canvas canvas, Component c) {
-    if (!c.loaded()) {
-      return;
-    }
-    canvas.translate(x, y);
-    c.render(canvas);
-    canvas.restore();
-    canvas.save();
   }
 }

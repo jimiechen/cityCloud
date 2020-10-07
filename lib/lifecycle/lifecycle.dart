@@ -1,5 +1,6 @@
 import 'package:cityCloud/const/config.dart';
 import 'package:cityCloud/router/general_router_manager.dart';
+import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
 // import 'package:umeng_sdk/umeng_sdk.dart';
 import 'package:pangolin/pangolin.dart' as Pangolin;
