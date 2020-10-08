@@ -8,7 +8,9 @@ import 'package:cityCloud/main/game/person/part_of_person/remider.dart';
 import 'package:cityCloud/main/game/person/person_const_data.dart';
 import 'package:cityCloud/main/game/person/person_effect/enter_effect.dart';
 import 'package:cityCloud/main/game/person/person_effect/go_out_effect.dart';
+import 'package:flare_flutter/provider/asset_flare.dart';
 import 'package:cityCloud/main/game/person/person_flare_controller.dart';
+import 'package:flame/flame.dart';
 import 'package:flame/position.dart';
 import 'package:flame_flare/flame_flare.dart';
 import 'package:flutter/material.dart';
@@ -53,8 +55,9 @@ class PersonSprite extends FlareActorComponent {
       double width = PersonSize,
       double height = PersonSize})
       : super(
-          FlareActorAnimation(
-            'assets/images/little_people.flr',
+          FlareActorAnimation.asset(
+            // PersonFlareLoader().createAssetProvider(),
+            AssetFlare(bundle: Flame.bundle, name: PersonFlareAsset),
             controller: animationController,
             fit: BoxFit.contain,
             alignment: Alignment.bottomCenter,
@@ -193,8 +196,7 @@ class PersonSprite extends FlareActorComponent {
         _randomActionTimeCount = 5;
         resetMoveEffect();
     }
-    animationController.clearAllAnimation();
-    animationController.play(animationName);
+    animationController.changeToAnimation(animationName);
   }
 
   @override

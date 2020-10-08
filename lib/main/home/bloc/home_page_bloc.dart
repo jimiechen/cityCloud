@@ -10,6 +10,7 @@ import 'package:cityCloud/expanded/network_api/network_api.dart';
 import 'package:cityCloud/main/game/car/model/car_info.dart';
 import 'package:cityCloud/main/game/map_tile/model/tile_info.dart';
 import 'package:cityCloud/main/game/person/model/person_model.dart';
+import 'package:cityCloud/user_info/user_info.dart';
 import 'package:cityCloud/util/util.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
@@ -32,91 +33,27 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> with BlocAddStateM
     } else if (event is HomePageEventUploadMapTileInfo) {
       uploadMapTileInfo(event.model);
     } else if (event is HomePageEventGetGameData) {
-      getGameData(
-        personData: (personList) {
-          addState(HomePageStatePersonData(personList));
-        },
-        carData: (carList) {
-          addState(HomePageStateCarData(carList));
-        },
-        mapTileData: (tileList) {
-          addState(HomePageStateMapTileData(tileList));
-        },
-      );
+      // getGameData(
+      //   personData: (personList) {
+      //     addState(HomePageStatePersonData(personList));
+      //   },
+      //   carData: (carList) {
+      //     addState(HomePageStateCarData(carList));
+      //   },
+      //   mapTileData: (tileList) {
+      //     addState(HomePageStateMapTileData(tileList));
+      //   },
+      // );
     }
   }
 
-  void getGameData({
-    ValueChanged<List<PersonModel>> personData,
-    ValueChanged<List<CarInfo>> carData,
-    ValueChanged<List<TileInfo>> mapTileData,
-  }) {
-    NetworkDio.get<List<CommonServerDataModel>, CommonServerDataModel>(
-      modelFromJson: (json) => CommonServerDataModel.fromJson(json),
-      pathForData: ['data', 'list'],
-      url: API_QUERY_OBJECT,
-      body: {
-        'data_type': NetworkDataType.person,
-      },
-    ).then((value) {
-      Iterable<CommonServerDataModel> tmpList = value?.data?.where((element) => element.json is Map);
-      personData?.call(
-        tmpList
-            ?.map((e) {
-              e.json['uploaded'] = true;
-              return PersonModel.fromJson(e.json);
-            })
-            ?.where((element) => PersonModels.isAllValueValidated(element))
-            ?.toList(),
-      );
-    });
-    NetworkDio.get<List<CommonServerDataModel>, CommonServerDataModel>(
-      modelFromJson: (json) => CommonServerDataModel.fromJson(json),
-      pathForData: ['data', 'list'],
-      url: API_QUERY_OBJECT,
-      body: {
-        'data_type': NetworkDataType.car,
-      },
-    ).then((value) {
-      Iterable<CommonServerDataModel> tmpList = value?.data?.where((element) => element.json is Map);
-      carData?.call(
-        tmpList
-            ?.map((e) {
-              e.json['uploaded'] = true;
-              return CarInfo.fromJson(e.json);
-            })
-            ?.where((element) => CarInfos.isAllValueValidated(element))
-            ?.toList(),
-      );
-    });
-    NetworkDio.get<List<CommonServerDataModel>, CommonServerDataModel>(
-      modelFromJson: (json) => CommonServerDataModel.fromJson(json),
-      pathForData: ['data', 'list'],
-      url: API_QUERY_OBJECT,
-      body: {
-        'data_type': NetworkDataType.map,
-      },
-    ).then((value) {
-      Iterable<CommonServerDataModel> tmpList = value?.data?.where((element) => element.json is Map);
-      mapTileData?.call(
-        tmpList
-            ?.map((e) {
-              e.json['uploaded'] = true;
-              return TileInfo.fromJson(e.json);
-            })
-            ?.where((element) => TileInfos.isAllValueValidated(element))
-            ?.toList(),
-      );
-    });
-  }
-
   void uploadPersonSpriteInfo(PersonModel model) {
-    if (model == null) return;
+    if (model == null || UserInfo().uid == null) return;
     NetworkDio.post(
       url: API_CREATE_OBJECT,
       body: {
         'json': model.toJson(),
-        'uid': 'cc',
+        'uid': UserInfo().uid,
         'data_type': NetworkDataType.person,
         'data_format': 'json',
         'source': Util.deviceStrType,
@@ -136,12 +73,12 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> with BlocAddStateM
   }
 
   void uploadCarInfo(CarInfo model) {
-    if (model == null) return;
+    if (model == null || UserInfo().uid == null) return;
     NetworkDio.post(
       url: API_CREATE_OBJECT,
       body: {
         'json': model.toJson(),
-        'uid': 'cc',
+        'uid': UserInfo().uid,
         'data_type': NetworkDataType.car,
         'data_format': 'json',
         'source': Util.deviceStrType,
@@ -161,12 +98,12 @@ class HomePageBloc extends Bloc<HomePageEvent, HomePageState> with BlocAddStateM
   }
 
   void uploadMapTileInfo(TileInfo model) {
-    if (model == null) return;
+    if (model == null || UserInfo().uid == null) return;
     NetworkDio.post(
       url: API_CREATE_OBJECT,
       body: {
         'json': model.toJson(),
-        'uid': 'cc',
+        'uid': UserInfo().uid,
         'data_type': NetworkDataType.map,
         'data_format': 'json',
         'source': Util.deviceStrType,

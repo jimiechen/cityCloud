@@ -6,7 +6,6 @@ import 'package:cityCloud/dart_class/extension/Iterable_extension.dart';
 import 'package:cityCloud/expanded/database/database.dart';
 import 'package:cityCloud/main/game/model/component_linked_list_entry.dart';
 import 'package:cityCloud/main/game/map_tile/model/tile_location.dart';
-import 'package:cityCloud/main/game/model/game_data_status.dart';
 import 'package:cityCloud/main/game/person/person_flare_controller.dart';
 import 'package:cityCloud/main/game/person/person_sprite.dart';
 import 'package:cityCloud/main/game/map_tile/tile_component.dart';
@@ -14,6 +13,7 @@ import 'package:cityCloud/main/game/map_tile/model/tile_path_node_info.dart';
 import 'package:cityCloud/main/home/bloc/home_page_bloc.dart';
 import 'package:cityCloud/main/home/cubit/home_page_cubit.dart';
 import 'package:cityCloud/styles/color_helper.dart';
+import 'package:cityCloud/user_info/user_info.dart';
 import 'package:cityCloud/util/image_helper.dart';
 import 'package:cityCloud/util/uuid.dart';
 import 'package:flame/components/component.dart';
@@ -29,8 +29,10 @@ import 'callback_pre_render_layer.dart';
 import 'car/car_sprite.dart';
 import 'cloud/cloud_sprite.dart';
 import 'helper/double_animation.dart';
+import 'helper/game_data_downloader.dart';
 import 'helper/inertial_motion.dart';
 import 'helper/translate_animation.dart';
+import 'map_tile/map_layer.dart';
 import 'map_tile/model/tile_path_node_info.dart';
 
 /*
@@ -43,7 +45,7 @@ enum _GestureType {
 }
 
 ///最大放大倍数
-const double MaxScale = 1.8;
+const double MaxScale = 5;
 
 ///两点之间随机选一个点
 Position positionAmong({@required Position beginPosition, @required Position endPosition, @required int movePercent}) {
@@ -74,7 +76,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   final Map<TileMapLocation, TileComponent> _tileComponentLocationMap = {};
 
   ///地图背景layer
-  CallbackPreRenderedLayer _mapLayer;
+  MapLayer _mapLayer;
 
   ///云
   CloudSprite _cloudSprite;
@@ -82,16 +84,11 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   ///自定义存放components链表
   LinkedList<ComponentLinkedListEntry> _components = LinkedList<ComponentLinkedListEntry>();
 
+  /// Components added by the [addLater] method
+  final List<Component> _addLater = [];
+
   ///bloc监听
   StreamSubscription _blocSubscription;
-
-  ///游戏页面相关数据状态，标识是否完成数据库加载和网络加载
-  GameDataStatus _gameDataStatus = GameDataStatus();
-
-  ///记录正在显示的东西
-  Set<String> showingPersonIDs = {};
-  Set<String> showingCarIDs = {};
-  Set<String> showingMapTileIDs = {};
 
   @override
   bool debugMode() {
@@ -103,54 +100,9 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
 
   CustomGame({this.homePageBloc, this.homePageCubit}) {
     homePageBloc?.add(HomePageEventGetGameData());
-    _blocSubscription = homePageBloc.listen((currentState) {
-      if (currentState is HomePageStatePersonData) {
-        _gameDataStatus.networkGotPerson = true;
-        CustomDatabase.share.delete(CustomDatabase.share.personModels).go();
+    // _blocSubscription = homePageBloc.listen((currentState) {
 
-        if (currentState.list.isNotNullAndEmpty) {
-          CustomDatabase.share.batch((batch) {
-            batch.insertAll(CustomDatabase.share.personModels, currentState.list);
-          });
-        }
-        currentState.list?.forEach((element) {
-          if (!showingPersonIDs.contains(element.id)) {
-            addPerson(element);
-          }
-          showingPersonIDs.add(element.id);
-        });
-      } else if (currentState is HomePageStateCarData) {
-        _gameDataStatus.networkGotCar = true;
-        CustomDatabase.share.delete(CustomDatabase.share.carInfos).go();
-
-        if (currentState.list.isNotNullAndEmpty) {
-          CustomDatabase.share.batch((batch) {
-            batch.insertAll(CustomDatabase.share.carInfos, currentState.list);
-          });
-        }
-        currentState.list?.forEach((element) {
-          if (!showingCarIDs.contains(element.id)) {
-            addCar(element);
-          }
-          showingCarIDs.add(element.id);
-        });
-      } else if (currentState is HomePageStateMapTileData) {
-        _gameDataStatus.networkGotMapTile = true;
-        CustomDatabase.share.delete(CustomDatabase.share.tileInfos).go();
-
-        if (currentState.list.isNotNullAndEmpty) {
-          CustomDatabase.share.batch((batch) {
-            batch.insertAll(CustomDatabase.share.tileInfos, currentState.list);
-          });
-        }
-        currentState.list?.forEach((element) {
-          if (!showingMapTileIDs.contains(element.id)) {
-            addTile(element);
-          }
-          showingMapTileIDs.add(element.id);
-        });
-      }
-    });
+    // });
     loadDBData();
 
     ///异步，要不size值为null
@@ -162,48 +114,33 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   ///加载数据库数据
   void loadDBData() {
     CustomDatabase.share.select(CustomDatabase.share.tileInfos).get().then((value) {
-      _gameDataStatus.dbLoadedMapTile = true;
-
-      ///如果网络加载成功了使用网络数据
-      if (!_gameDataStatus.networkGotMapTile) {
-        if (value != null && value.isNotEmpty) {
-          value.forEach((element) {
-            addTile(element, saveDb: false);
-            showingMapTileIDs.add(element.id);
-          });
-        }
-        // else if (_gameDataStatus.networkGotMapTile) {
-        //   addOriginMapTile();
-        // }
+      if (value == null || value.isEmpty) {
+        addOriginMapTile();
       }
+      value?.forEach((element) {
+        addTile(element, saveDb: false);
+      });
+      _mapLayer = MapLayer(_tileComponentLocationMap.values);
     });
 
     CustomDatabase.share.select(CustomDatabase.share.personModels).get().then((value) {
-      _gameDataStatus.dbLoadedPerson = true;
-
-      ///如果网络加载成功了使用网络数据
-      if (!_gameDataStatus.networkGotPerson) {
-        if (value != null && value.isNotEmpty) {
-          value.forEach((element) {
-            addPerson(element, saveDb: false);
-            showingPersonIDs.add(element.id);
-          });
-        }
+      if (value == null || value.isEmpty) {
+        ///此处为数据库为空的情况添加数据，所以只有在已经同步服务端数据的情况下才上传，以免和服务端数据冲突
+        randomAddPerson(toUpload: UserInfo().gameDataSyncServer);
       }
+      value?.forEach((element) {
+        addPerson(element, saveDb: false);
+      });
     });
 
     CustomDatabase.share.select(CustomDatabase.share.carInfos).get().then((value) {
-      _gameDataStatus.dbLoadedCar = true;
-
-      ///如果网络加载成功了使用网络数据
-      if (!_gameDataStatus.networkGotCar) {
-        if (value != null && value.isNotEmpty) {
-          value.forEach((element) {
-            addCar(element, saveDb: false);
-            showingCarIDs.add(element.id);
-          });
-        }
+      if (value == null || value.isEmpty) {
+        ///此处为数据库为空的情况添加数据，所以只有在已经同步服务端数据的情况下才上传，以免和服务端数据冲突
+        randomAddCar(toUpload: UserInfo().gameDataSyncServer);
       }
+      value?.forEach((element) {
+        addCar(element, saveDb: false);
+      });
     });
   }
 
@@ -315,66 +252,34 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
 
   ///添加初始地图
   void addOriginMapTile() {
-    int tileBGColor = ColorHelper.mapTile.randomItem.value;
-    [
-      TileInfo(
-        uploaded: false,
-        bgColor: tileBGColor,
-        tileMapX: 4,
-        tileMapY: 6,
-        viewID: Random().nextInt(ImageHelper.mapTileViews.length),
-        id: Uuid.generateUuidV4WithoutDashes(),
-      ),
-      TileInfo(
-        uploaded: false,
-        bgColor: tileBGColor,
-        tileMapX: 4,
-        tileMapY: 5,
-        viewID: Random().nextInt(ImageHelper.mapTileViews.length),
-        id: Uuid.generateUuidV4WithoutDashes(),
-      ),
-      TileInfo(
-        uploaded: false,
-        bgColor: tileBGColor,
-        tileMapX: 3,
-        tileMapY: 6,
-        viewID: Random().nextInt(ImageHelper.mapTileViews.length),
-        id: Uuid.generateUuidV4WithoutDashes(),
-      ),
-      TileInfo(
-        uploaded: false,
-        bgColor: tileBGColor,
-        tileMapX: 5,
-        tileMapY: 6,
-        viewID: Random().nextInt(ImageHelper.mapTileViews.length),
-        id: Uuid.generateUuidV4WithoutDashes(),
-      ),
-    ].forEach((element) {
-      addTile(element, saveDb: true);
-      // ///添加房子
-      // add(
-      //   BuildingSprite(
-      //       buildingInfo: BuildingInfo(
-      //         image: ImageHelper.buildings.randomItem,
-      //         scale: 20,
-      //         relativePosition: Position(30, 35),
-      //       ),
-      //       tileMapX: x,
-      //       tileMapY: y),
-      // );
-
-      // ///添加树
-      // add(
-      //   BuildingSprite(
-      //       buildingInfo: BuildingInfo(
-      //         image: ImageHelper.trees.randomItem,
-      //         scale: 5,
-      //         relativePosition: Position(20, 45),
-      //       ),
-      //       tileMapX: x,
-      //       tileMapY: y),
-      // );
+    ///只有当已经同步了服务端数据的情况下才上传初始地图，以免和服务端数据冲突
+    GameDataDownloader.defaultMapData(saveDb: true, toUpload: UserInfo().gameDataSyncServer)?.forEach((element) {
+      addTile(element, saveDb: false);
     });
+
+    // ///添加房子
+    // add(
+    //   BuildingSprite(
+    //       buildingInfo: BuildingInfo(
+    //         image: ImageHelper.buildings.randomItem,
+    //         scale: 20,
+    //         relativePosition: Position(30, 35),
+    //       ),
+    //       tileMapX: x,
+    //       tileMapY: y),
+    // );
+
+    // ///添加树
+    // add(
+    //   BuildingSprite(
+    //       buildingInfo: BuildingInfo(
+    //         image: ImageHelper.trees.randomItem,
+    //         scale: 5,
+    //         relativePosition: Position(20, 45),
+    //       ),
+    //       tileMapX: x,
+    //       tileMapY: y),
+    // );
   }
 
   void addTile(TileInfo info, {bool saveDb = false}) {
@@ -418,9 +323,9 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   }
 
   ///随机添加小车
-  void randomAddCar() {
+  void randomAddCar({bool toUpload = true}) {
     CarInfo carInfo = CarInfo(
-      uploaded: false,
+      uploaded: !toUpload,
       carID: Random().nextInt(ImageHelper.carNumber),
       id: Uuid.generateUuidV4WithoutDashes(),
     );
@@ -430,7 +335,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   void addCar(CarInfo carInfo, {bool saveDb = false}) {
     randomPosition((endNode, position) {
       ///添加小车
-      add(
+      addLater(
         CarSprite(
           endPathNode: endNode,
           initialPosition: position,
@@ -447,7 +352,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   }
 
   ///随机添加小人
-  void randomAddPerson() {
+  void randomAddPerson({bool toUpload = true}) {
     Random random = Random();
     int bodyID = random.nextInt(ImageHelper.bodys.length);
     int tmpID = random.nextInt(ImageHelper.hairs.length ~/ 2);
@@ -457,7 +362,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     }
     int hairID = tmpID;
     PersonModel personModel = PersonModel(
-      uploaded: false,
+      uploaded: !toUpload,
       bodyID: bodyID,
       eyeID: random.nextInt(ImageHelper.eyes.length),
       faceColorValue: ColorHelper.faces.randomItem.value,
@@ -473,13 +378,8 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   void addPerson(PersonModel model, {bool saveDb = false}) {
     assert(model != null);
     randomPosition((endNode, position) {
-      PersonSprite personSprite = PersonSprite(
-        endPathNode: endNode,
-        initialPosition: position,
-        model: model,
-        animationController: PersonSpriteFlareController()
-      );
-      add(personSprite);
+      PersonSprite personSprite = PersonSprite(endPathNode: endNode, initialPosition: position, model: model, animationController: PersonSpriteFlareController());
+      addLater(personSprite);
       personSprite.enter(targetEndNode: endNode, targetPosition: position);
       if (model.uploaded != true) {
         homePageBloc?.add(HomePageEventUploadPersonSpriteInfo(model: model));
@@ -517,9 +417,13 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   double showRemiderTimeCount = 0;
   double jumpTimeCount = 0;
   @override
+  // ignore: must_call_super
   void update(double t) {
     // _components.forEach((c) => c.gameComponent.update(t));
-
+    _addLater?.forEach((element) {
+      add(element);
+    });
+    _addLater.clear();
     if (_components.isNotEmpty) {
       ComponentLinkedListEntry tmpEntry = _components.first;
       if (tmpEntry != null) {
@@ -557,16 +461,6 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     _translateAnimation?.update(t);
     _scaleAnimation?.update(t);
     _cloudSprite?.update(t);
-
-    if (_mapLayer == null) {
-      if (_tileComponentLocationMap.values.every((element) => element.loaded())) {
-        _mapLayer = CallbackPreRenderedLayer(drawLayerCallback: (canvas) {
-          _tileComponentLocationMap?.forEach((key, value) {
-            value.render(canvas);
-          });
-        });
-      }
-    }
   }
 
   @override
@@ -620,6 +514,11 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
 
     c.onMount();
     _components.add(ComponentLinkedListEntry(c));
+  }
+
+  @override
+  void addLater(Component c) {
+    _addLater.add(c);
   }
 
   @override

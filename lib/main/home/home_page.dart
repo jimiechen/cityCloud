@@ -51,10 +51,10 @@ class _HomePageState extends State<HomePage> {
         );
       }
       else if (cubitState is GlobalCubitStateAddPerson) {
-        _box2dGame.randomAddPerson();
+        _box2dGame.randomAddPerson(toUpload: true);
       }
        else if (cubitState is GlobalCubitStateAddCar) {
-        _box2dGame.randomAddCar();
+        _box2dGame.randomAddCar(toUpload: true);
       }
     });
   }

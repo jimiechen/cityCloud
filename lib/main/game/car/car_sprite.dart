@@ -17,7 +17,7 @@ import 'package:flutter/material.dart';
 import '../map_tile/model/tile_path_node_info.dart';
 
 class CarSprite extends PositionComponent {
-  double _scale = 0.07;
+  double _scale = 0.1;
   List<SpriteComponent> _backComponents = [];
   List<SpriteComponent> _frontComponents = [];
   List<SpriteComponent> _leftComponents = [];

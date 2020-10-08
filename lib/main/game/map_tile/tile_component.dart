@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:cityCloud/expanded/database/database.dart';
-import 'package:cityCloud/main/game/map_tile/model/tile_info.dart';
 import 'package:cityCloud/main/game/map_tile/model/tile_location.dart';
 import 'package:cityCloud/main/game/map_tile/model/tile_path_node_info.dart';
 import 'package:cityCloud/util/image_helper.dart';
@@ -112,7 +111,7 @@ class TileComponent extends SpriteComponent {
     c.save();
     prepareCanvas(c);
     c.drawRect(Rect.fromLTWH(0, 0, width, height), Paint()..color = Color(tileInfo.bgColor));
-    sprite.render(c, width: width, height: height, overridePaint: overridePaint);
+    sprite?.render(c, width: width, height: height, overridePaint: overridePaint);
     if (_showWall) wallSpriteComponent?.render(c);
     c.restore();
   }

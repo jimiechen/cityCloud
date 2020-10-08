@@ -10,7 +10,6 @@ import 'package:flare_flutter/flare.dart';
 import 'package:flare_flutter/flare_controller.dart';
 import 'package:flare_dart/math/mat2d.dart';
 import 'package:flare_flutter/flare_actor.dart';
-import 'package:flare_dart/actor_color.dart';
 import 'package:flutter/material.dart';
 
 class PersonSpriteFlareController extends FlareController {
@@ -33,7 +32,9 @@ class PersonSpriteFlareController extends FlareController {
     _artboard = artboard;
     play(PersonAction_Walk);
     if (_personModel != null) {
-      _resetImage();
+      Future(() {
+        _resetImage();
+      });
     }
   }
 
@@ -112,19 +113,41 @@ class PersonSpriteFlareController extends FlareController {
     }
   }
 
-  ///清空动作
-  void clearAllAnimation({bool exceptColseEye = true}) {
+  // ///清空动作，exceptColseEye标识是否要删除咱眼睛动作，true为不删除
+  // void clearAllAnimation({bool exceptColseEye = true}) {
+  //   if (exceptColseEye) {
+  //     List<FlareAnimationLayer> tmpList = [];
+  //     _animationLayers?.forEach((element) {
+  //       if (element.name == PersonAction_CloseEye) {
+  //         tmpList.add(element);
+  //       }
+  //     });
+  //     _animationLayers.clear();
+  //     _animationLayers.addAll(tmpList);
+  //   } else {
+  //     _animationLayers.clear();
+  //   }
+  // }
+
+  ///exceptColseEye标识是否要删除咱眼睛动作，true为不删除
+  void changeToAnimation(String animationName, {bool exceptColseEye = true}) {
+    bool containAnimation = false;
     if (exceptColseEye) {
       List<FlareAnimationLayer> tmpList = [];
       _animationLayers?.forEach((element) {
-        if (element.name == PersonAction_CloseEye) {
+        if (element.name == PersonAction_CloseEye || element.name == animationName) {
           tmpList.add(element);
+          containAnimation = element.name == animationName;
         }
       });
       _animationLayers.clear();
       _animationLayers.addAll(tmpList);
     } else {
       _animationLayers.clear();
+    }
+
+    if (!containAnimation) {
+      play(animationName,mixSeconds: 1);
     }
   }
 
