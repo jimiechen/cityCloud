@@ -378,7 +378,6 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     randomPosition((endNode, position) {
       PersonSprite personSprite = PersonSprite(endPathNode: endNode, initialPosition: position, model: model);
       addLater(personSprite);
-      personSprite.enter(targetEndNode: endNode, targetPosition: position);
       if (model.uploaded != true) {
         homePageBloc?.add(HomePageEventUploadPersonSpriteInfo(model: model));
       }
@@ -399,7 +398,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   }
 
   void jump() {
-    List<PersonSprite> personSprite = List<PersonSprite>.from(_components.where((element) => element is PersonSprite));
+    List<PersonSprite> personSprite = List<PersonSprite>.from(_components.where((element) => element.gameComponent is PersonSprite).map((e) => e.gameComponent));
     _tileComponentLocationMap.values?.randomItem?.randomPath(({beginNode, endNode}) {
       int movePercent = Random().nextInt(100);
       Position target = positionAmong(beginPosition: beginNode.position, endPosition: endNode.position, movePercent: movePercent);
@@ -462,6 +461,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   }
 
   @override
+  // ignore: must_call_super
   void render(Canvas canvas) {
     canvas.save();
     canvas.scale(_scale, _scale);

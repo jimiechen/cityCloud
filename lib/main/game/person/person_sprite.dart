@@ -10,7 +10,6 @@ import 'package:cityCloud/main/game/person/part_of_person/hand.dart';
 import 'package:cityCloud/main/game/person/part_of_person/head.dart';
 import 'package:cityCloud/main/game/person/part_of_person/remider.dart';
 import 'package:cityCloud/main/game/person/person_const_data.dart';
-import 'package:cityCloud/main/game/person/person_effect/enter_effect.dart';
 import 'package:cityCloud/main/game/person/person_effect/go_out_effect.dart';
 import 'package:cityCloud/main/game/person/person_effect/hand_rotate_effect.dart';
 import 'package:cityCloud/util/image_helper.dart';
@@ -36,7 +35,7 @@ class PersonSprite extends PositionComponent {
   PersonMoveEffect _moveEffect;
 
   ///入场效果
-  EnterEffect _enterEffect;
+  GoOutEffect _enterEffect;
 
   ///从游戏中消失效果
   GoOutEffect _goOutEffect;
@@ -53,6 +52,9 @@ class PersonSprite extends PositionComponent {
 
   ///跳动控制
   JumpTranslate _jumpTranslate;
+
+  ///从一个位置跳到另一个位置
+  VoidCallback _jumpToAction;
 
   ///小人各部位的sprite
   FootSprite _leftFootSprite;
@@ -88,6 +90,8 @@ class PersonSprite extends PositionComponent {
     );
 
     _currentActionType = PersonActionType.Walk;
+    _randomActionTimeCount = 10;
+    resetMoveEffect();
     walk();
   }
 
@@ -124,28 +128,35 @@ class PersonSprite extends PositionComponent {
   ///从一个位置跳到另一个位置
   void jumpto({@required PathNode targetEndNode, @required Position targetCenter}) {
     if (_goOutEffect == null && _enterEffect == null) {
-      goOut(() {
-        Timer.run(() {
-          enter(targetEndNode: targetEndNode, targetPosition: targetCenter);
+      _jumpToAction = () {
+        goOut(() {
+          enter(
+              targetEndNode: targetEndNode,
+              targetPosition: targetCenter,
+              onComplete: () {
+                _jumpToAction = null;
+                changeAction();
+              });
         });
-      });
+      };
     }
   }
 
   ///小人进入游戏界面
-  void enter({@required PathNode targetEndNode, @required Position targetPosition}) {
+  void enter({@required PathNode targetEndNode, @required Position targetPosition, VoidCallback onComplete}) {
     assert(targetEndNode != null && targetPosition != null);
     if (_goOutEffect == null && _enterEffect == null) {
       _endPathNode = targetEndNode;
       x = targetPosition.x;
       y = targetPosition.y;
-      _enterEffect = EnterEffect(
-          personPosition: toPosition(),
+      _enterEffect = GoOutEffect(
+          reverse: true,
           onComplete: () {
             _enterEffect = null;
             x = targetPosition.x;
             y = targetPosition.y;
             resetMoveEffect();
+            onComplete?.call();
           });
     }
   }
@@ -153,12 +164,10 @@ class PersonSprite extends PositionComponent {
   ///小人从游戏界面消失
   void goOut(VoidCallback onComplete) {
     if (_goOutEffect == null && _enterEffect == null) {
-      _goOutEffect = GoOutEffect(
-          personPosition: toPosition(),
-          onComplete: () {
-            _goOutEffect = null;
-            onComplete?.call();
-          });
+      _goOutEffect = GoOutEffect(onComplete: () {
+        _goOutEffect = null;
+        onComplete?.call();
+      });
     }
   }
 
@@ -198,32 +207,35 @@ class PersonSprite extends PositionComponent {
   void changeAction() {
     PersonActionType preActionType = _currentActionType;
     _currentActionType = PersonActionType.values.randomItem;
-    if (preActionType != _currentActionType) {
+    if (_jumpToAction != null) {
+      reset();
+      _jumpToAction.call();
+    } else if (preActionType != _currentActionType) {
       reset();
       switch (_currentActionType) {
         case PersonActionType.Jump:
           jump();
-          _randomActionTimeCount = 4 / 3;
+          _randomActionTimeCount = 0.6;
           break;
         case PersonActionType.Stand:
           _randomActionTimeCount = 2;
           stand();
           break;
         default:
-          _randomActionTimeCount = 5;
+          _randomActionTimeCount = 10;
           walk();
           resetMoveEffect();
       }
     } else {
       switch (_currentActionType) {
         case PersonActionType.Jump:
-          _randomActionTimeCount = 4 / 3;
+          _randomActionTimeCount = 0.6;
           break;
         case PersonActionType.Stand:
           _randomActionTimeCount = 2;
           break;
         default:
-          _randomActionTimeCount = 5;
+          _randomActionTimeCount = 10;
       }
     }
   }
@@ -245,7 +257,7 @@ class PersonSprite extends PositionComponent {
   }
 
   void jump() {
-    double tralvelTime = 2 / 3;
+    double tralvelTime = 0.3;
     _leftHandSprite.addEffect(
       HandRotateEffect(curve: Curves.linear, isAlternating: true, radians: PersonHandJumpRotate, speed: PersonHandJumpRotate / tralvelTime),
     );
@@ -258,16 +270,16 @@ class PersonSprite extends PositionComponent {
     _leftFootSprite.addEffect(
       MoveEffect(
         isAlternating: true,
-        destination: _leftFootSprite.toPosition().add(Position(0, -PersonFootJumpTackBackLength)),
-        speed: PersonFootJumpTackBackLength / tralvelTime,
+        destination: _leftFootSprite.toPosition().add(Position(0, -PersonFootJumpTakeBackLength)),
+        speed: PersonFootJumpTakeBackLength / tralvelTime,
         curve: Curves.linear,
       ),
     );
     _rightFootSprite.addEffect(
       MoveEffect(
         isAlternating: true,
-        destination: _rightFootSprite.toPosition().add(Position(0, -PersonFootJumpTackBackLength)),
-        speed: PersonFootJumpTackBackLength / tralvelTime,
+        destination: _rightFootSprite.toPosition().add(Position(0, -PersonFootJumpTakeBackLength)),
+        speed: PersonFootJumpTakeBackLength / tralvelTime,
         curve: Curves.linear,
       ),
     );
@@ -353,23 +365,23 @@ class PersonSprite extends PositionComponent {
       _closeEyeTimeCount = Random().nextDouble() * 1.5 + 2.5;
       _headSprite?.closeEye();
     }
+
+    super.update(dt);
+    if (_jumpTranslate?.hasFinished() == true) {
+      _jumpTranslate = null;
+    }
+    _jumpTranslate?.update(dt);
+    _leftFootSprite?.update(dt);
+    _rightFootSprite?.update(dt);
+    _bodySprite?.update(dt);
+    _leftHandSprite?.update(dt);
+    _rightHandSprite?.update(dt);
+    _headSprite?.update(dt);
+    _remiderSprite?.update(dt);
     if (_enterEffect != null || _goOutEffect != null) {
-      _remiderSprite = null;
       _enterEffect?.update(dt);
       _goOutEffect?.update(dt);
     } else {
-      super.update(dt);
-      if (_jumpTranslate?.hasFinished() == true) {
-        _jumpTranslate = null;
-      }
-      _jumpTranslate?.update(dt);
-      _leftFootSprite?.update(dt);
-      _rightFootSprite?.update(dt);
-      _bodySprite?.update(dt);
-      _leftHandSprite?.update(dt);
-      _rightHandSprite?.update(dt);
-      _headSprite?.update(dt);
-      _remiderSprite?.update(dt);
       _randomActionTimeCount -= dt;
       if (_randomActionTimeCount < 0) {
         changeAction();
@@ -389,6 +401,9 @@ class PersonSprite extends PositionComponent {
     ///画脚下阴影
     canvas.drawOval(Rect.fromCenter(center: Offset(0, 0), width: PersonShadowWidth, height: PersonShadowHeight), _shadowPaint);
     _jumpTranslate?.translate(canvas);
+    canvas.save();
+    _enterEffect?.setEffectToCanvas(canvas);
+    _goOutEffect?.setEffectToCanvas(canvas);
     _renderComponent(canvas, _remiderSprite);
     _renderComponent(canvas, _leftFootSprite);
     _renderComponent(canvas, _rightFootSprite);
@@ -396,6 +411,7 @@ class PersonSprite extends PositionComponent {
     _renderComponent(canvas, _leftHandSprite);
     _renderComponent(canvas, _rightHandSprite);
     _renderComponent(canvas, _headSprite);
+    canvas.restore();
     canvas.restore();
   }
 

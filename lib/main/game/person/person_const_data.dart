@@ -11,7 +11,7 @@ enum PersonActionType {
   Stand,
 }
 
-const double CarMoveSpeed = 4; //小车移动速度
+const double CarMoveSpeed = 5; //小车移动速度
 
 const double PersonScale = 0.1;
 
@@ -19,7 +19,7 @@ const double PersonMoveSpeed = 3; //移动速度
 const double PersonShadowWidth = 6; //影子宽
 const double PersonShadowHeight = 3; //影子高
 
-const double PersonJumpHeight = 34 * PersonScale; //挑起的高度
+const double PersonJumpHeight = 40 * PersonScale; //挑起的高度
 
 const double PersonHandsSpacing = 46 * PersonScale; //双手间距离
 const double PersonHandCenterY = (250 - 191) * PersonScale; //手臂中心点位置y距离脚底距离
@@ -44,4 +44,4 @@ const double PersonFootsSpacing = 15 * PersonScale; //双脚间距离
 const double PersonFootPutUpHeight = 5 * PersonScale; //脚抬起高度
 const double PersonFootLength = 42 * PersonScale; //脚长
 const double PersonFootWidth = 9 * PersonScale; //脚宽度
-const double PersonFootJumpTackBackLength = 5 * PersonScale; //脚抬起高度
+const double PersonFootJumpTakeBackLength = 5 * PersonScale; //脚抬起高度
