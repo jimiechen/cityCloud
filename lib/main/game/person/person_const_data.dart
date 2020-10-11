@@ -11,6 +11,8 @@ enum PersonActionType {
   Stand,
 }
 
+const double CarMoveSpeed = 4; //小车移动速度
+
 const double PersonScale = 0.1;
 
 const double PersonMoveSpeed = 3; //移动速度

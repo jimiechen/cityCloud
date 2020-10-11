@@ -44,26 +44,27 @@ class CarSprite extends PositionComponent {
     Paint carPaint = Paint()
       ..color = Colors.white
       ..isAntiAlias = true;
-
+    double travelTime = 0.5;
+    double rotate = pi / 80;
     Sprite.loadSprite(ImageHelper.carShadowBack[carInfo.carID]).then((shadow) {
       SpriteComponent shadowSpriteComponent = SpriteComponent.fromSprite(shadow.size.x * _scale, shadow.size.y * _scale, shadow);
       shadowSpriteComponent.overridePaint = shadowPaint;
       shadowSpriteComponent.x = -shadowSpriteComponent.width / 2;
-      shadowSpriteComponent.y = -shadowSpriteComponent.height / 2 - 2;
+      shadowSpriteComponent.y = -shadowSpriteComponent.height / 2;
       _backComponents.add(shadowSpriteComponent);
       Sprite.loadSprite(ImageHelper.carBack[carInfo.carID]).then((value) {
         SpriteComponent carSpriteComponent = SpriteComponent.fromSprite(value.size.x * _scale, value.size.y * _scale, value);
         carSpriteComponent.overridePaint = carPaint;
 
         RotateEffect rotateEffect = RotateEffect(
-          radians: pi / 30,
-          speed: 0.5,
+          radians: rotate * 2,
+          speed: rotate * 2 / travelTime,
           curve: Curves.linear,
           isInfinite: true,
           isAlternating: true,
         );
         carSpriteComponent.anchor = Anchor(Offset(0.5, 0.7));
-        carSpriteComponent.angle = -pi / 60;
+        carSpriteComponent.angle = -rotate;
         carSpriteComponent.addEffect(rotateEffect);
         _backComponents.add(carSpriteComponent);
       });
@@ -72,21 +73,21 @@ class CarSprite extends PositionComponent {
       SpriteComponent shadowSpriteComponent = SpriteComponent.fromSprite(shadow.size.x * _scale, shadow.size.y * _scale, shadow);
       shadowSpriteComponent.overridePaint = shadowPaint;
       shadowSpriteComponent.x = -shadowSpriteComponent.width / 2;
-      shadowSpriteComponent.y = -shadowSpriteComponent.height / 2 + 8;
+      shadowSpriteComponent.y = -shadowSpriteComponent.height / 2;
       _frontComponents.add(shadowSpriteComponent);
 
       Sprite.loadSprite(ImageHelper.carFront[carInfo.carID]).then((value) {
         SpriteComponent carSpriteComponent = SpriteComponent.fromSprite(value.size.x * _scale, value.size.y * _scale, value);
         carSpriteComponent.overridePaint = carPaint;
         RotateEffect rotateEffect = RotateEffect(
-          radians: pi / 30,
-          speed: 0.5,
+          radians: rotate * 2,
+          speed: rotate * 2 / travelTime,
           curve: Curves.linear,
           isInfinite: true,
           isAlternating: true,
         );
         carSpriteComponent.anchor = Anchor.center;
-        carSpriteComponent.angle = -pi / 60;
+        carSpriteComponent.angle = -rotate;
         carSpriteComponent.addEffect(rotateEffect);
         _frontComponents.add(carSpriteComponent);
       });
@@ -95,24 +96,24 @@ class CarSprite extends PositionComponent {
     Sprite.loadSprite(ImageHelper.carShadowSide[carInfo.carID]).then((shadow) {
       SpriteComponent shadowSpriteComponent = SpriteComponent.fromSprite(shadow.size.x * _scale, shadow.size.y * _scale, shadow);
       shadowSpriteComponent.overridePaint = shadowPaint;
-      shadowSpriteComponent.x = -shadowSpriteComponent.width / 2 - 6;
+      shadowSpriteComponent.x = -shadowSpriteComponent.width / 2;
       shadowSpriteComponent.y = -shadowSpriteComponent.height / 2;
       _leftComponents.add(shadowSpriteComponent);
       Sprite.loadSprite(ImageHelper.carSide[carInfo.carID]).then((value) {
         SpriteComponent carSpriteComponent = SpriteComponent.fromSprite(value.size.x * _scale, value.size.y * _scale, value);
-        carSpriteComponent.x = -carSpriteComponent.width * 0.7;
+        carSpriteComponent.x = -carSpriteComponent.width * 0.5;
         carSpriteComponent.y = -carSpriteComponent.height * 0.8;
         carSpriteComponent.overridePaint = carPaint;
 
-        double distance = carSpriteComponent.height * 0.2;
+        double distance = carSpriteComponent.height * 0.1;
         ScaleEffect scaleEffect = ScaleEffect(
           size: Size(carSpriteComponent.width, carSpriteComponent.height - distance),
-          speed: 10,
+          speed: distance / travelTime,
           curve: Curves.easeOut,
         );
         MoveEffect moveEffect = MoveEffect(
           destination: carSpriteComponent.toPosition() + Position(0, distance),
-          speed: 10,
+          speed: distance / travelTime,
           curve: Curves.easeOut,
         );
         carSpriteComponent.addEffect(
@@ -138,7 +139,7 @@ class CarSprite extends PositionComponent {
     PersonMoveEffect moveEffect = PersonMoveEffect(
       destination: _endPathNode.position,
       curve: Curves.linear,
-      speed: PersonMoveSpeed,
+      speed: CarMoveSpeed,
       onComplete: () {
         Timer.run(() {
           _endPathNode = _endPathNode.randomLinkedNode;
