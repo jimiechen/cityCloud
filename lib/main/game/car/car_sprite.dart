@@ -138,7 +138,7 @@ class CarSprite extends PositionComponent {
     PersonMoveEffect moveEffect = PersonMoveEffect(
       destination: _endPathNode.position,
       curve: Curves.linear,
-      speed: MoveSpeed,
+      speed: PersonMoveSpeed,
       onComplete: () {
         Timer.run(() {
           _endPathNode = _endPathNode.randomLinkedNode;

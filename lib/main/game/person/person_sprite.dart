@@ -4,20 +4,25 @@ import 'dart:math';
 import 'package:cityCloud/dart_class/extension/Iterable_extension.dart';
 import 'package:cityCloud/expanded/global_cubit/global_cubit.dart';
 import 'package:cityCloud/expanded/database/database.dart';
+import 'package:cityCloud/main/game/person/part_of_person/body.dart';
+import 'package:cityCloud/main/game/person/part_of_person/foot.dart';
+import 'package:cityCloud/main/game/person/part_of_person/hand.dart';
+import 'package:cityCloud/main/game/person/part_of_person/head.dart';
 import 'package:cityCloud/main/game/person/part_of_person/remider.dart';
 import 'package:cityCloud/main/game/person/person_const_data.dart';
 import 'package:cityCloud/main/game/person/person_effect/enter_effect.dart';
 import 'package:cityCloud/main/game/person/person_effect/go_out_effect.dart';
-import 'package:flare_flutter/provider/asset_flare.dart';
-import 'package:cityCloud/main/game/person/person_flare_controller.dart';
-import 'package:flame/flame.dart';
+import 'package:cityCloud/main/game/person/person_effect/hand_rotate_effect.dart';
+import 'package:cityCloud/util/image_helper.dart';
+import 'package:flame/components/component.dart';
+import 'package:flame/effects/effects.dart';
 import 'package:flame/position.dart';
-import 'package:flame_flare/flame_flare.dart';
 import 'package:flutter/material.dart';
 import '../map_tile/model/tile_path_node_info.dart';
+import 'person_effect/jump_translate.dart';
 import 'person_effect/person_move_effect.dart';
 
-class PersonSprite extends FlareActorComponent {
+class PersonSprite extends PositionComponent {
   ///小人面朝向
   HorizontalOrigentation _faceOrigentation;
 
@@ -39,39 +44,51 @@ class PersonSprite extends FlareActorComponent {
   ///小人身体各部位信息
   final PersonModel model;
 
-  ///小人flare动画控制
-  final PersonSpriteFlareController animationController;
-
   ///定时倒数改变小人当前动作，走、站立、跳三个动作
   double _randomActionTimeCount = 5;
+  PersonActionType _currentActionType;
 
-  Timer _closeEyeTimer;
+  ///小人闭眼倒计时
+  double _closeEyeTimeCount = 4;
 
-  PersonSprite(
-      {@required this.animationController,
-      @required this.model,
-      @required Position initialPosition,
-      @required PathNode endPathNode,
-      double width = PersonSize,
-      double height = PersonSize})
-      : super(
-          FlareActorAnimation.asset(
-            // PersonFlareLoader().createAssetProvider(),
-            AssetFlare(bundle: Flame.bundle, name: PersonFlareAsset),
-            controller: animationController,
-            fit: BoxFit.contain,
-            alignment: Alignment.bottomCenter,
-          ),
-          width: width,
-          height: height,
-        ) {
+  ///跳动控制
+  JumpTranslate _jumpTranslate;
+
+  ///小人各部位的sprite
+  FootSprite _leftFootSprite;
+  FootSprite _rightFootSprite;
+  BodySprite _bodySprite;
+  HandSprite _leftHandSprite;
+  HandSprite _rightHandSprite;
+  HeadSprite _headSprite;
+
+  ///人影paint
+  Paint _shadowPaint = Paint()..color = Colors.grey.withOpacity(0.5);
+
+  PersonSprite({
+    @required this.model,
+    @required Position initialPosition,
+    @required PathNode endPathNode,
+  }) {
     _endPathNode = endPathNode;
     x = initialPosition.x;
     y = initialPosition.y;
-    animationController.resetImage(model);
-    _closeEyeTimer = Timer.periodic(Duration(milliseconds: Random().nextInt(1500) + 2500), (timer) {
-      animationController.play(PersonAction_CloseEye);
-    });
+
+    Color personColor = Color(model.faceColorValue);
+    _leftFootSprite = FootSprite(footColor: personColor, footImage: ImageHelper.foots[model.footID]);
+    _rightFootSprite = FootSprite(footColor: personColor, footImage: ImageHelper.foots[model.footID], isLeftHand: false);
+    _bodySprite = BodySprite(bodyColor: personColor, bodyImage: ImageHelper.bodys[model.bodyID]);
+    _leftHandSprite = HandSprite(handColor: personColor, handImage: ImageHelper.hands[model.handID]);
+    _rightHandSprite = HandSprite(handColor: personColor, handImage: ImageHelper.hands[model.handID], isLeftHand: false);
+    _headSprite = HeadSprite(
+      eyeImage: ImageHelper.eyes[model.eyeID],
+      faceColor: personColor,
+      hairImage: ImageHelper.hairs[model.hairID],
+      noseImage: ImageHelper.noses[model.noseID],
+    );
+
+    _currentActionType = PersonActionType.Walk;
+    walk();
   }
 
   ///根据_endPathNode重新设置移动
@@ -82,7 +99,7 @@ class PersonSprite extends FlareActorComponent {
     _moveEffect = PersonMoveEffect(
       destination: _endPathNode.position,
       curve: Curves.linear,
-      speed: MoveSpeed,
+      speed: PersonMoveSpeed,
       onComplete: () {
         Timer.run(() {
           _endPathNode = _endPathNode.randomLinkedNode;
@@ -179,59 +196,215 @@ class PersonSprite extends FlareActorComponent {
 
   ///改变小人动作，走、跳、立定
   void changeAction() {
-    String animationName;
-    switch (Random().nextInt(3)) {
-      case 0:
-        animationName = PersonAction_Jump;
-        _moveEffect?.dispose();
-        _randomActionTimeCount = 1;
-        break;
-      case 1:
-        animationName = PersonAction_Stand;
-        _moveEffect?.dispose();
-        _randomActionTimeCount = 2;
-        break;
-      default:
-        animationName = PersonAction_Walk;
-        _randomActionTimeCount = 5;
-        resetMoveEffect();
+    PersonActionType preActionType = _currentActionType;
+    _currentActionType = PersonActionType.values.randomItem;
+    if (preActionType != _currentActionType) {
+      reset();
+      switch (_currentActionType) {
+        case PersonActionType.Jump:
+          jump();
+          _randomActionTimeCount = 4 / 3;
+          break;
+        case PersonActionType.Stand:
+          _randomActionTimeCount = 2;
+          stand();
+          break;
+        default:
+          _randomActionTimeCount = 5;
+          walk();
+          resetMoveEffect();
+      }
+    } else {
+      switch (_currentActionType) {
+        case PersonActionType.Jump:
+          _randomActionTimeCount = 4 / 3;
+          break;
+        case PersonActionType.Stand:
+          _randomActionTimeCount = 2;
+          break;
+        default:
+          _randomActionTimeCount = 5;
+      }
     }
-    animationController.changeToAnimation(animationName);
+  }
+
+  void reset() {
+    clearEffects();
+    _leftFootSprite?.resetPosition();
+    _leftFootSprite?.clearEffects();
+    _rightFootSprite?.resetPosition();
+    _rightFootSprite?.clearEffects();
+    _bodySprite?.resetPosition();
+    _bodySprite?.clearEffects();
+    _leftHandSprite?.resetPosition();
+    _leftHandSprite?.clearEffects();
+    _rightHandSprite?.resetPosition();
+    _rightHandSprite?.clearEffects();
+    _headSprite?.resetPosition();
+    _headSprite?.clearEffects();
+  }
+
+  void jump() {
+    double tralvelTime = 2 / 3;
+    _leftHandSprite.addEffect(
+      HandRotateEffect(curve: Curves.linear, isAlternating: true, radians: PersonHandJumpRotate, speed: PersonHandJumpRotate / tralvelTime),
+    );
+    _rightHandSprite.addEffect(
+      HandRotateEffect(curve: Curves.linear, isAlternating: true, radians: -PersonHandJumpRotate, speed: PersonHandJumpRotate / tralvelTime),
+    );
+
+    _jumpTranslate = JumpTranslate(curve: Curves.easeOut, jumpHeight: PersonJumpHeight, speed: PersonJumpHeight / tralvelTime, isAlternating: true);
+
+    _leftFootSprite.addEffect(
+      MoveEffect(
+        isAlternating: true,
+        destination: _leftFootSprite.toPosition().add(Position(0, -PersonFootJumpTackBackLength)),
+        speed: PersonFootJumpTackBackLength / tralvelTime,
+        curve: Curves.linear,
+      ),
+    );
+    _rightFootSprite.addEffect(
+      MoveEffect(
+        isAlternating: true,
+        destination: _rightFootSprite.toPosition().add(Position(0, -PersonFootJumpTackBackLength)),
+        speed: PersonFootJumpTackBackLength / tralvelTime,
+        curve: Curves.linear,
+      ),
+    );
+  }
+
+  void stand() {
+    double tralvelTime = 0.4;
+    _leftHandSprite.addEffect(
+      HandRotateEffect(curve: Curves.linear, isAlternating: true, radians: PersonHandWalkRotate, speed: PersonHandWalkRotate / tralvelTime, isInfinite: true),
+    );
+
+    _rightHandSprite.addEffect(
+      HandRotateEffect(curve: Curves.linear, isAlternating: true, radians: -PersonHandWalkRotate, speed: PersonHandWalkRotate / tralvelTime, isInfinite: true),
+    );
+
+    _headSprite.addEffect(
+      MoveEffect(
+        isAlternating: true,
+        isInfinite: true,
+        destination: _headSprite.toPosition().add(Position(0, PersonFootPutUpHeight)),
+        speed: PersonHeadMoveRange / tralvelTime,
+        curve: Curves.linear,
+      ),
+    );
+  }
+
+  void walk() {
+    double tralvelTime = 0.4;
+    _leftFootSprite.addEffect(
+      MoveEffect(
+        isAlternating: true,
+        isInfinite: true,
+        destination: _leftFootSprite.toPosition().add(Position(0, -PersonFootPutUpHeight)),
+        speed: PersonFootPutUpHeight / tralvelTime,
+        curve: Curves.linear,
+      ),
+    );
+    Position originPosition = _rightFootSprite.toPosition();
+    _rightFootSprite.y -= PersonFootPutUpHeight;
+    _rightFootSprite.addEffect(
+      MoveEffect(
+        isAlternating: true,
+        isInfinite: true,
+        destination: originPosition,
+        speed: PersonFootPutUpHeight / tralvelTime,
+        curve: Curves.linear,
+      ),
+    );
+
+    _leftHandSprite.addEffect(
+      HandRotateEffect(curve: Curves.linear, isAlternating: true, radians: PersonHandWalkRotate, speed: PersonHandWalkRotate / tralvelTime, isInfinite: true),
+    );
+
+    _rightHandSprite.addEffect(
+      HandRotateEffect(curve: Curves.linear, isAlternating: true, radians: -PersonHandWalkRotate, speed: PersonHandWalkRotate / tralvelTime, isInfinite: true),
+    );
+
+    _headSprite.addEffect(
+      MoveEffect(
+        isAlternating: true,
+        isInfinite: true,
+        destination: _headSprite.toPosition().add(Position(0, PersonFootPutUpHeight)),
+        speed: PersonHeadMoveRange / tralvelTime,
+        curve: Curves.linear,
+      ),
+    );
   }
 
   @override
-  bool destroy() {
-    _closeEyeTimer?.cancel();
-    return super.destroy();
+  bool loaded() {
+    return _leftFootSprite?.loaded() == true &&
+        _rightFootSprite?.loaded() == true &&
+        _bodySprite.loaded() &&
+        _leftHandSprite.loaded() &&
+        _rightHandSprite.loaded() &&
+        _headSprite.loaded();
   }
 
   @override
   void update(double dt) {
+    _closeEyeTimeCount -= dt;
+    if (_closeEyeTimeCount < 0) {
+      _closeEyeTimeCount = Random().nextDouble() * 1.5 + 2.5;
+      _headSprite?.closeEye();
+    }
     if (_enterEffect != null || _goOutEffect != null) {
       _remiderSprite = null;
       _enterEffect?.update(dt);
       _goOutEffect?.update(dt);
     } else {
+      super.update(dt);
+      if (_jumpTranslate?.hasFinished() == true) {
+        _jumpTranslate = null;
+      }
+      _jumpTranslate?.update(dt);
+      _leftFootSprite?.update(dt);
+      _rightFootSprite?.update(dt);
+      _bodySprite?.update(dt);
+      _leftHandSprite?.update(dt);
+      _rightHandSprite?.update(dt);
+      _headSprite?.update(dt);
       _remiderSprite?.update(dt);
       _randomActionTimeCount -= dt;
       if (_randomActionTimeCount < 0) {
         changeAction();
       }
-      super.update(dt);
     }
   }
 
   @override
   void render(Canvas canvas) {
-    ///画脚下阴影
-    canvas.drawOval(
-      Rect.fromCenter(center: Offset(x, y), width: ShadowWidth, height: ShadowHeight),
-      Paint()..color = Colors.grey.withOpacity(0.5),
-    );
     canvas.save();
-    canvas.translate(-width / 2, -height);
-    _remiderSprite?.render(canvas);
-    super.render(canvas);
+    canvas.translate(x, y);
+    if (_faceOrigentation == HorizontalOrigentation.Right) {
+      ///小人往右
+      canvas.scale(-1.0, 1.0);
+    }
+
+    ///画脚下阴影
+    canvas.drawOval(Rect.fromCenter(center: Offset(0, 0), width: PersonShadowWidth, height: PersonShadowHeight), _shadowPaint);
+    _jumpTranslate?.translate(canvas);
+    _renderComponent(canvas, _remiderSprite);
+    _renderComponent(canvas, _leftFootSprite);
+    _renderComponent(canvas, _rightFootSprite);
+    _renderComponent(canvas, _bodySprite);
+    _renderComponent(canvas, _leftHandSprite);
+    _renderComponent(canvas, _rightHandSprite);
+    _renderComponent(canvas, _headSprite);
+    canvas.restore();
+  }
+
+  void _renderComponent(Canvas canvas, Component c) {
+    if (c?.loaded() != true) {
+      return;
+    }
+    canvas.save();
+    c.render(canvas);
     canvas.restore();
   }
 }
