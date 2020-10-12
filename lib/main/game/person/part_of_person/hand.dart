@@ -1,38 +1,31 @@
-import 'package:cityCloud/dart_class/flame/callback_pre_rendered_layer.dart';
 import 'package:flame/components/component.dart';
 import 'package:flame/sprite.dart';
 import 'package:flutter/material.dart';
 import '../person_const_data.dart';
 
-class HandSprite extends PositionComponent {
+class HandSprite extends SpriteComponent {
+  final String handImage;
+  final Color handColor;
   final bool isLeftHand;
 
-  CallbackPreRenderedLayer _layer;
-
-  double _width;
-  double _height;
+  Paint _handPaint;
 
   HandSprite({
-    @required String handImage,
-    @required Color handColor,
+    @required this.handImage,
+    @required this.handColor,
     this.isLeftHand = true,
   }) {
+    _handPaint = Paint()..color = handColor;
     Sprite.loadSprite(handImage).then((value) {
-      _width = value.size.x * PersonScale;
-      _height = value.size.y * PersonScale;
+      sprite = value;
       resetPosition();
-      _layer = CallbackPreRenderedLayer(drawLayerCallback: (canvas) {
-        canvas.drawRRect(RRect.fromRectXY(Rect.fromLTWH(0, 0, width, height), 2, 2), Paint()..color = handColor);
-        value.render(canvas, width: width, height: height);
-      });
-      _layer.createLayer();
     });
   }
 
   void resetPosition() {
     angle = 0;
-    width = _width;
-    height = _height;
+    width = sprite.size.x * PersonScale;
+    height = sprite.size.y * PersonScale;
     x = (isLeftHand ? -PersonHandsSpacing / 2 : PersonHandsSpacing / 2) - width / 2;
     y = -PersonHandCenterY - height / 2;
   }
@@ -40,6 +33,7 @@ class HandSprite extends PositionComponent {
   @override
   void render(Canvas canvas) {
     prepareCanvas(canvas);
-    _layer?.render(canvas);
+    canvas.drawRRect(RRect.fromRectXY(Rect.fromLTWH(0, 0, width, height), 2, 2), _handPaint);
+    sprite.render(canvas, width: width, height: height, overridePaint: overridePaint);
   }
 }

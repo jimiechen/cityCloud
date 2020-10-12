@@ -1,35 +1,29 @@
-import 'package:cityCloud/dart_class/flame/callback_pre_rendered_layer.dart';
 import 'package:flame/components/component.dart';
 import 'package:flame/sprite.dart';
 import 'package:flutter/material.dart';
 
 import '../person_const_data.dart';
 
-class BodySprite extends PositionComponent {
-  CallbackPreRenderedLayer _layer;
+class BodySprite extends SpriteComponent {
+  final String bodyImage;
+  final Color bodyColor;
 
-  double _width;
-  double _height;
+  Paint _bodyPaint;
 
   BodySprite({
-    @required String bodyImage,
-    @required Color bodyColor,
+    @required this.bodyImage,
+    @required this.bodyColor,
   }) {
+    _bodyPaint = Paint()..color = bodyColor;
     Sprite.loadSprite(bodyImage).then((value) {
-      _width = value.size.x * PersonScale;
-      _height = value.size.y * PersonScale;
+      sprite = value;
       resetPosition();
-      _layer = CallbackPreRenderedLayer(drawLayerCallback: (canvas) {
-        canvas.drawRect(Rect.fromLTWH(0, 0, width * 0.9, height * 0.8), Paint()..color = bodyColor);
-        value.render(canvas, width: width, height: height);
-      });
-      _layer.createLayer();
     });
   }
 
   void resetPosition() {
-    width = _width;
-    height = _height;
+    width = sprite.size.x * PersonScale;
+    height = sprite.size.y * PersonScale;
     x = PersonBodyCenterX - width / 2;
     y = -PersonBodyCenterY - height / 2;
   }
@@ -37,6 +31,7 @@ class BodySprite extends PositionComponent {
   @override
   void render(Canvas canvas) {
     prepareCanvas(canvas);
-    _layer?.render(canvas);
+    canvas.drawRect(Rect.fromLTWH(0, 0, width * 0.9, height * 0.8), _bodyPaint);
+    sprite.render(canvas, width: width, height: height, overridePaint: overridePaint);
   }
 }
