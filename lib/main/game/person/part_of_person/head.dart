@@ -1,6 +1,6 @@
+import 'package:cityCloud/dart_class/flame/callback_pre_rendered_layer.dart';
 import 'package:cityCloud/main/game/person/person_const_data.dart';
 import 'package:flame/components/component.dart';
-import 'package:flame/effects/combined_effect.dart';
 import 'package:flame/effects/effects.dart';
 import 'package:flame/position.dart';
 import 'package:flame/sprite.dart';
@@ -13,11 +13,11 @@ class HeadSprite extends PositionComponent {
   final String noseImage;
   final Color faceColor;
 
-  SpriteComponent hairComponent;
-  SpriteComponent noseComponent;
   SpriteComponent eyeSprite;
 
   Paint _facePaint;
+
+  CallbackPreRenderedLayer _layer;
 
   HeadSprite({
     @required this.hairImage,
@@ -31,9 +31,27 @@ class HeadSprite extends PositionComponent {
     Sprite.loadSprite(hairImage).then((value) {
       double imageWidth = value.size.x * PersonScale;
       double imageHeight = value.size.y * PersonScale;
-      hairComponent = SpriteComponent.fromSprite(imageWidth, imageHeight, value);
+      SpriteComponent hairComponent = SpriteComponent.fromSprite(imageWidth, imageHeight, value);
       hairComponent.x = PersonHairCenterXInFace - imageWidth / 2;
       hairComponent.y = PersonHairCenterYInFace - imageHeight / 2;
+      Sprite.loadSprite(noseImage).then((value) {
+        double imageWidth = value.size.x * PersonScale;
+        double imageHeight = value.size.y * PersonScale;
+        SpriteComponent noseComponent = SpriteComponent.fromSprite(imageWidth, imageHeight, value);
+        noseComponent.x = PersonNoseCenterXInFace - imageWidth / 2;
+        noseComponent.y = PersonNoseCenterYInFace - imageHeight / 2;
+        _layer = CallbackPreRenderedLayer(drawLayerCallback: (canvas) {
+          canvas.drawOval(
+              Rect.fromCenter(center: Offset.zero, width: PersonFaceWidth, height: PersonFaceHeight), _facePaint);
+          canvas.save();
+          noseComponent.render(canvas);
+          canvas.restore();
+          canvas.save();
+          hairComponent.render(canvas);
+          canvas.restore();
+        });
+        _layer.createLayer();
+      });
     });
 
     Sprite.loadSprite(eyeImage).then((value) {
@@ -42,14 +60,6 @@ class HeadSprite extends PositionComponent {
       eyeSprite = SpriteComponent.fromSprite(imageWidth, imageHeight, value);
       eyeSprite.x = PersonEyeCenterXInFace - imageWidth / 2;
       eyeSprite.y = PersonEyeCenterYInFace - imageHeight / 2;
-    });
-
-    Sprite.loadSprite(noseImage).then((value) {
-      double imageWidth = value.size.x * PersonScale;
-      double imageHeight = value.size.y * PersonScale;
-      noseComponent = SpriteComponent.fromSprite(imageWidth, imageHeight, value);
-      noseComponent.x = PersonNoseCenterXInFace - imageWidth / 2;
-      noseComponent.y = PersonNoseCenterYInFace - imageHeight / 2;
     });
   }
 
@@ -81,7 +91,7 @@ class HeadSprite extends PositionComponent {
   }
 
   bool loaded() {
-    return hairComponent?.loaded() == true && noseComponent?.loaded() == true && eyeSprite?.loaded() == true;
+    return _layer?.haveLayerPicture == true && eyeSprite?.loaded() == true;
   }
 
   @override
@@ -94,10 +104,8 @@ class HeadSprite extends PositionComponent {
   void render(Canvas canvas) {
     canvas.save();
     canvas.translate(x, y);
-    canvas.drawOval(Rect.fromCenter(center: Offset.zero, width: PersonFaceWidth, height: PersonFaceHeight), _facePaint);
+    _layer?.render(canvas);
     _renderComponent(canvas, eyeSprite);
-    _renderComponent(canvas, noseComponent);
-    _renderComponent(canvas, hairComponent);
     canvas.restore();
   }
 

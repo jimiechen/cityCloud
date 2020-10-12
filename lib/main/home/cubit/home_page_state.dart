@@ -14,7 +14,7 @@ class HomePageCubitTapOnTaskCenter extends HomePageCubitState {}
 class HomePageCubitTapOnMessageCenter extends HomePageCubitState {}
 class HomePageCubitTapOnFriendDynamic extends HomePageCubitState {}
 
-/*上拉菜单也地步按钮点击事件*/
+/*上拉菜单底部按钮点击事件*/
 class HomePageCubitTapOnUserCenter extends HomePageCubitState {}
 class HomePageCubitTapOnAddDynamic extends HomePageCubitState {}
 class HomePageCubitTapOnMessageList extends HomePageCubitState {}

@@ -3,14 +3,14 @@ import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
-class JumpTranslate extends PositionComponentEffect {
+class JumpCanvasTranslate extends PositionComponentEffect {
   double jumpHeight;
   double speed;
   Curve curve;
 
   double _currentTranslate = 0;
 
-  JumpTranslate({
+  JumpCanvasTranslate({
     @required this.jumpHeight,
     @required this.speed,
     this.curve,

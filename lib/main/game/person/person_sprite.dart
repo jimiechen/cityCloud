@@ -10,7 +10,7 @@ import 'package:cityCloud/main/game/person/part_of_person/hand.dart';
 import 'package:cityCloud/main/game/person/part_of_person/head.dart';
 import 'package:cityCloud/main/game/person/part_of_person/remider.dart';
 import 'package:cityCloud/main/game/person/person_const_data.dart';
-import 'package:cityCloud/main/game/person/person_effect/go_out_effect.dart';
+import 'package:cityCloud/dart_class/flame/scale_translate_canvas_effect.dart';
 import 'package:cityCloud/main/game/person/person_effect/hand_rotate_effect.dart';
 import 'package:cityCloud/util/image_helper.dart';
 import 'package:flame/components/component.dart';
@@ -18,7 +18,7 @@ import 'package:flame/effects/effects.dart';
 import 'package:flame/position.dart';
 import 'package:flutter/material.dart';
 import '../map_tile/model/tile_path_node_info.dart';
-import 'person_effect/jump_translate.dart';
+import 'person_effect/jump_canvas_translate.dart';
 import 'person_effect/person_move_effect.dart';
 
 class PersonSprite extends PositionComponent {
@@ -35,10 +35,10 @@ class PersonSprite extends PositionComponent {
   PersonMoveEffect _moveEffect;
 
   ///入场效果
-  GoOutEffect _enterEffect;
+  ScalTranslateCanvasEffect _enterEffect;
 
   ///从游戏中消失效果
-  GoOutEffect _goOutEffect;
+  ScalTranslateCanvasEffect _goOutEffect;
 
   ///小人身体各部位信息
   final PersonModel model;
@@ -51,7 +51,7 @@ class PersonSprite extends PositionComponent {
   double _closeEyeTimeCount = 4;
 
   ///跳动控制
-  JumpTranslate _jumpTranslate;
+  JumpCanvasTranslate _jumpTranslate;
 
   ///从一个位置跳到另一个位置
   VoidCallback _jumpToAction;
@@ -78,10 +78,12 @@ class PersonSprite extends PositionComponent {
 
     Color personColor = Color(model.faceColorValue);
     _leftFootSprite = FootSprite(footColor: personColor, footImage: ImageHelper.foots[model.footID]);
-    _rightFootSprite = FootSprite(footColor: personColor, footImage: ImageHelper.foots[model.footID], isLeftHand: false);
+    _rightFootSprite =
+        FootSprite(footColor: personColor, footImage: ImageHelper.foots[model.footID], isLeftHand: false);
     _bodySprite = BodySprite(bodyColor: personColor, bodyImage: ImageHelper.bodys[model.bodyID]);
     _leftHandSprite = HandSprite(handColor: personColor, handImage: ImageHelper.hands[model.handID]);
-    _rightHandSprite = HandSprite(handColor: personColor, handImage: ImageHelper.hands[model.handID], isLeftHand: false);
+    _rightHandSprite =
+        HandSprite(handColor: personColor, handImage: ImageHelper.hands[model.handID], isLeftHand: false);
     _headSprite = HeadSprite(
       eyeImage: ImageHelper.eyes[model.eyeID],
       faceColor: personColor,
@@ -149,7 +151,10 @@ class PersonSprite extends PositionComponent {
       _endPathNode = targetEndNode;
       x = targetPosition.x;
       y = targetPosition.y;
-      _enterEffect = GoOutEffect(
+      _enterEffect = ScalTranslateCanvasEffect(
+          destinationTranslate: Position(0,-40),
+          destinationScale: Offset(-0.5, 1.5),
+          travelTime: 0.3,
           reverse: true,
           onComplete: () {
             _enterEffect = null;
@@ -164,10 +169,15 @@ class PersonSprite extends PositionComponent {
   ///小人从游戏界面消失
   void goOut(VoidCallback onComplete) {
     if (_goOutEffect == null && _enterEffect == null) {
-      _goOutEffect = GoOutEffect(onComplete: () {
-        _goOutEffect = null;
-        onComplete?.call();
-      });
+      _goOutEffect = ScalTranslateCanvasEffect(
+          destinationTranslate: Position(0,-40),
+          destinationScale: Offset(-0.5, 1.5),
+          travelTime: 0.3,
+          onComplete: () {
+            _goOutEffect = null;
+
+            onComplete?.call();
+          });
     }
   }
 
@@ -259,13 +269,25 @@ class PersonSprite extends PositionComponent {
   void jump() {
     double tralvelTime = 0.3;
     _leftHandSprite.addEffect(
-      HandRotateEffect(curve: Curves.linear, isAlternating: true, radians: PersonHandJumpRotate, speed: PersonHandJumpRotate / tralvelTime),
+      HandRotateEffect(
+          curve: Curves.linear,
+          isAlternating: true,
+          radians: PersonHandJumpRotate,
+          speed: PersonHandJumpRotate / tralvelTime),
     );
     _rightHandSprite.addEffect(
-      HandRotateEffect(curve: Curves.linear, isAlternating: true, radians: -PersonHandJumpRotate, speed: PersonHandJumpRotate / tralvelTime),
+      HandRotateEffect(
+          curve: Curves.linear,
+          isAlternating: true,
+          radians: -PersonHandJumpRotate,
+          speed: PersonHandJumpRotate / tralvelTime),
     );
 
-    _jumpTranslate = JumpTranslate(curve: Curves.easeOut, jumpHeight: PersonJumpHeight, speed: PersonJumpHeight / tralvelTime, isAlternating: true);
+    _jumpTranslate = JumpCanvasTranslate(
+        curve: Curves.easeOut,
+        jumpHeight: PersonJumpHeight,
+        speed: PersonJumpHeight / tralvelTime,
+        isAlternating: true);
 
     _leftFootSprite.addEffect(
       MoveEffect(
@@ -288,11 +310,21 @@ class PersonSprite extends PositionComponent {
   void stand() {
     double tralvelTime = 0.4;
     _leftHandSprite.addEffect(
-      HandRotateEffect(curve: Curves.linear, isAlternating: true, radians: PersonHandWalkRotate, speed: PersonHandWalkRotate / tralvelTime, isInfinite: true),
+      HandRotateEffect(
+          curve: Curves.linear,
+          isAlternating: true,
+          radians: PersonHandWalkRotate,
+          speed: PersonHandWalkRotate / tralvelTime,
+          isInfinite: true),
     );
 
     _rightHandSprite.addEffect(
-      HandRotateEffect(curve: Curves.linear, isAlternating: true, radians: -PersonHandWalkRotate, speed: PersonHandWalkRotate / tralvelTime, isInfinite: true),
+      HandRotateEffect(
+          curve: Curves.linear,
+          isAlternating: true,
+          radians: -PersonHandWalkRotate,
+          speed: PersonHandWalkRotate / tralvelTime,
+          isInfinite: true),
     );
 
     _headSprite.addEffect(
@@ -330,11 +362,21 @@ class PersonSprite extends PositionComponent {
     );
 
     _leftHandSprite.addEffect(
-      HandRotateEffect(curve: Curves.linear, isAlternating: true, radians: PersonHandWalkRotate, speed: PersonHandWalkRotate / tralvelTime, isInfinite: true),
+      HandRotateEffect(
+          curve: Curves.linear,
+          isAlternating: true,
+          radians: PersonHandWalkRotate,
+          speed: PersonHandWalkRotate / tralvelTime,
+          isInfinite: true),
     );
 
     _rightHandSprite.addEffect(
-      HandRotateEffect(curve: Curves.linear, isAlternating: true, radians: -PersonHandWalkRotate, speed: PersonHandWalkRotate / tralvelTime, isInfinite: true),
+      HandRotateEffect(
+          curve: Curves.linear,
+          isAlternating: true,
+          radians: -PersonHandWalkRotate,
+          speed: PersonHandWalkRotate / tralvelTime,
+          isInfinite: true),
     );
 
     _headSprite.addEffect(
@@ -399,7 +441,8 @@ class PersonSprite extends PositionComponent {
     }
 
     ///画脚下阴影
-    canvas.drawOval(Rect.fromCenter(center: Offset(0, 0), width: PersonShadowWidth, height: PersonShadowHeight), _shadowPaint);
+    canvas.drawOval(
+        Rect.fromCenter(center: Offset(0, 0), width: PersonShadowWidth, height: PersonShadowHeight), _shadowPaint);
     _jumpTranslate?.translate(canvas);
     canvas.save();
     _enterEffect?.setEffectToCanvas(canvas);
