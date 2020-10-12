@@ -6,7 +6,6 @@ import 'package:cityCloud/dart_class/extension/Iterable_extension.dart';
 import 'package:cityCloud/expanded/database/database.dart';
 import 'package:cityCloud/main/game/model/component_linked_list_entry.dart';
 import 'package:cityCloud/main/game/map_tile/model/tile_location.dart';
-import 'package:cityCloud/main/game/person/person_flare_controller.dart';
 import 'package:cityCloud/main/game/person/person_sprite.dart';
 import 'package:cityCloud/main/game/map_tile/tile_component.dart';
 import 'package:cityCloud/main/game/map_tile/model/tile_path_node_info.dart';
@@ -25,7 +24,6 @@ import 'package:flame/position.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'callback_pre_render_layer.dart';
 import 'car/car_sprite.dart';
 import 'cloud/cloud_sprite.dart';
 import 'helper/double_animation.dart';
@@ -378,9 +376,8 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   void addPerson(PersonModel model, {bool saveDb = false}) {
     assert(model != null);
     randomPosition((endNode, position) {
-      PersonSprite personSprite = PersonSprite(endPathNode: endNode, initialPosition: position, model: model, animationController: PersonSpriteFlareController());
+      PersonSprite personSprite = PersonSprite(endPathNode: endNode, initialPosition: position, model: model);
       addLater(personSprite);
-      personSprite.enter(targetEndNode: endNode, targetPosition: position);
       if (model.uploaded != true) {
         homePageBloc?.add(HomePageEventUploadPersonSpriteInfo(model: model));
       }
@@ -401,7 +398,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   }
 
   void jump() {
-    List<PersonSprite> personSprite = List<PersonSprite>.from(_components.where((element) => element is PersonSprite));
+    List<PersonSprite> personSprite = List<PersonSprite>.from(_components.where((element) => element.gameComponent is PersonSprite).map((e) => e.gameComponent));
     _tileComponentLocationMap.values?.randomItem?.randomPath(({beginNode, endNode}) {
       int movePercent = Random().nextInt(100);
       Position target = positionAmong(beginPosition: beginNode.position, endPosition: endNode.position, movePercent: movePercent);
@@ -464,6 +461,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   }
 
   @override
+  // ignore: must_call_super
   void render(Canvas canvas) {
     canvas.save();
     canvas.scale(_scale, _scale);
