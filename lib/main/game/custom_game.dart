@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'dart:math';
 
 import 'package:cityCloud/dart_class/extension/Iterable_extension.dart';
+import 'package:cityCloud/dart_class/flame/callback_pre_rendered_layer.dart';
 import 'package:cityCloud/expanded/database/database.dart';
 import 'package:cityCloud/main/game/model/component_linked_list_entry.dart';
 import 'package:cityCloud/main/game/map_tile/model/tile_location.dart';
@@ -49,7 +50,8 @@ const double MaxScale = 5;
 Position positionAmong({@required Position beginPosition, @required Position endPosition, @required int movePercent}) {
   assert(movePercent != null);
   if (beginPosition == null || endPosition == null) return beginPosition ?? endPosition;
-  return Position(beginPosition.x + (endPosition.x - beginPosition.x) * movePercent / 100, beginPosition.y + (endPosition.y - beginPosition.y) * movePercent / 100);
+  return Position(beginPosition.x + (endPosition.x - beginPosition.x) * movePercent / 100,
+      beginPosition.y + (endPosition.y - beginPosition.y) * movePercent / 100);
 }
 
 class CustomGame extends BaseGame with TapDetector, ScaleDetector {
@@ -96,6 +98,10 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   final HomePageBloc homePageBloc;
   final HomePageCubit homePageCubit;
 
+  CallbackPreRenderedLayer _layer;
+
+  bool _isWaitingForRender = false;
+
   CustomGame({this.homePageBloc, this.homePageCubit}) {
     homePageBloc?.add(HomePageEventGetGameData());
     // _blocSubscription = homePageBloc.listen((currentState) {
@@ -106,6 +112,10 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     ///异步，要不size值为null
     Timer.run(() {
       _cloudSprite = CloudSprite(size);
+    });
+
+    _layer = CallbackPreRenderedLayer(drawLayerCallback: (canvas) {
+      _components.forEach((comp) => _renderComponent(canvas, comp.gameComponent));
     });
   }
 
@@ -301,10 +311,14 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   void addTileComponent(TileComponent tileComponent) {
     assert(tileComponent != null);
     _tileComponentLocationMap[tileComponent.tileMapLocation] = tileComponent;
-    TileComponent topTileComponent = _tileComponentLocationMap[TileMapLocation(tileComponent.tileInfo.tileMapX, tileComponent.tileInfo.tileMapY - 1)];
-    TileComponent leftTileComponent = _tileComponentLocationMap[TileMapLocation(tileComponent.tileInfo.tileMapX - 1, tileComponent.tileInfo.tileMapY)];
-    TileComponent bottomTileComponent = _tileComponentLocationMap[TileMapLocation(tileComponent.tileInfo.tileMapX, tileComponent.tileInfo.tileMapY + 1)];
-    TileComponent rightTileComponent = _tileComponentLocationMap[TileMapLocation(tileComponent.tileInfo.tileMapX + 1, tileComponent.tileInfo.tileMapY)];
+    TileComponent topTileComponent = _tileComponentLocationMap[
+        TileMapLocation(tileComponent.tileInfo.tileMapX, tileComponent.tileInfo.tileMapY - 1)];
+    TileComponent leftTileComponent = _tileComponentLocationMap[
+        TileMapLocation(tileComponent.tileInfo.tileMapX - 1, tileComponent.tileInfo.tileMapY)];
+    TileComponent bottomTileComponent = _tileComponentLocationMap[
+        TileMapLocation(tileComponent.tileInfo.tileMapX, tileComponent.tileInfo.tileMapY + 1)];
+    TileComponent rightTileComponent = _tileComponentLocationMap[
+        TileMapLocation(tileComponent.tileInfo.tileMapX + 1, tileComponent.tileInfo.tileMapY)];
 
     if (topTileComponent != null) {
       tileComponent.linkWithTileComponent(tileComponent: topTileComponent, borderOrientation: BorderOrientation.Top);
@@ -313,10 +327,12 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
       tileComponent.linkWithTileComponent(tileComponent: leftTileComponent, borderOrientation: BorderOrientation.Left);
     }
     if (bottomTileComponent != null) {
-      tileComponent.linkWithTileComponent(tileComponent: bottomTileComponent, borderOrientation: BorderOrientation.Bottom);
+      tileComponent.linkWithTileComponent(
+          tileComponent: bottomTileComponent, borderOrientation: BorderOrientation.Bottom);
     }
     if (rightTileComponent != null) {
-      tileComponent.linkWithTileComponent(tileComponent: rightTileComponent, borderOrientation: BorderOrientation.Right);
+      tileComponent.linkWithTileComponent(
+          tileComponent: rightTileComponent, borderOrientation: BorderOrientation.Right);
     }
   }
 
@@ -391,17 +407,20 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     TileComponent tile = _tileComponentLocationMap?.values?.randomItem;
     tile?.randomPath(({beginNode, endNode}) {
       if (beginNode != null && endNode != null) {
-        Position position = positionAmong(beginPosition: beginNode.position, endPosition: endNode.position, movePercent: Random().nextInt(100));
+        Position position = positionAmong(
+            beginPosition: beginNode.position, endPosition: endNode.position, movePercent: Random().nextInt(100));
         callback?.call(endNode, position);
       }
     });
   }
 
   void jump() {
-    List<PersonSprite> personSprite = List<PersonSprite>.from(_components.where((element) => element.gameComponent is PersonSprite).map((e) => e.gameComponent));
+    List<PersonSprite> personSprite = List<PersonSprite>.from(
+        _components.where((element) => element.gameComponent is PersonSprite).map((e) => e.gameComponent));
     _tileComponentLocationMap.values?.randomItem?.randomPath(({beginNode, endNode}) {
       int movePercent = Random().nextInt(100);
-      Position target = positionAmong(beginPosition: beginNode.position, endPosition: endNode.position, movePercent: movePercent);
+      Position target =
+          positionAmong(beginPosition: beginNode.position, endPosition: endNode.position, movePercent: movePercent);
       personSprite.randomItem?.jumpto(targetEndNode: endNode, targetCenter: target);
     });
   }
@@ -458,6 +477,13 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     _translateAnimation?.update(t);
     _scaleAnimation?.update(t);
     _cloudSprite?.update(t);
+    if (!_isWaitingForRender) {
+      _isWaitingForRender = true;
+      Timer.run(() {
+        _layer?.createLayer();
+        _isWaitingForRender = false;
+      });
+    }
   }
 
   @override
@@ -474,12 +500,21 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     _mapLayer?.render(canvas);
 
     canvas.save();
-    _components.forEach((comp) => renderComponent(canvas, comp.gameComponent));
+    _layer?.render(canvas);
     canvas.restore();
 
     canvas.restore();
     canvas.save();
     _cloudSprite?.render(canvas);
+    canvas.restore();
+  }
+
+  void _renderComponent(Canvas canvas, Component c) {
+    if (c?.loaded() != true) {
+      return;
+    }
+    canvas.save();
+    c.render(canvas);
     canvas.restore();
   }
 
