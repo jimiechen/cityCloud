@@ -16,9 +16,9 @@ or alternatively using `brew install fastlane`
 
 # Available Actions
 ## Android
-### android pgyer
+### android forPgyer
 ```
-fastlane android pgyer
+fastlane android forPgyer
 ```
 Runs all the tests
 ### android beta

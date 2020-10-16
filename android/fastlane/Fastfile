@@ -17,19 +17,22 @@ default_platform(:android)
 
 platform :android do
   desc "Runs all the tests"
-  lane :pgyer do
+  lane :forPgyer do
     gradle(
     task: 'assemble',
-    build_type: 'Release'
+    build_type: 'Release',
     )
-    # pgyer(api_key: "4198f2f3876788e3a4dc1c73ef0cbc5c", user_key: "8e5911e4f450b2c4924454f4af3f438c")
+    pgyer(api_key: "4198f2f3876788e3a4dc1c73ef0cbc5c", user_key: "8e5911e4f450b2c4924454f4af3f438c", apk:"../build/app/outputs/flutter-apk/app-release.apk")
   end
 
   desc "Submit a new Beta Build to Crashlytics Beta"
   lane :beta do
-    gradle(task: "clean assembleRelease")
-    crashlytics
-  
+    #gradle(task: "clean assembleRelease")
+    #crashlytics
+    gradle(
+    task: 'assemble',
+    build_type: 'Release',
+    )
     # sh "your_script.sh"
     # You can also use other beta testing services here
   end

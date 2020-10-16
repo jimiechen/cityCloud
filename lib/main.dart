@@ -24,6 +24,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return OKToast(
       child: MaterialApp(
+        // showPerformanceOverlay: true,
         builder: (BuildContext context, Widget child) {
           return MediaQuery(
             child: child,
