@@ -45,7 +45,7 @@ class _HomeStatusPageState extends State<HomeStatusPage> with SingleTickerProvid
       animation: _animationController,
       builder: (_, child) {
         return Padding(
-          padding: EdgeInsets.only(top: (topPadding + 20) * (1 - _animationController.value), left: 12, right: 12),
+          padding: EdgeInsets.only(top: (topPadding + 60) * (1 - _animationController.value), left: 12, right: 12),
           child: Opacity(
             opacity: 1 - _animationController.value,
             child: child,

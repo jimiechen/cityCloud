@@ -2,7 +2,7 @@ import 'package:cityCloud/expanded/global_cubit/global_cubit.dart';
 import 'package:cityCloud/main/game/custom_game.dart';
 import 'package:cityCloud/main/home/bloc/home_page_bloc.dart';
 import 'package:cityCloud/main/home/cubit/home_page_cubit.dart';
-import 'package:cityCloud/main/home/home_menu_page.dart';
+import 'package:cityCloud/main/home/home_menu_page/home_menu_page.dart';
 import 'package:cityCloud/main/home/home_status_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +15,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   CustomGame _box2dGame;
-  HomeMenuPage _homeAbovePage = HomeMenuPage();
+  HomeMenuPage _homeMenuPage = HomeMenuPage();
   HomeStatusPage _homeStatusPage = HomeStatusPage();
   HomePageBloc _bloc = HomePageBloc();
 
@@ -77,8 +77,8 @@ class _HomePageState extends State<HomePage> {
         child: Stack(
           children: [
             _box2dGame.widget,
-            _homeAbovePage,
             _homeStatusPage,
+            _homeMenuPage,
           ],
         ),
       ),
