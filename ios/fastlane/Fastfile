@@ -20,4 +20,19 @@ platform :ios do
   lane :custom_lane do
     # add actions here: https://docs.fastlane.tools/actions
   end
+
+  desc "Runs all the tests"
+  lane :forPgyer do
+    build_app(export_method: "ad-hoc")
+    pgyer(api_key: "4198f2f3876788e3a4dc1c73ef0cbc5c", user_key: "8e5911e4f450b2c4924454f4af3f438c", ipa:"../ios/Runner.ipa")
+  end
+
+  desc "Submit a new Beta Build to Crashlytics Beta"
+  lane :adHoc do
+    #gradle(task: "clean assembleRelease")
+    #crashlytics
+    build_app(export_method: "ad-hoc")
+    # sh "your_script.sh"
+    # You can also use other beta testing services here
+  end
 end
