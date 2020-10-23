@@ -26,7 +26,7 @@ class TileComponent extends SpriteComponent {
   set showWall(bool b) {
     if (b) {
       Sprite.loadSprite('wall.png').then((value) {
-        wallSpriteComponent = SpriteComponent.fromSprite(width, value.size.y * width / value.size.x, value);
+        wallSpriteComponent = SpriteComponent.fromSprite(width, value.size.y * TileWidth / value.size.x, value);
         wallSpriteComponent.x = 0;
         wallSpriteComponent.y = height;
       });
@@ -112,7 +112,12 @@ class TileComponent extends SpriteComponent {
     prepareCanvas(c);
     c.drawRect(Rect.fromLTWH(0, 0, width, height), Paint()..color = Color(tileInfo.bgColor));
     sprite?.render(c, width: width, height: height, overridePaint: overridePaint);
-    if (_showWall) wallSpriteComponent?.render(c);
+
+    if (_showWall && wallSpriteComponent != null) {
+      wallSpriteComponent.y = height;
+      wallSpriteComponent.width = width;
+      wallSpriteComponent.render(c);
+    }
     c.restore();
   }
 

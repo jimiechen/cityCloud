@@ -50,8 +50,7 @@ const double MaxScale = 5;
 Position positionAmong({@required Position beginPosition, @required Position endPosition, @required int movePercent}) {
   assert(movePercent != null);
   if (beginPosition == null || endPosition == null) return beginPosition ?? endPosition;
-  return Position(beginPosition.x + (endPosition.x - beginPosition.x) * movePercent / 100,
-      beginPosition.y + (endPosition.y - beginPosition.y) * movePercent / 100);
+  return Position(beginPosition.x + (endPosition.x - beginPosition.x) * movePercent / 100, beginPosition.y + (endPosition.y - beginPosition.y) * movePercent / 100);
 }
 
 class CustomGame extends BaseGame with TapDetector, ScaleDetector {
@@ -290,7 +289,69 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     // );
   }
 
-  void addTile(TileInfo info, {bool saveDb = false}) {
+  void randomAddTile({bool toUpload = true}) {
+    TileComponent tile = _tileComponentLocationMap?.values?.randomItem;
+    int tileX = tile?.tileInfo?.tileMapX;
+    int tileY = tile?.tileInfo?.tileMapY;
+    VoidCallback next;
+    int random = Random().nextInt(4);
+    switch (random) {
+      case 0:
+        {
+          next = () {
+            tileX--;
+          };
+          break;
+        }
+      case 1:
+        {
+          next = () {
+            tileX++;
+          };
+          break;
+        }
+      case 2:
+        {
+          next = () {
+            tileY--;
+          };
+          break;
+        }
+      case 3:
+        {
+          next = () {
+            tileY++;
+          };
+          break;
+        }
+    }
+
+    if (next != null && tile != null) {
+      TileComponent tmpTileComponent;
+      do {
+        next.call();
+        tmpTileComponent = _tileComponentLocationMap[TileMapLocation(tileX, tileY)];
+      } while (tmpTileComponent != null);
+      int tileColor = _tileComponentLocationMap?.values?.randomItem?.tileInfo?.bgColor ?? ColorHelper.mapTile.randomItem.value;
+      TileComponent toAddComponent = addTile(
+        TileInfo(
+          tileMapX: tileX,
+          tileMapY: tileY,
+          bgColor: tileColor,
+          id: Uuid.generateUuidV4WithoutDashes(),
+          uploaded: false,
+          viewID: Random().nextInt(ImageHelper.mapTileViews.length),
+        ),
+      );
+      _mapLayer?.addTile(toAddComponent);
+
+      ///将添加的地图块移动到视图中心
+      Offset extent = (Offset(size.width / 2, size.height / 2) - toAddComponent.toRect().center * _scale) / _scale;
+      _translateAfterScale = extent;
+    }
+  }
+
+  TileComponent addTile(TileInfo info, {bool saveDb = false}) {
     assert(info != null);
     TileComponent tileComponent = TileComponent(
       tileInfo: info,
@@ -306,19 +367,16 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     if (saveDb == true) {
       CustomDatabase.share.into(CustomDatabase.share.tileInfos).insert(info);
     }
+    return tileComponent;
   }
 
   void addTileComponent(TileComponent tileComponent) {
     assert(tileComponent != null);
     _tileComponentLocationMap[tileComponent.tileMapLocation] = tileComponent;
-    TileComponent topTileComponent = _tileComponentLocationMap[
-        TileMapLocation(tileComponent.tileInfo.tileMapX, tileComponent.tileInfo.tileMapY - 1)];
-    TileComponent leftTileComponent = _tileComponentLocationMap[
-        TileMapLocation(tileComponent.tileInfo.tileMapX - 1, tileComponent.tileInfo.tileMapY)];
-    TileComponent bottomTileComponent = _tileComponentLocationMap[
-        TileMapLocation(tileComponent.tileInfo.tileMapX, tileComponent.tileInfo.tileMapY + 1)];
-    TileComponent rightTileComponent = _tileComponentLocationMap[
-        TileMapLocation(tileComponent.tileInfo.tileMapX + 1, tileComponent.tileInfo.tileMapY)];
+    TileComponent topTileComponent = _tileComponentLocationMap[TileMapLocation(tileComponent.tileInfo.tileMapX, tileComponent.tileInfo.tileMapY - 1)];
+    TileComponent leftTileComponent = _tileComponentLocationMap[TileMapLocation(tileComponent.tileInfo.tileMapX - 1, tileComponent.tileInfo.tileMapY)];
+    TileComponent bottomTileComponent = _tileComponentLocationMap[TileMapLocation(tileComponent.tileInfo.tileMapX, tileComponent.tileInfo.tileMapY + 1)];
+    TileComponent rightTileComponent = _tileComponentLocationMap[TileMapLocation(tileComponent.tileInfo.tileMapX + 1, tileComponent.tileInfo.tileMapY)];
 
     if (topTileComponent != null) {
       tileComponent.linkWithTileComponent(tileComponent: topTileComponent, borderOrientation: BorderOrientation.Top);
@@ -327,12 +385,10 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
       tileComponent.linkWithTileComponent(tileComponent: leftTileComponent, borderOrientation: BorderOrientation.Left);
     }
     if (bottomTileComponent != null) {
-      tileComponent.linkWithTileComponent(
-          tileComponent: bottomTileComponent, borderOrientation: BorderOrientation.Bottom);
+      tileComponent.linkWithTileComponent(tileComponent: bottomTileComponent, borderOrientation: BorderOrientation.Bottom);
     }
     if (rightTileComponent != null) {
-      tileComponent.linkWithTileComponent(
-          tileComponent: rightTileComponent, borderOrientation: BorderOrientation.Right);
+      tileComponent.linkWithTileComponent(tileComponent: rightTileComponent, borderOrientation: BorderOrientation.Right);
     }
   }
 
@@ -366,7 +422,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   }
 
   ///随机添加小人
-  void randomAddPerson({bool toUpload = true}) {
+  void randomAddPerson({bool toUpload = true, bool useEnterAnimation = false}) {
     Random random = Random();
     int bodyID = random.nextInt(ImageHelper.bodys.length);
     int tmpID = random.nextInt(ImageHelper.hairs.length ~/ 2);
@@ -386,13 +442,14 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
       id: Uuid.generateUuidV4WithoutDashes(),
       noseID: random.nextInt(ImageHelper.noses.length),
     );
-    addPerson(personModel, saveDb: true);
+    addPerson(personModel, saveDb: true, useEnterAnimation: useEnterAnimation);
   }
 
-  void addPerson(PersonModel model, {bool saveDb = false}) {
+  void addPerson(PersonModel model, {bool saveDb = false, bool useEnterAnimation = false}) {
     assert(model != null);
     randomPosition((endNode, position) {
       PersonSprite personSprite = PersonSprite(endPathNode: endNode, initialPosition: position, model: model);
+      if (useEnterAnimation) personSprite.enter(targetEndNode: endNode, targetPosition: position);
       addLater(personSprite);
       if (model.uploaded != true) {
         homePageBloc?.add(HomePageEventUploadPersonSpriteInfo(model: model));
@@ -407,20 +464,17 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     TileComponent tile = _tileComponentLocationMap?.values?.randomItem;
     tile?.randomPath(({beginNode, endNode}) {
       if (beginNode != null && endNode != null) {
-        Position position = positionAmong(
-            beginPosition: beginNode.position, endPosition: endNode.position, movePercent: Random().nextInt(100));
+        Position position = positionAmong(beginPosition: beginNode.position, endPosition: endNode.position, movePercent: Random().nextInt(100));
         callback?.call(endNode, position);
       }
     });
   }
 
   void jump() {
-    List<PersonSprite> personSprite = List<PersonSprite>.from(
-        _components.where((element) => element.gameComponent is PersonSprite).map((e) => e.gameComponent));
+    List<PersonSprite> personSprite = List<PersonSprite>.from(_components.where((element) => element.gameComponent is PersonSprite).map((e) => e.gameComponent));
     _tileComponentLocationMap.values?.randomItem?.randomPath(({beginNode, endNode}) {
       int movePercent = Random().nextInt(100);
-      Position target =
-          positionAmong(beginPosition: beginNode.position, endPosition: endNode.position, movePercent: movePercent);
+      Position target = positionAmong(beginPosition: beginNode.position, endPosition: endNode.position, movePercent: movePercent);
       personSprite.randomItem?.jumpto(targetEndNode: endNode, targetCenter: target);
     });
   }
@@ -435,7 +489,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   @override
   // ignore: must_call_super
   void update(double t) {
-    // _components.forEach((c) => c.gameComponent.update(t));
+    _mapLayer?.update(t);
     _addLater?.forEach((element) {
       add(element);
     });

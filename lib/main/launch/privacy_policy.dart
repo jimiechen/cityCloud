@@ -6,7 +6,9 @@ import 'package:cityCloud/main/launch/router_list.dart';
 import 'package:cityCloud/main/launch/upush_test.dart';
 import 'package:cityCloud/router/router.dart';
 import 'package:cityCloud/styles/color_helper.dart';
+import 'package:cityCloud/user_info/user_info.dart';
 import 'package:cityCloud/widgets/default_app_bar.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pangolin/pangolin.dart' as Pangolin;
 
@@ -25,6 +27,20 @@ class PrivacyPolicyPage extends StatelessWidget {
               Text(
                 '这里是隐私政策,这里是隐私政策,这里是隐私政策,这里是隐私政策,这里是隐私政策,这里是隐私政策,',
               ),
+
+              SizedBox(height:20),
+              Text(
+                '下面开关是表示是否上传初始地图和小车小人到服务端的，开关为开则上传',
+              ),
+              StatefulBuilder(builder: (_, refresh) {
+                return CupertinoSwitch(
+                    value: UserInfo().gameDataSyncServer,
+                    onChanged: (b) {
+                      refresh(() {
+                        UserInfo().gameDataSyncServer = b;
+                      });
+                    });
+              }),
             ],
           ),
           Positioned(

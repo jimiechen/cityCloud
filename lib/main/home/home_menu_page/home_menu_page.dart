@@ -55,7 +55,8 @@ class _HomeMenuPageState extends State<HomeMenuPage> with TickerProviderStateMix
           currentState is HomePageCubitTapOnMessageCenter ||
           currentState is HomePageCubitTapOnFriendDynamic ||
           currentState is HomePageCubitTapOnUserCenter) {
-        _animationController.forward();
+        // _animationController.forward();
+        print(currentState);
       }
     });
   }
