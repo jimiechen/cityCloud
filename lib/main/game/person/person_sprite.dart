@@ -43,8 +43,7 @@ class PersonSprite extends PositionComponent {
   ///小人身体各部位信息
   final PersonModel model;
 
-  ///定时倒数改变小人当前动作，走、站立、跳三个动作
-  double _randomActionTimeCount = 5;
+  ///小人当前动作，走、站立、跳三个动作
   PersonActionType _currentActionType;
 
   ///小人闭眼倒计时
@@ -52,9 +51,6 @@ class PersonSprite extends PositionComponent {
 
   ///跳动控制
   JumpCanvasTranslate _jumpTranslate;
-
-  ///从一个位置跳到另一个位置
-  VoidCallback _jumpToAction;
 
   ///小人各部位的sprite
   FootSprite _leftFootSprite;
@@ -67,6 +63,9 @@ class PersonSprite extends PositionComponent {
   ///人影paint
   Paint _shadowPaint = Paint()..color = Colors.grey.withOpacity(0.5);
 
+  //
+  PathNode _prepareJumpToNode;
+
   PersonSprite({
     @required this.model,
     @required Position initialPosition,
@@ -78,12 +77,10 @@ class PersonSprite extends PositionComponent {
 
     Color personColor = Color(model.faceColorValue);
     _leftFootSprite = FootSprite(footColor: personColor, footImage: ImageHelper.foots[model.footID]);
-    _rightFootSprite =
-        FootSprite(footColor: personColor, footImage: ImageHelper.foots[model.footID], isLeftHand: false);
+    _rightFootSprite = FootSprite(footColor: personColor, footImage: ImageHelper.foots[model.footID], isLeftHand: false);
     _bodySprite = BodySprite(bodyColor: personColor, bodyImage: ImageHelper.bodys[model.bodyID]);
     _leftHandSprite = HandSprite(handColor: personColor, handImage: ImageHelper.hands[model.handID]);
-    _rightHandSprite =
-        HandSprite(handColor: personColor, handImage: ImageHelper.hands[model.handID], isLeftHand: false);
+    _rightHandSprite = HandSprite(handColor: personColor, handImage: ImageHelper.hands[model.handID], isLeftHand: false);
     _headSprite = HeadSprite(
       eyeImage: ImageHelper.eyes[model.eyeID],
       faceColor: personColor,
@@ -92,7 +89,6 @@ class PersonSprite extends PositionComponent {
     );
 
     _currentActionType = PersonActionType.Walk;
-    _randomActionTimeCount = 10;
     resetMoveEffect();
     walk();
   }
@@ -108,9 +104,15 @@ class PersonSprite extends PositionComponent {
       speed: PersonMoveSpeed,
       onComplete: () {
         Timer.run(() {
-          _endPathNode = _endPathNode.randomLinkedNode;
-          if (_endPathNode != null) {
-            resetMoveEffect();
+          if (_prepareJumpToNode != null) {
+            ///需要跳到其他地方
+            _jumpto(targetEndNode: _prepareJumpToNode);
+            _prepareJumpToNode = null;
+          } else {
+            _endPathNode = _endPathNode.randomLinkedNode;
+            if (_endPathNode != null) {
+              changeAction();
+            }
           }
         });
       },
@@ -129,18 +131,19 @@ class PersonSprite extends PositionComponent {
 
   ///从一个位置跳到另一个位置
   void jumpto({@required PathNode targetEndNode, @required Position targetCenter}) {
+    _prepareJumpToNode = targetEndNode;
+  }
+
+  void _jumpto({@required PathNode targetEndNode}) {
     if (_goOutEffect == null && _enterEffect == null) {
-      _jumpToAction = () {
-        goOut(() {
-          enter(
-              targetEndNode: targetEndNode,
-              targetPosition: targetCenter,
-              onComplete: () {
-                _jumpToAction = null;
-                changeAction();
-              });
-        });
-      };
+      goOut(() {
+        enter(
+            targetEndNode: targetEndNode,
+            targetPosition: targetEndNode.randomLinkedNode.position,
+            onComplete: () {
+              changeAction();
+            });
+      });
     }
   }
 
@@ -152,7 +155,7 @@ class PersonSprite extends PositionComponent {
       x = targetPosition.x;
       y = targetPosition.y;
       _enterEffect = ScalTranslateCanvasEffect(
-          destinationTranslate: Position(0,-40),
+          destinationTranslate: Position(0, -40),
           destinationScale: Offset(-0.5, 1.5),
           travelTime: 0.3,
           reverse: true,
@@ -170,7 +173,7 @@ class PersonSprite extends PositionComponent {
   void goOut(VoidCallback onComplete) {
     if (_goOutEffect == null && _enterEffect == null) {
       _goOutEffect = ScalTranslateCanvasEffect(
-          destinationTranslate: Position(0,-40),
+          destinationTranslate: Position(0, -40),
           destinationScale: Offset(-0.5, 1.5),
           travelTime: 0.3,
           onComplete: () {
@@ -217,40 +220,31 @@ class PersonSprite extends PositionComponent {
   void changeAction() {
     PersonActionType preActionType = _currentActionType;
     _currentActionType = PersonActionType.values.randomItem;
-    if (_jumpToAction != null) {
-      reset();
-      _jumpToAction.call();
-    } else if (preActionType != _currentActionType) {
-      reset();
-      switch (_currentActionType) {
-        case PersonActionType.Jump:
-          jump();
-          _randomActionTimeCount = 0.6;
-          break;
-        case PersonActionType.Stand:
-          _randomActionTimeCount = 2;
-          stand();
-          break;
-        default:
-          _randomActionTimeCount = 10;
-          walk();
-          resetMoveEffect();
-      }
-    } else {
-      switch (_currentActionType) {
-        case PersonActionType.Jump:
-          _randomActionTimeCount = 0.6;
-          break;
-        case PersonActionType.Stand:
-          _randomActionTimeCount = 2;
-          break;
-        default:
-          _randomActionTimeCount = 10;
-      }
+    bool resetHnad = preActionType == PersonActionType.Jump || _currentActionType == PersonActionType.Jump;
+    reset(resetHnad: resetHnad);
+    switch (_currentActionType) {
+      case PersonActionType.Jump:
+        jump(complete: () {
+          changeAction();
+        });
+        break;
+      case PersonActionType.Stand:
+        stand(
+            resetHnad: resetHnad,
+            complete: () {
+              changeAction();
+            });
+        break;
+      default:
+        walk(resetHnad: resetHnad);
+        resetMoveEffect();
     }
   }
 
-  void reset() {
+/**
+ * resetHnad:是否重置手的动画
+ */
+  void reset({bool resetHnad = true}) {
     clearEffects();
     _leftFootSprite?.resetPosition();
     _leftFootSprite?.clearEffects();
@@ -258,36 +252,42 @@ class PersonSprite extends PositionComponent {
     _rightFootSprite?.clearEffects();
     _bodySprite?.resetPosition();
     _bodySprite?.clearEffects();
-    _leftHandSprite?.resetPosition();
-    _leftHandSprite?.clearEffects();
-    _rightHandSprite?.resetPosition();
-    _rightHandSprite?.clearEffects();
+    if (resetHnad) {
+      _leftHandSprite?.resetPosition();
+      _leftHandSprite?.clearEffects();
+      _rightHandSprite?.resetPosition();
+      _rightHandSprite?.clearEffects();
+    }
     _headSprite?.resetPosition();
     _headSprite?.clearEffects();
   }
 
-  void jump() {
+  void jump({VoidCallback complete}) {
     double tralvelTime = 0.3;
     _leftHandSprite.addEffect(
       HandRotateEffect(
-          curve: Curves.linear,
-          isAlternating: true,
-          radians: PersonHandJumpRotate,
-          speed: PersonHandJumpRotate / tralvelTime),
+        curve: Curves.linear,
+        isAlternating: true,
+        radians: PersonHandJumpRotate,
+        speed: PersonHandJumpRotate / tralvelTime,
+      ),
     );
     _rightHandSprite.addEffect(
       HandRotateEffect(
-          curve: Curves.linear,
-          isAlternating: true,
-          radians: -PersonHandJumpRotate,
-          speed: PersonHandJumpRotate / tralvelTime),
+        curve: Curves.linear,
+        isAlternating: true,
+        radians: -PersonHandJumpRotate,
+        speed: PersonHandJumpRotate / tralvelTime,
+      ),
     );
 
     _jumpTranslate = JumpCanvasTranslate(
-        curve: Curves.easeOut,
-        jumpHeight: PersonJumpHeight,
-        speed: PersonJumpHeight / tralvelTime,
-        isAlternating: true);
+      curve: Curves.easeOut,
+      jumpHeight: PersonJumpHeight,
+      speed: PersonJumpHeight / tralvelTime,
+      isAlternating: true,
+      onComplete: complete,
+    );
 
     _leftFootSprite.addEffect(
       MoveEffect(
@@ -307,25 +307,36 @@ class PersonSprite extends PositionComponent {
     );
   }
 
-  void stand() {
+/**
+ * resetHnad:是否重置手的动画
+ */
+  void stand({VoidCallback complete, bool resetHnad = true}) {
     double tralvelTime = 0.4;
-    _leftHandSprite.addEffect(
-      HandRotateEffect(
+    Future.delayed(Duration(seconds: 2), () {
+      complete?.call();
+    });
+
+    if (resetHnad) {
+      _leftHandSprite.addEffect(
+        HandRotateEffect(
           curve: Curves.linear,
           isAlternating: true,
           radians: PersonHandWalkRotate,
           speed: PersonHandWalkRotate / tralvelTime,
-          isInfinite: true),
-    );
+          isInfinite: true,
+        ),
+      );
 
-    _rightHandSprite.addEffect(
-      HandRotateEffect(
+      _rightHandSprite.addEffect(
+        HandRotateEffect(
           curve: Curves.linear,
           isAlternating: true,
           radians: -PersonHandWalkRotate,
           speed: PersonHandWalkRotate / tralvelTime,
-          isInfinite: true),
-    );
+          isInfinite: true,
+        ),
+      );
+    }
 
     _headSprite.addEffect(
       MoveEffect(
@@ -338,7 +349,10 @@ class PersonSprite extends PositionComponent {
     );
   }
 
-  void walk() {
+/**
+ * resetHnad:是否重置手的动画
+ */
+  void walk({bool resetHnad = true}) {
     double tralvelTime = 0.4;
     _leftFootSprite.addEffect(
       MoveEffect(
@@ -361,23 +375,27 @@ class PersonSprite extends PositionComponent {
       ),
     );
 
-    _leftHandSprite.addEffect(
-      HandRotateEffect(
+    if (resetHnad) {
+      _leftHandSprite.addEffect(
+        HandRotateEffect(
           curve: Curves.linear,
           isAlternating: true,
           radians: PersonHandWalkRotate,
           speed: PersonHandWalkRotate / tralvelTime,
-          isInfinite: true),
-    );
+          isInfinite: true,
+        ),
+      );
 
-    _rightHandSprite.addEffect(
-      HandRotateEffect(
+      _rightHandSprite.addEffect(
+        HandRotateEffect(
           curve: Curves.linear,
           isAlternating: true,
           radians: -PersonHandWalkRotate,
           speed: PersonHandWalkRotate / tralvelTime,
-          isInfinite: true),
-    );
+          isInfinite: true,
+        ),
+      );
+    }
 
     _headSprite.addEffect(
       MoveEffect(
@@ -423,11 +441,6 @@ class PersonSprite extends PositionComponent {
     if (_enterEffect != null || _goOutEffect != null) {
       _enterEffect?.update(dt);
       _goOutEffect?.update(dt);
-    } else {
-      _randomActionTimeCount -= dt;
-      if (_randomActionTimeCount < 0) {
-        changeAction();
-      }
     }
   }
 
@@ -441,8 +454,7 @@ class PersonSprite extends PositionComponent {
     }
 
     ///画脚下阴影
-    canvas.drawOval(
-        Rect.fromCenter(center: Offset(0, 0), width: PersonShadowWidth, height: PersonShadowHeight), _shadowPaint);
+    canvas.drawOval(Rect.fromCenter(center: Offset(0, 0), width: PersonShadowWidth, height: PersonShadowHeight), _shadowPaint);
     _jumpTranslate?.translate(canvas);
     canvas.save();
     _enterEffect?.setEffectToCanvas(canvas);
