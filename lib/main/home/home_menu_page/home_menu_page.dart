@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:cityCloud/styles/color_helper.dart';
+import 'package:cityCloud/widgets/hit_test_manager_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,6 +35,11 @@ class _HomeMenuPageState extends State<HomeMenuPage> with TickerProviderStateMix
       length: _tabsTitle.length,
       vsync: this,
     );
+    _tabController.addListener(() {
+      setState(() {
+        
+      });
+    });
     _animationController = AnimationController(
       duration: Duration(milliseconds: 200),
       reverseDuration: Duration(milliseconds: 200),
@@ -196,62 +202,67 @@ class _HomeMenuPageState extends State<HomeMenuPage> with TickerProviderStateMix
           ),
         ),
         Expanded(
-          child: IgnoreHitTestWidget(
-            child: PageView(
-              controller: _pageController,
-              physics: _animationController.isCompleted ? null : NeverScrollableScrollPhysics(),
-              onPageChanged: (index) {
-                _tabController.animateTo(index);
-              },
+          child: HitTestManagerWidget(
+            ignoreHitTest: _tabController.index == 0 && _animationController.status == AnimationStatus.dismissed,
+            hitestChild: Column(
               children: [
-                Column(
-                  children: [
-                    Spacer(),
-                    AnimatedBuilder(
-                      animation: _animationController,
-                      child: InteractiveViewer(
-                          onInteractionStart: (detail) {
-                            _startTapY = detail.localFocalPoint.dy;
-                            _startTapAnimationValue = _animationController.value;
-                          },
-                          onInteractionUpdate: (detail) {
-                            _animationController.value =
-                                _startTapAnimationValue + min((_startTapY - detail.localFocalPoint.dy) / _interactiveViewExtentedHeight, 1 - _startTapAnimationValue);
-                          },
-                          onInteractionEnd: (detial) {
-                            if (_animationController.value > _startTapAnimationValue) {
-                              ///手势向上
-                              if (_animationController.value > 0.2) {
-                                _animationController.forward();
-                              } else {
-                                _animationController.reverse();
-                              }
-                            } else {
-                              ///手势向下
-                              if (_animationController.value > 0.8) {
-                                _animationController.forward();
-                              } else {
-                                _animationController.reverse();
-                              }
-                            }
-                          },
-                          child: Column(
-                            children: [...taskCenterContent()],
-                          )),
-                      builder: (_, child) {
-                        return SizedBox(
-                          height: _interactiveViewExtentedHeight * _animationController.value + _interactiveViewMinHeight,
-                          width: BoxConstraints.expand().maxWidth,
-                          child: child,
-                        );
+                Spacer(),
+                AnimatedBuilder(
+                  animation: _animationController,
+                  child: InteractiveViewer(
+                      onInteractionStart: (detail) {
+                        _startTapY = detail.localFocalPoint.dy;
+                        _startTapAnimationValue = _animationController.value;
                       },
-                    ),
-                  ],
+                      onInteractionUpdate: (detail) {
+                        _animationController.value =
+                            _startTapAnimationValue + min((_startTapY - detail.localFocalPoint.dy) / _interactiveViewExtentedHeight, 1 - _startTapAnimationValue);
+                      },
+                      onInteractionEnd: (detial) {
+                        if (_animationController.value > _startTapAnimationValue) {
+                          ///手势向上
+                          if (_animationController.value > 0.2) {
+                            _animationController.forward();
+                          } else {
+                            _animationController.reverse();
+                          }
+                        } else {
+                          ///手势向下
+                          if (_animationController.value > 0.8) {
+                            _animationController.forward();
+                          } else {
+                            _animationController.reverse();
+                          }
+                        }
+                      },
+                      child: Column(
+                        children: [...taskCenterContent()],
+                      )),
+                  builder: (_, child) {
+                    return SizedBox(
+                      height: _interactiveViewExtentedHeight * _animationController.value + _interactiveViewMinHeight,
+                      width: BoxConstraints.expand().maxWidth,
+                      child: child,
+                    );
+                  },
                 ),
-                Container(color: Colors.white),
-                Container(color: Colors.white),
               ],
             ),
+            ignoreWidgetBuilder: (child) {
+              return PageView(
+                controller: _pageController,
+                onPageChanged: (index) {
+                  if(index != _tabController.index) {
+                    _tabController.animateTo(index);
+                  }
+                },
+                children: [
+                  child,
+                  Container(color: Colors.white),
+                  Container(color: Colors.white),
+                ],
+              );
+            },
           ),
         ),
       ],
@@ -262,31 +273,5 @@ class _HomeMenuPageState extends State<HomeMenuPage> with TickerProviderStateMix
   void dispose() {
     _streamSubscription?.cancel();
     super.dispose();
-  }
-}
-
-class IgnoreHitTestWidget extends SingleChildRenderObjectWidget {
-  const IgnoreHitTestWidget({
-    Key key,
-    Widget child,
-  }) : super(key: key, child: child);
-
-  @override
-  IgnoreHitTestRender createRenderObject(BuildContext context) {
-    final IgnoreHitTestRender renderObject = IgnoreHitTestRender();
-    return renderObject;
-  }
-}
-
-class IgnoreHitTestRender extends RenderProxyBox {
-  IgnoreHitTestRender({
-    RenderBox child,
-  }) : super(child);
-
-  @override
-  bool hitTest(BoxHitTestResult result, {Offset position}) {
-    bool b = super.hitTest(result, position: position);
-    // print(result);
-    return false;
   }
 }

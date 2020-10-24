@@ -3,7 +3,7 @@ class UserInfo {
   UserInfo._();
   factory UserInfo() => share;
 
-  String get uid => 'cc'  ;
+  String get uid => 'cc2'  ;
   ///如果是账号第一次登陆，一定要同步数据
   bool gameDataSyncServer = false;
 }
