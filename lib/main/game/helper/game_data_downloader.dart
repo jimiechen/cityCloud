@@ -17,53 +17,62 @@ class GameDataDownloader {
   ///下载游戏相关数据，并存到数据库,返回布尔值标识是否所有数据都请求成功，如果所有数据都成功获取则返回true，否则false。请求到数据后存储到本地数据库
   static Future<bool> getGameData() {
     return Future.wait<bool>(
-      [NetworkDataType.person, NetworkDataType.car, NetworkDataType.map].map((element) {
+      [NetworkDataType.person, NetworkDataType.car, NetworkDataType.map].map((dataType) {
         return NetworkDio.get<List<CommonServerDataModel>, CommonServerDataModel>(
           modelFromJson: (json) => CommonServerDataModel.fromJson(json),
           pathForData: ['data', 'list'],
           url: API_QUERY_OBJECT,
           body: {
             'uid': UserInfo().uid,
-            'data_type': element,
+            'data_type': dataType,
           },
-        ).then((value) {
-          Iterable<CommonServerDataModel> tmpList = value?.data?.where((element) => element.json is Map);
-          if (element == NetworkDataType.person) {
-            CustomDatabase.share.delete(CustomDatabase.share.personModels).go();
-            var dataList = tmpList
-                ?.map((e) {
-                  e.json['uploaded'] = true;
-                  return PersonModel.fromJson(e.json);
-                })
-                ?.where((element) => PersonModels.isAllValueValidated(element))
-                ?.toList();
+        ).then((value) async {
+          Iterable<CommonServerDataModel> tmpList = value?.data?.where((element) => element.json is Map && element.dataType == dataType);
+          if (dataType == NetworkDataType.person) {
+            await CustomDatabase.share.delete(CustomDatabase.share.personModels).go();
+            Set<String> idsSet = {};
+            var dataList = tmpList?.map((e) {
+              e.json['uploaded'] = true;
+              return PersonModel.fromJson(e.json);
+            })?.where((element) {
+              bool b = idsSet.add(element.id);
+              return b && PersonModels.isAllValueValidated(element);
+            })?.toList();
             CustomDatabase.share.batch((batch) {
               batch.insertAll(CustomDatabase.share.personModels, dataList);
             });
-          } else if (element == NetworkDataType.car) {
-            CustomDatabase.share.delete(CustomDatabase.share.carInfos).go();
-            var dataList = tmpList
-                ?.map((e) {
-                  e.json['uploaded'] = true;
-                  return CarInfo.fromJson(e.json);
-                })
-                ?.where((element) => CarInfos.isAllValueValidated(element))
-                ?.toList();
+            dataList = null;
+            idsSet = null;
+          } else if (dataType == NetworkDataType.car) {
+            await CustomDatabase.share.delete(CustomDatabase.share.carInfos).go();
+            Set<String> idsSet = {};
+            var dataList = tmpList?.map((e) {
+              e.json['uploaded'] = true;
+              return CarInfo.fromJson(e.json);
+            })?.where((element) {
+              bool b = idsSet.add(element.id);
+              return b && CarInfos.isAllValueValidated(element);
+            })?.toList();
             CustomDatabase.share.batch((batch) {
               batch.insertAll(CustomDatabase.share.carInfos, dataList);
             });
-          } else if (element == NetworkDataType.map) {
-            CustomDatabase.share.delete(CustomDatabase.share.tileInfos).go();
-            var dataList = tmpList
-                ?.map((e) {
-                  e.json['uploaded'] = true;
-                  return TileInfo.fromJson(e.json);
-                })
-                ?.where((element) => TileInfos.isAllValueValidated(element))
-                ?.toList();
+            dataList = null;
+            idsSet = null;
+          } else if (dataType == NetworkDataType.map) {
+            await CustomDatabase.share.delete(CustomDatabase.share.tileInfos).go();
+            Set<String> idsSet = {};
+            var dataList = tmpList?.map((e) {
+              e.json['uploaded'] = true;
+              return TileInfo.fromJson(e.json);
+            })?.where((element) {
+              bool b = idsSet.add(element.id);
+              return b && TileInfos.isAllValueValidated(element);
+            })?.toList();
             CustomDatabase.share.batch((batch) {
               batch.insertAll(CustomDatabase.share.tileInfos, dataList);
             });
+            dataList = null;
+            idsSet = null;
           }
           return true;
         }).catchError((onError) {
@@ -78,7 +87,7 @@ class GameDataDownloader {
   }
 
   ///默认地图数据
-  static List<TileInfo> defaultMapData({bool saveDb = false,bool toUpload = false}) {
+  static List<TileInfo> defaultMapData({bool saveDb = false, bool toUpload = false}) {
     int tileBGColor = ColorHelper.mapTile.randomItem.value;
     List infoList = [
       _mapTileLocation(5, 2),
