@@ -18,7 +18,7 @@ class GameDataDownloader {
   static Future<bool> getGameData() {
     return Future.wait<bool>(
       [NetworkDataType.person, NetworkDataType.car, NetworkDataType.map].map((dataType) {
-        return NetworkDio.get<List<CommonServerDataModel>, CommonServerDataModel>(
+        return NetworkDio.post<List<CommonServerDataModel>, CommonServerDataModel>(
           modelFromJson: (json) => CommonServerDataModel.fromJson(json),
           pathForData: ['data', 'list'],
           url: API_QUERY_OBJECT,
