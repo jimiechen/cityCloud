@@ -27,7 +27,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   #flutter 游戏框架
-  flame: ^0.27.0
+  flame: ^0.28.0
   #flame的flare插件
   flame_flare: ^0.1.0
   #下拉刷新，上拉加载更多

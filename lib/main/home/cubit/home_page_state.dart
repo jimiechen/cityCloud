@@ -18,3 +18,6 @@ class HomePageCubitTapOnFriendDynamic extends HomePageCubitState {}
 class HomePageCubitTapOnUserCenter extends HomePageCubitState {}
 class HomePageCubitTapOnAddDynamic extends HomePageCubitState {}
 class HomePageCubitTapOnMessageList extends HomePageCubitState {}
+
+class HomePageCubitStopGame extends HomePageCubitState {}
+class HomePageCubitStartGame extends HomePageCubitState {}

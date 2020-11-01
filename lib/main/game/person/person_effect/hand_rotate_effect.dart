@@ -31,7 +31,7 @@ class HandRotateEffect extends PositionComponentEffect {
   @override
   void update(double dt) {
     super.update(dt);
-    final double c = curve?.transform(percentage) ?? 1.0;
+    final double c = curve?.transform(percentage??0) ?? 1.0;
     component.angle = _originalAngle + _peakAngle * c;
   }
 }

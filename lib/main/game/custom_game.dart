@@ -101,11 +101,18 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
 
   bool _isWaitingForRender = false;
 
+  ///游戏是否正在运行
+  bool _isRuning = true;
+
   CustomGame({this.homePageBloc, this.homePageCubit}) {
     homePageBloc?.add(HomePageEventGetGameData());
-    // _blocSubscription = homePageBloc.listen((currentState) {
-
-    // });
+    _blocSubscription = homePageCubit.listen((currentState) {
+      if (currentState is HomePageCubitStopGame && _isRuning) {
+        pauseEngine();
+      } else if (currentState is HomePageCubitStartGame && !_isRuning) {
+        resumeEngine();
+      }
+    });
     loadDBData();
 
     ///异步，要不size值为null
@@ -633,5 +640,17 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     }
 
     super.lifecycleStateChange(state);
+  }
+
+  @override
+  void resumeEngine() {
+    _isRuning = true;
+    super.resumeEngine();
+  }
+
+  @override
+  void pauseEngine() {
+    _isRuning = false;
+    super.pauseEngine();
   }
 }

@@ -1,5 +1,7 @@
 import 'package:cityCloud/dart_class/flame/callback_pre_rendered_layer.dart';
 import 'package:cityCloud/main/game/person/person_const_data.dart';
+import 'package:cityCloud/main/game/person/person_effect/eye_scale_effect.dart';
+import 'package:cityCloud/main/game/person/person_effect/person_move_effect.dart';
 import 'package:flame/components/component.dart';
 import 'package:flame/effects/effects.dart';
 import 'package:flame/position.dart';
@@ -71,7 +73,7 @@ class HeadSprite extends PositionComponent {
   void closeEye() {
     eyeSprite?.clearEffects();
     eyeSprite.addEffect(
-      ScaleEffect(
+      EyeScaleEffect(
         size: Size(eyeSprite.width, 0),
         speed: eyeSprite.height * 4,
         curve: Curves.linear,
@@ -81,7 +83,7 @@ class HeadSprite extends PositionComponent {
     );
 
     eyeSprite?.addEffect(
-      MoveEffect(
+      PersonMoveEffect(
         isAlternating: true,
         curve: Curves.linear,
         destination: eyeSprite.toPosition().add(Position(0, eyeSprite.height / 2)),

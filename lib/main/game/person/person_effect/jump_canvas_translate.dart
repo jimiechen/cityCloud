@@ -24,7 +24,7 @@ class JumpCanvasTranslate extends PositionComponentEffect {
   @override
   void update(double dt) {
     super.update(dt);
-    final double c = curve?.transform(percentage) ?? 1.0;
+    final double c = curve?.transform(percentage??0) ?? 1.0;
     _currentTranslate = jumpHeight * c;
   }
 

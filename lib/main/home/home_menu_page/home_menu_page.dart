@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:cityCloud/styles/color_helper.dart';
 import 'package:cityCloud/widgets/hit_test_manager_widget.dart';
+import 'package:flame/position.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,14 +16,17 @@ class HomeMenuPage extends StatefulWidget {
 }
 
 class _HomeMenuPageState extends State<HomeMenuPage> with TickerProviderStateMixin {
-  double _startTapY;
-  AnimationController _animationController;
-  double _startTapAnimationValue;
-  double _interactiveViewMinHeight = 170;
-  double _interactiveViewExtentedHeight = 0;
-  StreamSubscription _streamSubscription;
+  double _firstPageOriginHeight = 170;
+  double _topSpaceHeight;
+  double _pageViewHeight;
+  double _topBarHeight;
 
-  HomeMenuPageCubit _pageCubit = HomeMenuPageCubit();
+  ScrollController _scrollController = ScrollController();
+
+  AnimationController _tabBarAnimationController;
+  AnimationController _downArrowAnimationController;
+  StreamSubscription _streamSubscription;
+  // HomeMenuPageCubit _pageCubit = HomeMenuPageCubit();
 
   List<String> _tabsTitle = ['地区', '推荐', '关注'];
   TabController _tabController;
@@ -31,30 +34,60 @@ class _HomeMenuPageState extends State<HomeMenuPage> with TickerProviderStateMix
   @override
   void initState() {
     super.initState();
+    HomePageCubit homePageCubit = BlocProvider.of<HomePageCubit>(context);
     _tabController = TabController(
       length: _tabsTitle.length,
       vsync: this,
     );
     _tabController.addListener(() {
-      setState(() {
-        
-      });
+      setState(() {});
     });
-    _animationController = AnimationController(
+    _scrollController.addListener(() {
+      if (_scrollController.offset > _topSpaceHeight - _topBarHeight - 10) {
+        if (homePageCubit.state is! HomePageCubitStopGame) {
+          homePageCubit.add(HomePageCubitStopGame());
+        }
+      } else if (_scrollController.offset < _topSpaceHeight - _topBarHeight - 15) {
+        if (homePageCubit.state is! HomePageCubitStartGame) {
+          homePageCubit.add(HomePageCubitStartGame());
+        }
+      }
+
+      if (_scrollController.offset < _topSpaceHeight - _topBarHeight) {
+        if (!_tabBarAnimationController.isAnimating && !_tabBarAnimationController.isDismissed) {
+          _tabBarAnimationController.reverse();
+        }
+      } else {
+        if (!_tabBarAnimationController.isAnimating && !_tabBarAnimationController.isCompleted) {
+          _tabBarAnimationController.forward();
+        }
+      }
+
+      double start = _pageViewHeight - _firstPageOriginHeight;
+      if (_scrollController.offset < start) {
+        if (!_downArrowAnimationController.isAnimating && !_downArrowAnimationController.isDismissed) {
+          _downArrowAnimationController.reverse();
+        }
+      } else if (_scrollController.offset < _pageViewHeight) {
+        if (!_downArrowAnimationController.isAnimating) {
+          _downArrowAnimationController.animateTo((_scrollController.offset - start) / (_pageViewHeight - start), duration: Duration.zero);
+        }
+      } else if (_scrollController.offset >= _pageViewHeight) {
+        if (!_downArrowAnimationController.isAnimating && !_downArrowAnimationController.isCompleted) {
+          _downArrowAnimationController.forward();
+        }
+      }
+    });
+    _tabBarAnimationController = AnimationController(
       duration: Duration(milliseconds: 200),
-      reverseDuration: Duration(milliseconds: 200),
       vsync: this,
       value: 0,
     );
-    _animationController.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        BlocProvider.of<HomePageCubit>(context).add(HomePageCubitShowMenu());
-        setState(() {});
-      } else if (status == AnimationStatus.dismissed) {
-        BlocProvider.of<HomePageCubit>(context).add(HomePageCubitHideMenu());
-        setState(() {});
-      }
-    });
+    _downArrowAnimationController = AnimationController(
+      duration: Duration(milliseconds: 200),
+      vsync: this,
+      value: 0,
+    );
 
     _streamSubscription = BlocProvider.of<HomePageCubit>(context).listen((currentState) {
       if (currentState is HomePageCubitTapOnTaskCenter ||
@@ -78,34 +111,29 @@ class _HomeMenuPageState extends State<HomeMenuPage> with TickerProviderStateMix
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: BlocBuilder<HomePageCubit, HomePageCubitState>(
-        buildWhen: (preState, currentState) => currentState is HomePageCubitShowMenu || currentState is HomePageCubitHideMenu,
-        builder: (_, currentState) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                height: 20,
-                padding: EdgeInsets.all(2),
-                decoration: BoxDecoration(
-                  color: ColorHelper.DividerColor,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text('当前35481人在线'),
-              ),
-              SizedBox(height: 12),
-              Container(
-                height: 50,
-                decoration: BoxDecoration(
-                  color: ColorHelper.BGColor,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                alignment: Alignment.center,
-                child: Text('记录今天有趣的事情'),
-              ),
-            ],
-          );
-        },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            height: 20,
+            padding: EdgeInsets.all(2),
+            decoration: BoxDecoration(
+              color: ColorHelper.DividerColor,
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Text('当前35481人在线'),
+          ),
+          SizedBox(height: 12),
+          Container(
+            height: 50,
+            decoration: BoxDecoration(
+              color: ColorHelper.BGColor,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            alignment: Alignment.center,
+            child: Text('记录今天有趣的事情'),
+          ),
+        ],
       ),
     );
 
@@ -145,128 +173,142 @@ class _HomeMenuPageState extends State<HomeMenuPage> with TickerProviderStateMix
         ],
       ),
     );
-    yield Expanded(
-      child: Container(
-        color: ColorHelper.ColorF2,
-        child: ListView(
-          physics: ClampingScrollPhysics(),
-          padding: const EdgeInsets.all(0),
-          children: [
-            SizedBox(height: 8),
-            Container(
-              height: 40,
-              color: Colors.white,
-              alignment: Alignment.centerLeft,
-              child: IconButton(
-                icon: Icon(Icons.arrow_downward),
-                onPressed: () {
-                  _animationController.reverse();
-                },
-              ),
-            )
-          ],
-        ),
-      ),
+    // yield SizedBox(height: 8);
+    // yield ;
+  }
+
+  Widget topBar() {
+    double topPadding = MediaQuery.of(context).padding.top;
+    _topBarHeight = topPadding + 45;
+    return AnimatedBuilder(
+      animation: _tabBarAnimationController,
+      builder: (_, __) {
+        return Positioned(
+          left: 0,
+          right: 0,
+          top: -_tabBarAnimationController.value * _topBarHeight,
+          child: Container(
+            height: _topBarHeight,
+            width: BoxConstraints.expand().maxWidth,
+            padding: EdgeInsets.only(top: topPadding),
+            color: Colors.white,
+            child: TabBar(
+              tabs: _tabsTitle.map((e) => Text(e)).toList(),
+              controller: _tabController,
+              isScrollable: true,
+              indicatorColor: Colors.transparent,
+              labelColor: ColorHelper.Black51,
+              unselectedLabelColor: ColorHelper.Black153,
+              unselectedLabelStyle: TextStyle(color: ColorHelper.Black153, fontSize: 13),
+              labelStyle: TextStyle(color: ColorHelper.Black51, fontSize: 16, fontWeight: FontWeight.bold),
+              onTap: (index) {
+                _pageController.animateToPage(
+                  index,
+                  duration: Duration(milliseconds: 20),
+                  curve: Curves.linear,
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget downArrow() {
+    double topPadding = MediaQuery.of(context).padding.top;
+    return AnimatedBuilder(
+      animation: _downArrowAnimationController,
+      builder: (_, __) {
+        return Container(
+          height: _topBarHeight,
+          color: Colors.white.withOpacity(_downArrowAnimationController.value),
+          padding: EdgeInsets.only(top: topPadding),
+          alignment: Alignment.centerLeft,
+          child: IconButton(
+            icon: Icon(
+              Icons.arrow_downward,
+              color: ColorHelper.ThemeBlack.withOpacity(_downArrowAnimationController.value),
+            ),
+            onPressed: () {
+              _scrollController.animateTo(0, duration: Duration(milliseconds: 200), curve: Curves.linear);
+            },
+          ),
+        );
+      },
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    double bottomPadding = MediaQuery.of(context).padding.bottom;
-    double topPadding = MediaQuery.of(context).padding.top;
-    _interactiveViewExtentedHeight = _interactiveViewMinHeight + 100;
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        Container(
-          height: 45 + MediaQuery.of(context).padding.top,
-          width: BoxConstraints.expand().maxWidth,
-          padding: EdgeInsets.only(top: topPadding),
-          color: Colors.white,
-          child: TabBar(
-            tabs: _tabsTitle.map((e) => Text(e)).toList(),
-            controller: _tabController,
-            isScrollable: true,
-            indicatorColor: Colors.transparent,
-            labelColor: ColorHelper.Black51,
-            unselectedLabelColor: ColorHelper.Black153,
-            unselectedLabelStyle: TextStyle(color: ColorHelper.Black153, fontSize: 13),
-            labelStyle: TextStyle(color: ColorHelper.Black51, fontSize: 16, fontWeight: FontWeight.bold),
-            onTap: (index) {
-              _pageController.animateToPage(
-                index,
-                duration: Duration(milliseconds: 20),
-                curve: Curves.linear,
-              );
-            },
-          ),
-        ),
-        Expanded(
-          child: HitTestManagerWidget(
-            ignoreHitTest: _tabController.index == 0 && _animationController.status == AnimationStatus.dismissed,
-            hitestChild: Column(
-              children: [
-                Spacer(),
-                AnimatedBuilder(
-                  animation: _animationController,
-                  child: InteractiveViewer(
-                      onInteractionStart: (detail) {
-                        _startTapY = detail.localFocalPoint.dy;
-                        _startTapAnimationValue = _animationController.value;
-                      },
-                      onInteractionUpdate: (detail) {
-                        _animationController.value =
-                            _startTapAnimationValue + min((_startTapY - detail.localFocalPoint.dy) / _interactiveViewExtentedHeight, 1 - _startTapAnimationValue);
-                      },
-                      onInteractionEnd: (detial) {
-                        if (_animationController.value > _startTapAnimationValue) {
-                          ///手势向上
-                          if (_animationController.value > 0.2) {
-                            _animationController.forward();
-                          } else {
-                            _animationController.reverse();
-                          }
-                        } else {
-                          ///手势向下
-                          if (_animationController.value > 0.8) {
-                            _animationController.forward();
-                          } else {
-                            _animationController.reverse();
-                          }
-                        }
-                      },
-                      child: Column(
-                        children: [...taskCenterContent()],
-                      )),
-                  builder: (_, child) {
-                    return SizedBox(
-                      height: _interactiveViewExtentedHeight * _animationController.value + _interactiveViewMinHeight,
-                      width: BoxConstraints.expand().maxWidth,
-                      child: child,
-                    );
-                  },
-                ),
-              ],
-            ),
-            ignoreWidgetBuilder: (child) {
-              return PageView(
-                controller: _pageController,
-                onPageChanged: (index) {
-                  if(index != _tabController.index) {
-                    _tabController.animateTo(index);
+    return LayoutBuilder(
+      builder: (_, constraints) {
+        _pageViewHeight = constraints.maxHeight;
+        _topSpaceHeight = _pageViewHeight - _firstPageOriginHeight;
+        double manualMoveHeight = _topSpaceHeight * 0.5;
+        return Stack(
+          children: [
+            HitTestIgnoreManagerWidget(
+              ignoreHitTest: _tabController.index == 0,
+              hitestChild: Listener(
+                onPointerMove: (_) {},
+                onPointerUp: (_) {
+                  if (_scrollController.offset > manualMoveHeight && _scrollController.offset < _topSpaceHeight - _topBarHeight) {
+                    _scrollController.animateTo(manualMoveHeight, duration: Duration(milliseconds: 200), curve: Curves.linear);
+                  } else if (_scrollController.offset >= _topSpaceHeight - _topBarHeight && _scrollController.offset < _pageViewHeight) {
+                    _scrollController.animateTo(_pageViewHeight, duration: Duration(milliseconds: 200), curve: Curves.linear);
                   }
                 },
-                children: [
-                  child,
-                  Container(color: Colors.white),
-                  Container(color: Colors.white),
-                ],
-              );
-            },
-          ),
-        ),
-      ],
+                child: HitTestCheckWidget(
+                  checkHitTestPermission: (hitTestPosition) {
+                    return hitTestPosition.dy + _scrollController.offset > _topSpaceHeight;
+                  },
+                  child: ListView(
+                    controller: _scrollController,
+                    padding: const EdgeInsets.all(0),
+                    children: [
+                      SizedBox(height: _topSpaceHeight),
+                      ...taskCenterContent(),
+                      Container(
+                        color: Colors.yellow,
+                        height: 800,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              ignoreWidgetBuilder: (child) {
+                return PageView(
+                  controller: _pageController,
+                  onPageChanged: (index) {
+                    if (index != _tabController.index) {
+                      _tabController.animateTo(index);
+                    }
+                  },
+                  children: [
+                    child,
+                    Container(color: Colors.white),
+                    Container(color: Colors.white),
+                  ],
+                );
+              },
+            ),
+            downArrow(),
+            topBar(),
+          ],
+        );
+      },
     );
+
+    // Column(
+    //   mainAxisAlignment: MainAxisAlignment.end,
+    //   children: [
+
+    //     // Expanded(
+    //     //   child:
+    //     // ),
+    //   ],
+    // );
   }
 
   @override

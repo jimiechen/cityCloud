@@ -290,7 +290,7 @@ class PersonSprite extends PositionComponent {
     );
 
     _leftFootSprite.addEffect(
-      MoveEffect(
+      PersonMoveEffect(
         isAlternating: true,
         destination: _leftFootSprite.toPosition().add(Position(0, -PersonFootJumpTakeBackLength)),
         speed: PersonFootJumpTakeBackLength / tralvelTime,
@@ -298,7 +298,7 @@ class PersonSprite extends PositionComponent {
       ),
     );
     _rightFootSprite.addEffect(
-      MoveEffect(
+      PersonMoveEffect(
         isAlternating: true,
         destination: _rightFootSprite.toPosition().add(Position(0, -PersonFootJumpTakeBackLength)),
         speed: PersonFootJumpTakeBackLength / tralvelTime,
@@ -339,7 +339,7 @@ class PersonSprite extends PositionComponent {
     }
 
     _headSprite.addEffect(
-      MoveEffect(
+      PersonMoveEffect(
         isAlternating: true,
         isInfinite: true,
         destination: _headSprite.toPosition().add(Position(0, PersonFootPutUpHeight)),
@@ -355,7 +355,7 @@ class PersonSprite extends PositionComponent {
   void walk({bool resetHnad = true}) {
     double tralvelTime = 0.4;
     _leftFootSprite.addEffect(
-      MoveEffect(
+      PersonMoveEffect(
         isAlternating: true,
         isInfinite: true,
         destination: _leftFootSprite.toPosition().add(Position(0, -PersonFootPutUpHeight)),
@@ -366,7 +366,7 @@ class PersonSprite extends PositionComponent {
     Position originPosition = _rightFootSprite.toPosition();
     _rightFootSprite.y -= PersonFootPutUpHeight;
     _rightFootSprite.addEffect(
-      MoveEffect(
+      PersonMoveEffect(
         isAlternating: true,
         isInfinite: true,
         destination: originPosition,
@@ -398,7 +398,7 @@ class PersonSprite extends PositionComponent {
     }
 
     _headSprite.addEffect(
-      MoveEffect(
+      PersonMoveEffect(
         isAlternating: true,
         isInfinite: true,
         destination: _headSprite.toPosition().add(Position(0, PersonFootPutUpHeight)),
