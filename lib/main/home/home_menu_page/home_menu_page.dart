@@ -248,50 +248,55 @@ class _HomeMenuPageState extends State<HomeMenuPage> with TickerProviderStateMix
         double manualMoveHeight = _topSpaceHeight * 0.5;
         return Stack(
           children: [
-            HitTestIgnoreManagerWidget(
-              ignoreHitTest: _tabController.index == 0,
-              hitestChild: Listener(
-                onPointerMove: (_) {},
-                onPointerUp: (_) {
-                  if (_scrollController.offset > manualMoveHeight && _scrollController.offset < _topSpaceHeight - _topBarHeight) {
-                    _scrollController.animateTo(manualMoveHeight, duration: Duration(milliseconds: 200), curve: Curves.linear);
-                  } else if (_scrollController.offset >= _topSpaceHeight - _topBarHeight && _scrollController.offset < _pageViewHeight) {
-                    _scrollController.animateTo(_pageViewHeight, duration: Duration(milliseconds: 200), curve: Curves.linear);
-                  }
-                },
-                child: HitTestCheckWidget(
-                  checkHitTestPermission: (hitTestPosition) {
-                    return hitTestPosition.dy + _scrollController.offset > _topSpaceHeight;
-                  },
-                  child: ListView(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.all(0),
-                    children: [
-                      SizedBox(height: _topSpaceHeight),
-                      ...taskCenterContent(),
-                      Container(
-                        color: Colors.yellow,
-                        height: 800,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              ignoreWidgetBuilder: (child) {
-                return PageView(
-                  controller: _pageController,
-                  onPageChanged: (index) {
-                    if (index != _tabController.index) {
-                      _tabController.animateTo(index);
+            HitTestAbsorbCheckWidget(
+              checkHitTestAbsorb: (hitTestPosition) {
+                return hitTestPosition.dy + _scrollController.offset > _topSpaceHeight;
+              },
+              child: HitTestIgnoreManagerWidget(
+                ignoreHitTest: _tabController.index == 0,
+                hitestChild: Listener(
+                  onPointerMove: (_) {},
+                  onPointerUp: (_) {
+                    if (_scrollController.offset > manualMoveHeight && _scrollController.offset < _topSpaceHeight - _topBarHeight) {
+                      _scrollController.animateTo(manualMoveHeight, duration: Duration(milliseconds: 200), curve: Curves.linear);
+                    } else if (_scrollController.offset >= _topSpaceHeight - _topBarHeight && _scrollController.offset < _pageViewHeight) {
+                      _scrollController.animateTo(_pageViewHeight, duration: Duration(milliseconds: 200), curve: Curves.linear);
                     }
                   },
-                  children: [
-                    child,
-                    Container(color: Colors.white),
-                    Container(color: Colors.white),
-                  ],
-                );
-              },
+                  child: HitTestCheckWidget(
+                    checkHitTestPermission: (hitTestPosition) {
+                      return hitTestPosition.dy + _scrollController.offset > _topSpaceHeight;
+                    },
+                    child: ListView(
+                      controller: _scrollController,
+                      padding: const EdgeInsets.all(0),
+                      children: [
+                        SizedBox(height: _topSpaceHeight),
+                        ...taskCenterContent(),
+                        Container(
+                          color: Colors.yellow,
+                          height: 800,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                ignoreWidgetBuilder: (child) {
+                  return PageView(
+                    controller: _pageController,
+                    onPageChanged: (index) {
+                      if (index != _tabController.index) {
+                        _tabController.animateTo(index);
+                      }
+                    },
+                    children: [
+                      child,
+                      Container(color: Colors.white),
+                      Container(color: Colors.white),
+                    ],
+                  );
+                },
+              ),
             ),
             downArrow(),
             topBar(),

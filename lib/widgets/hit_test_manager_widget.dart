@@ -28,6 +28,32 @@ class _HitTestCheckRenderObject extends RenderProxyBox {
   }
 }
 
+class HitTestAbsorbCheckWidget extends SingleChildRenderObjectWidget {
+  final bool Function(Offset) checkHitTestAbsorb;
+  HitTestAbsorbCheckWidget({Key key, Widget child, this.checkHitTestAbsorb}) : super(key: key,child: child);
+
+  @override
+  _HitTestAbsorbCheckRenderObject createRenderObject(BuildContext context) {
+    return _HitTestAbsorbCheckRenderObject()..checkHitTestAbsorb = checkHitTestAbsorb;
+  }
+
+  @override
+  void updateRenderObject(BuildContext context, covariant _HitTestAbsorbCheckRenderObject renderObject) {
+    renderObject.checkHitTestAbsorb = checkHitTestAbsorb;
+  }
+}
+
+class _HitTestAbsorbCheckRenderObject extends RenderProxyBox {
+  bool Function(Offset) checkHitTestAbsorb;
+
+
+  @override
+  bool hitTest(BoxHitTestResult result, {Offset position}) {
+    bool b = super.hitTest(result, position: position);
+    return b || checkHitTestAbsorb?.call(position) == true;
+  }
+}
+
 // ignore: must_be_immutable
 class HitTestIgnoreManagerWidget extends SingleChildRenderObjectWidget {
   final bool ignoreHitTest;
