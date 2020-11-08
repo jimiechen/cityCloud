@@ -1411,6 +1411,291 @@ class $TileInfosTable extends TileInfos
   }
 }
 
+class LogInfo extends DataClass implements Insertable<LogInfo> {
+  final int id;
+  final String date;
+  final String logName;
+  final String logDescription;
+  LogInfo(
+      {@required this.id,
+      @required this.date,
+      @required this.logName,
+      this.logDescription});
+  factory LogInfo.fromData(Map<String, dynamic> data, GeneratedDatabase db,
+      {String prefix}) {
+    final effectivePrefix = prefix ?? '';
+    final intType = db.typeSystem.forDartType<int>();
+    final stringType = db.typeSystem.forDartType<String>();
+    return LogInfo(
+      id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      date: stringType.mapFromDatabaseResponse(data['${effectivePrefix}date']),
+      logName: stringType
+          .mapFromDatabaseResponse(data['${effectivePrefix}log_name']),
+      logDescription: stringType
+          .mapFromDatabaseResponse(data['${effectivePrefix}log_description']),
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (!nullToAbsent || id != null) {
+      map['id'] = Variable<int>(id);
+    }
+    if (!nullToAbsent || date != null) {
+      map['date'] = Variable<String>(date);
+    }
+    if (!nullToAbsent || logName != null) {
+      map['log_name'] = Variable<String>(logName);
+    }
+    if (!nullToAbsent || logDescription != null) {
+      map['log_description'] = Variable<String>(logDescription);
+    }
+    return map;
+  }
+
+  LogInfosCompanion toCompanion(bool nullToAbsent) {
+    return LogInfosCompanion(
+      id: id == null && nullToAbsent ? const Value.absent() : Value(id),
+      date: date == null && nullToAbsent ? const Value.absent() : Value(date),
+      logName: logName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(logName),
+      logDescription: logDescription == null && nullToAbsent
+          ? const Value.absent()
+          : Value(logDescription),
+    );
+  }
+
+  factory LogInfo.fromJson(Map<String, dynamic> json,
+      {ValueSerializer serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return LogInfo(
+      id: serializer.fromJson<int>(json['id']),
+      date: serializer.fromJson<String>(json['date']),
+      logName: serializer.fromJson<String>(json['logName']),
+      logDescription: serializer.fromJson<String>(json['logDescription']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer serializer}) {
+    serializer ??= moorRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'date': serializer.toJson<String>(date),
+      'logName': serializer.toJson<String>(logName),
+      'logDescription': serializer.toJson<String>(logDescription),
+    };
+  }
+
+  LogInfo copyWith(
+          {int id, String date, String logName, String logDescription}) =>
+      LogInfo(
+        id: id ?? this.id,
+        date: date ?? this.date,
+        logName: logName ?? this.logName,
+        logDescription: logDescription ?? this.logDescription,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('LogInfo(')
+          ..write('id: $id, ')
+          ..write('date: $date, ')
+          ..write('logName: $logName, ')
+          ..write('logDescription: $logDescription')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => $mrjf($mrjc(id.hashCode,
+      $mrjc(date.hashCode, $mrjc(logName.hashCode, logDescription.hashCode))));
+  @override
+  bool operator ==(dynamic other) =>
+      identical(this, other) ||
+      (other is LogInfo &&
+          other.id == this.id &&
+          other.date == this.date &&
+          other.logName == this.logName &&
+          other.logDescription == this.logDescription);
+}
+
+class LogInfosCompanion extends UpdateCompanion<LogInfo> {
+  final Value<int> id;
+  final Value<String> date;
+  final Value<String> logName;
+  final Value<String> logDescription;
+  const LogInfosCompanion({
+    this.id = const Value.absent(),
+    this.date = const Value.absent(),
+    this.logName = const Value.absent(),
+    this.logDescription = const Value.absent(),
+  });
+  LogInfosCompanion.insert({
+    this.id = const Value.absent(),
+    @required String date,
+    @required String logName,
+    this.logDescription = const Value.absent(),
+  })  : date = Value(date),
+        logName = Value(logName);
+  static Insertable<LogInfo> custom({
+    Expression<int> id,
+    Expression<String> date,
+    Expression<String> logName,
+    Expression<String> logDescription,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (date != null) 'date': date,
+      if (logName != null) 'log_name': logName,
+      if (logDescription != null) 'log_description': logDescription,
+    });
+  }
+
+  LogInfosCompanion copyWith(
+      {Value<int> id,
+      Value<String> date,
+      Value<String> logName,
+      Value<String> logDescription}) {
+    return LogInfosCompanion(
+      id: id ?? this.id,
+      date: date ?? this.date,
+      logName: logName ?? this.logName,
+      logDescription: logDescription ?? this.logDescription,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<String>(date.value);
+    }
+    if (logName.present) {
+      map['log_name'] = Variable<String>(logName.value);
+    }
+    if (logDescription.present) {
+      map['log_description'] = Variable<String>(logDescription.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LogInfosCompanion(')
+          ..write('id: $id, ')
+          ..write('date: $date, ')
+          ..write('logName: $logName, ')
+          ..write('logDescription: $logDescription')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $LogInfosTable extends LogInfos with TableInfo<$LogInfosTable, LogInfo> {
+  final GeneratedDatabase _db;
+  final String _alias;
+  $LogInfosTable(this._db, [this._alias]);
+  final VerificationMeta _idMeta = const VerificationMeta('id');
+  GeneratedIntColumn _id;
+  @override
+  GeneratedIntColumn get id => _id ??= _constructId();
+  GeneratedIntColumn _constructId() {
+    return GeneratedIntColumn('id', $tableName, false,
+        hasAutoIncrement: true, declaredAsPrimaryKey: true);
+  }
+
+  final VerificationMeta _dateMeta = const VerificationMeta('date');
+  GeneratedTextColumn _date;
+  @override
+  GeneratedTextColumn get date => _date ??= _constructDate();
+  GeneratedTextColumn _constructDate() {
+    return GeneratedTextColumn(
+      'date',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _logNameMeta = const VerificationMeta('logName');
+  GeneratedTextColumn _logName;
+  @override
+  GeneratedTextColumn get logName => _logName ??= _constructLogName();
+  GeneratedTextColumn _constructLogName() {
+    return GeneratedTextColumn(
+      'log_name',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _logDescriptionMeta =
+      const VerificationMeta('logDescription');
+  GeneratedTextColumn _logDescription;
+  @override
+  GeneratedTextColumn get logDescription =>
+      _logDescription ??= _constructLogDescription();
+  GeneratedTextColumn _constructLogDescription() {
+    return GeneratedTextColumn(
+      'log_description',
+      $tableName,
+      true,
+    );
+  }
+
+  @override
+  List<GeneratedColumn> get $columns => [id, date, logName, logDescription];
+  @override
+  $LogInfosTable get asDslTable => this;
+  @override
+  String get $tableName => _alias ?? 'log_infos';
+  @override
+  final String actualTableName = 'log_infos';
+  @override
+  VerificationContext validateIntegrity(Insertable<LogInfo> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id'], _idMeta));
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+          _dateMeta, date.isAcceptableOrUnknown(data['date'], _dateMeta));
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('log_name')) {
+      context.handle(_logNameMeta,
+          logName.isAcceptableOrUnknown(data['log_name'], _logNameMeta));
+    } else if (isInserting) {
+      context.missing(_logNameMeta);
+    }
+    if (data.containsKey('log_description')) {
+      context.handle(
+          _logDescriptionMeta,
+          logDescription.isAcceptableOrUnknown(
+              data['log_description'], _logDescriptionMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  LogInfo map(Map<String, dynamic> data, {String tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
+    return LogInfo.fromData(data, _db, prefix: effectivePrefix);
+  }
+
+  @override
+  $LogInfosTable createAlias(String alias) {
+    return $LogInfosTable(_db, alias);
+  }
+}
+
 abstract class _$CustomDatabase extends GeneratedDatabase {
   _$CustomDatabase(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
   $CacheDBItemsTable _cacheDBItems;
@@ -1423,6 +1708,8 @@ abstract class _$CustomDatabase extends GeneratedDatabase {
       _personModels ??= $PersonModelsTable(this);
   $TileInfosTable _tileInfos;
   $TileInfosTable get tileInfos => _tileInfos ??= $TileInfosTable(this);
+  $LogInfosTable _logInfos;
+  $LogInfosTable get logInfos => _logInfos ??= $LogInfosTable(this);
   CacheDBItemsDao _cacheDBItemsDao;
   CacheDBItemsDao get cacheDBItemsDao =>
       _cacheDBItemsDao ??= CacheDBItemsDao(this as CustomDatabase);
@@ -1430,5 +1717,5 @@ abstract class _$CustomDatabase extends GeneratedDatabase {
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [cacheDBItems, carInfos, personModels, tileInfos];
+      [cacheDBItems, carInfos, personModels, tileInfos, logInfos];
 }

@@ -1,3 +1,4 @@
+import 'package:cityCloud/expanded/log_recorder/log_recorder.dart';
 import 'package:cityCloud/lifecycle/lifecycle.dart';
 import 'package:cityCloud/router/router.dart';
 import 'package:flutter/material.dart';
@@ -15,8 +16,8 @@ void main() {
     DeviceOrientation.portraitDown,
   ]);
   WidgetsBinding.instance.addObserver(LifeCycle());
+  LogRecorder.addLog(logDescription: '打开app', logType: LogType.initApp);
   runApp(MyApp());
-  
 }
 
 class MyApp extends StatelessWidget {

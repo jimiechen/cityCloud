@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cityCloud/expanded/log_recorder/log_recorder.dart';
 import 'package:cityCloud/main/game/car/model/car_info.dart';
 import 'package:cityCloud/main/game/map_tile/model/tile_info.dart';
 import 'package:cityCloud/main/game/person/model/person_model.dart';
@@ -28,7 +29,7 @@ LazyDatabase _openConnection() {
   });
 }
 
-@UseMoor(tables: [CacheDBItems,CarInfos,PersonModels,TileInfos], daos: [CacheDBItemsDao])
+@UseMoor(tables: [CacheDBItems,CarInfos,PersonModels,TileInfos,LogInfos], daos: [CacheDBItemsDao])
 class CustomDatabase extends _$CustomDatabase {
   // we tell the database where to store the data with this constructor
   static CustomDatabase _share = CustomDatabase._();

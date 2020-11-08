@@ -24,7 +24,7 @@ class _RouterListPageState extends State<RouterListPage> {
     ),
     ItemModel(
       name: '查看日志',
-      info: GeneralRouterParamater(),
+      info: GeneralRouterParamater(routerType: GeneralRouterType.Log),
     ),
     ItemModel(
       name: '通用设置',

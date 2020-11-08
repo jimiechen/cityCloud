@@ -1,5 +1,6 @@
 import 'package:cityCloud/const/config.dart';
 import 'package:cityCloud/expanded/puzzle_captcha/captcha/block_puzzle_captcha.dart';
+import 'package:cityCloud/main/launch/custom_log.dart';
 import 'package:cityCloud/main/launch/database_data_show.dart';
 import 'package:cityCloud/main/launch/js_interation.dart';
 import 'package:cityCloud/router/router.dart';
@@ -77,7 +78,7 @@ class GeneralRouterManager {
         _gotoLookDatabase();
         break;
       case GeneralRouterType.Log:
-        // TODO: Handle this case.
+        _gotoLookLogData();
         break;
       case GeneralRouterType.GeneralSetting:
         // TODO: Handle this case.
@@ -110,6 +111,10 @@ class GeneralRouterManager {
 
   static void _gotoLookDatabase() {
     Navigator.push(buildContext, RouterManager.routeForPage(page: DatabaseDataShowPage()));
+  }
+
+  static void _gotoLookLogData(){
+    Navigator.push(buildContext, RouterManager.routeForPage(page: CustomLogPage()));
   }
 
   static void _gotoWebview(Map data) {

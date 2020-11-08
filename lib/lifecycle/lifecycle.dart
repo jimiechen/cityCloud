@@ -1,7 +1,5 @@
 import 'package:cityCloud/const/config.dart';
-import 'package:cityCloud/main/game/helper/game_data_downloader.dart';
 import 'package:cityCloud/router/general_router_manager.dart';
-import 'package:cityCloud/user_info/user_info.dart';
 import 'package:cityCloud/util/image_helper.dart';
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
@@ -40,9 +38,9 @@ class LifeCycle with WidgetsBindingObserver {
         appId: PangolinAppID, useTextureView: true, appName: PangolinAppName, allowShowNotify: true, allowShowPageWhenScreenLock: true, debug: true, supportMultiProcess: true);
 
     ///初始化的时候加载游戏初始数据，如果是正式开发移到登陆后加载
-    GameDataDownloader.getGameData().then((value) {
-      UserInfo().gameDataSyncServer = value;
-    });
+    // GameDataDownloader.getGameData().then((value) {
+    //   UserInfo().gameDataSyncServer = value;
+    // });
 
     ///预加载图片
     Flame.images.loadAll([...ImageHelper.mapTileViews]);

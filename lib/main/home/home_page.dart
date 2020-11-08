@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cityCloud/expanded/global_cubit/global_cubit.dart';
+import 'package:cityCloud/expanded/log_recorder/log_recorder.dart';
 import 'package:cityCloud/main/game/custom_game.dart';
 import 'package:cityCloud/main/home/bloc/home_page_bloc.dart';
 import 'package:cityCloud/main/home/cubit/home_page_cubit.dart';
@@ -30,6 +31,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    LogRecorder.addLog(logDescription: '打开首页', logType: LogType.openPage);
     _box2dGame = CustomGame(homePageBloc: _bloc, homePageCubit: _cubit);
     GlobalCubit().listen((cubitState) {
       if (cubitState is GlobalTapOnPersionSpriteRemider) {
@@ -64,10 +66,13 @@ class _HomePageState extends State<HomePage> {
     _streamSubscription = _cubit.listen((currentState) {
       if (currentState is HomePageCubitTapOnTaskCenter) {
         _box2dGame.randomAddPerson(toUpload: UserInfo().gameDataSyncServer, useEnterAnimation: true);
+        LogRecorder.addLog(logDescription: '点击按钮手动添加小人', logType: LogType.addPerson);
       } else if (currentState is HomePageCubitTapOnMessageCenter) {
         _box2dGame.randomAddCar(toUpload: UserInfo().gameDataSyncServer);
+         LogRecorder.addLog(logDescription: '点击按钮手动添加小车', logType: LogType.addCar);
       } else if (currentState is HomePageCubitTapOnFriendDynamic) {
         _box2dGame.randomAddTile(toUpload: UserInfo().gameDataSyncServer);
+         LogRecorder.addLog(logDescription: '点击按钮手动添加地图块', logType: LogType.addMapTile);
       }
     });
   }
