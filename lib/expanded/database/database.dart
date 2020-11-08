@@ -5,7 +5,7 @@ import 'package:cityCloud/main/game/map_tile/model/tile_info.dart';
 import 'package:cityCloud/main/game/person/model/person_model.dart';
 import 'package:cityCloud/util/list_data_cache_manager.dart/list_item.dart';
 import 'package:moor/moor.dart';
-import 'package:moor_ffi/moor_ffi.dart';
+import 'package:moor/ffi.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 
