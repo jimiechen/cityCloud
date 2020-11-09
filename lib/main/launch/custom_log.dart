@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cityCloud/expanded/database/database.dart';
 import 'package:cityCloud/widgets/default_app_bar.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +15,10 @@ class _CustomLogPageState extends State<CustomLogPage> {
   @override
   void initState() {
     super.initState();
+    refreshData();
+  }
+
+  void refreshData(){
     CustomDatabase db = CustomDatabase();
     (db.select(db.logInfos)
           ..orderBy([
@@ -26,11 +32,21 @@ class _CustomLogPageState extends State<CustomLogPage> {
     });
   }
 
+  void clear() {
+    CustomDatabase.share.delete(CustomDatabase.share.logInfos).go().then((value) {
+      Timer.run(() {
+        refreshData();
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: DefaultAppBar(
         titleText: '查看自定义日志',
+        actionText: '删除',
+        actionTextOnTap: clear,
       ),
       body: ListView.separated(
         itemBuilder: (_, index) {
