@@ -27,6 +27,10 @@ class _RouterListPageState extends State<RouterListPage> {
       info: GeneralRouterParamater(routerType: GeneralRouterType.Log),
     ),
     ItemModel(
+      name: 'MobileIMSDK 测试',
+      info: GeneralRouterParamater(routerType: GeneralRouterType.MobileIMSDK),
+    ),
+    ItemModel(
       name: '通用设置',
       info: GeneralRouterParamater(),
     ),

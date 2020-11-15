@@ -3,6 +3,7 @@ import 'package:cityCloud/expanded/puzzle_captcha/captcha/block_puzzle_captcha.d
 import 'package:cityCloud/main/launch/custom_log.dart';
 import 'package:cityCloud/main/launch/database_data_show.dart';
 import 'package:cityCloud/main/launch/js_interation.dart';
+import 'package:cityCloud/main/launch/mobile_im_sdk_debug/mobile_im_sdk_login_page.dart';
 import 'package:cityCloud/router/router.dart';
 import 'package:cityCloud/util/util.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,7 @@ enum GeneralRouterType {
   Native, //跳转原生页面
   PopupAd, //弹框广告
   SplashAd, //闪屏广告
+  MobileIMSDK,//MobileIMSDK
 }
 
 ///用于通用路由跳转的flutter页面区分
@@ -80,6 +82,9 @@ class GeneralRouterManager {
       case GeneralRouterType.Log:
         _gotoLookLogData();
         break;
+      case GeneralRouterType.MobileIMSDK:
+        _gotoMobileIMSDKDebug();
+        break;
       case GeneralRouterType.GeneralSetting:
         // TODO: Handle this case.
         break;
@@ -115,6 +120,10 @@ class GeneralRouterManager {
 
   static void _gotoLookLogData(){
     Navigator.push(buildContext, RouterManager.routeForPage(page: CustomLogPage()));
+  }
+
+  static void _gotoMobileIMSDKDebug(){
+    Navigator.push(buildContext, RouterManager.routeForPage(page: MobileIMSDKLoginPage()));
   }
 
   static void _gotoWebview(Map data) {
