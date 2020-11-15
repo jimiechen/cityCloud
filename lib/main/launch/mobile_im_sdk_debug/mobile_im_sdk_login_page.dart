@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:cityCloud/main/launch/mobile_im_sdk_debug/custom_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_mobile_imsdk/flutter_MobileIMSDK.dart';
+import 'package:flutter_mobile_imsdk/flutter_mobile_imsdk.dart';
 
 import 'mobile_im_sdk_debug_page.dart';
 
@@ -26,14 +26,14 @@ class _MobileIMSDKLoginPageState extends State<MobileIMSDKLoginPage> {
   @override
   void initState() {
     super.initState();
-    FlutterMobileIMSDK.setMethodCallHandler(handler: (method) {
+    FlutterMobileImsdk.setMethodCallHandler(handler: (method) {
       _streamController.add(method);
     });
 
     _streamSubscription = _streamController.stream.listen((event) {
       if (event is MobileIMSDKLoginSuccess) {
         print(event.info.toJson());
-        showToast('登录成功');
+        // showToast('登录成功');
         Navigator.pop(context);
         _streamSubscription.pause();
         Navigator.push(
@@ -82,9 +82,9 @@ class _MobileIMSDKLoginPageState extends State<MobileIMSDKLoginPage> {
       showToast('请填用户名和密码');
     } else {
       showDefaultLoading(context: context, title: '正在登录...');
-      FlutterMobileIMSDK.initMobileIMSDK(serverIP: ipController.text, serverPort: int.parse(portController.text), debug: true).then((value) {
+      FlutterMobileImsdk.initMobileIMSDK(serverIP: ipController.text, serverPort: int.parse(portController.text), debug: true).then((value) {
         if (value.result == true) {
-          FlutterMobileIMSDK.login(loginUserId: accountController.text, loginToken: passwordController.text).then((value) {
+          FlutterMobileImsdk.login(loginUserId: accountController.text, loginToken: passwordController.text).then((value) {
             if (value.result == false) {
               showToast('登录失败');
               Navigator.pop(context);
