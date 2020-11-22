@@ -73,8 +73,7 @@ class _FeedBackPageState extends State<FeedBackPage> {
         ));
         return;
       }
-      showModalBottomSheet<void>(
-          context: context, builder: _bottomSheetBuilder);
+      showModalBottomSheet<void>(context: context, builder: _bottomSheetBuilder);
     }
 
     //底部布局
@@ -159,22 +158,16 @@ class _FeedBackPageState extends State<FeedBackPage> {
               Text('取消', style: TextStyle(fontSize: 16, color: Colors.black)),
               Expanded(
                   child: Center(
-                child: Text('意见反馈',
-                    style: TextStyle(fontSize: 16, color: Colors.black)),
+                child: Text('意见反馈', style: TextStyle(fontSize: 16, color: Colors.black)),
               )),
               new InkWell(
-                child: Text('发送',
-                    style: TextStyle(fontSize: 16, color: Colors.black)),
+                child: Text('发送', style: TextStyle(fontSize: 16, color: Colors.black)),
                 onTap: () {
                   mSubmitFileList.clear();
                   for (int i = 0; i < mFileList.length; i++) {
-                    mSubmitFileList.add(MultipartFile.fromFileSync(
-                        mFileList.elementAt(i).path));
+                    mSubmitFileList.add(MultipartFile.fromFileSync(mFileList.elementAt(i).path));
                   }
-                  FormData formData = FormData.fromMap({
-                    "description": _mEtController.text,
-                    "files": mSubmitFileList
-                  });
+                  FormData formData = FormData.fromMap({"description": _mEtController.text, "files": mSubmitFileList});
                   request(ServiceUrl.feedback, formData: formData).then((val) {
                     int code = val['status'];
                     String msg = val['msg'];
@@ -288,9 +281,9 @@ class _FeedBackPageState extends State<FeedBackPage> {
       );
     }
 
-    return SafeArea(
-        child: Scaffold(
-      body: Container(
+    return Scaffold(
+        body: SafeArea(
+      child: Container(
           color: Colors.white,
           height: double.maxFinite,
           child: new Column(

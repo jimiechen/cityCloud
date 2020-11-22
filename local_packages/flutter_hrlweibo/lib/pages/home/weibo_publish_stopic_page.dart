@@ -34,8 +34,7 @@ class WeiBoPublishTopicPageState extends State<WeiBoPublishTopicPage> {
   }
 
   void loadLeftTypeData() async {
-    DioManager.getInstance().post(ServiceUrl.getWeiBoTopicTypeList, null,
-        (data) {
+    DioManager.getInstance().post(ServiceUrl.getWeiBoTopicTypeList, null, (data) {
       data['data'].forEach((data) {
         mLeftTopicTypeList.add(WeiBoTopicType.fromJson(data));
       });
@@ -66,17 +65,16 @@ class WeiBoPublishTopicPageState extends State<WeiBoPublishTopicPage> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return SafeArea(
-      child: Scaffold(
-          body: Column(
+    return Scaffold(
+      body: SafeArea(
+          child: Column(
         children: <Widget>[
           Row(
             children: <Widget>[
               Expanded(
                   child: Center(
                 child: Container(
-                  margin:
-                      EdgeInsets.only(left: 10, top: 15, right: 10, bottom: 10),
+                  margin: EdgeInsets.only(left: 10, top: 15, right: 10, bottom: 10),
                   padding: EdgeInsets.only(top: 6, bottom: 6, left: 15),
                   decoration: BoxDecoration(
                     color: Color(0xffE4E2E8),
@@ -92,8 +90,7 @@ class WeiBoPublishTopicPageState extends State<WeiBoPublishTopicPage> {
                         "# 话题 电影 书 地点 股票",
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style:
-                            TextStyle(fontSize: 14, color: Color(0xffee565656)),
+                        style: TextStyle(fontSize: 14, color: Color(0xffee565656)),
                       ),
                     ],
                   ),
@@ -114,10 +111,7 @@ class WeiBoPublishTopicPageState extends State<WeiBoPublishTopicPage> {
           ),
           Expanded(
             child: Row(
-              children: <Widget>[
-                leftListv(3, mLeftTopicTypeList, onMenuChecked),
-                RightListView()
-              ],
+              children: <Widget>[leftListv(3, mLeftTopicTypeList, onMenuChecked), RightListView()],
             ),
           )
         ],
@@ -139,15 +133,9 @@ class WeiBoPublishTopicPageState extends State<WeiBoPublishTopicPage> {
                 child: Container(
                   padding: EdgeInsets.only(top: 15, bottom: 15),
                   decoration: BoxDecoration(
-                    color: _selectCount == index
-                        ? Colors.white
-                        : Color(0xffEEEDF1),
+                    color: _selectCount == index ? Colors.white : Color(0xffEEEDF1),
                     border: Border(
-                      left: BorderSide(
-                          width: 5,
-                          color: _selectCount == index
-                              ? Color(0xffF79A03)
-                              : Color(0xffEEEDF1)),
+                      left: BorderSide(width: 5, color: _selectCount == index ? Color(0xffF79A03) : Color(0xffEEEDF1)),
                     ),
                   ),
                   alignment: Alignment.center,
@@ -189,25 +177,18 @@ class WeiBoPublishTopicPageState extends State<WeiBoPublishTopicPage> {
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(5.0),
                                   shape: BoxShape.rectangle,
-                                  image: DecorationImage(
-                                      image: NetworkImage(
-                                          '${mRightTopicList[index].topicimg}'),
-                                      fit: BoxFit.cover))),
+                                  image: DecorationImage(image: NetworkImage('${mRightTopicList[index].topicimg}'), fit: BoxFit.cover))),
                           Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
                                 "#" + mRightTopicList[index].topicdesc + "#",
-                                style: TextStyle(
-                                    fontSize: 15, color: Colors.black),
+                                style: TextStyle(fontSize: 15, color: Colors.black),
                               ),
                               Text(
-                                "讨论" +
-                                    mRightTopicList[index].topicdiscuss +
-                                    "万",
-                                style: TextStyle(
-                                    fontSize: 12, color: Color(0xff999999)),
+                                "讨论" + mRightTopicList[index].topicdiscuss + "万",
+                                style: TextStyle(fontSize: 12, color: Color(0xff999999)),
                               )
                             ],
                           )
@@ -230,6 +211,5 @@ class WeiBoPublishTopicPageState extends State<WeiBoPublishTopicPage> {
 }
 
 getRandomColor() {
-  return Color.fromARGB(255, Random.secure().nextInt(255),
-      Random.secure().nextInt(255), Random.secure().nextInt(255));
+  return Color.fromARGB(255, Random.secure().nextInt(255), Random.secure().nextInt(255), Random.secure().nextInt(255));
 }

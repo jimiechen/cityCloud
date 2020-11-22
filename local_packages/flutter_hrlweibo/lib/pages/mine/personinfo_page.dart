@@ -13,26 +13,14 @@ class PersonInfoPage extends StatefulWidget {
   _PersonInfoPageState createState() => _PersonInfoPageState();
 }
 
-class _PersonInfoPageState extends State<PersonInfoPage>
-    with SingleTickerProviderStateMixin {
+class _PersonInfoPageState extends State<PersonInfoPage> with SingleTickerProviderStateMixin {
   ScrollController scrollController = ScrollController();
 
   bool isShowBlackTitle = false;
 
   TabController _tabController;
-  OtherUser mUser = new OtherUser(
-      id: "0",
-      username: "",
-      nick: "",
-      headurl: "",
-      decs: "",
-      gender: "0",
-      followCount: "0",
-      fanCount: "0",
-      ismember: 0,
-      isvertify: 0,
-      relation: 0,
-      createtime: 0);
+  OtherUser mUser =
+      new OtherUser(id: "0", username: "", nick: "", headurl: "", decs: "", gender: "0", followCount: "0", fanCount: "0", ismember: 0, isvertify: 0, relation: 0, createtime: 0);
 
   @override
   void initState() {
@@ -109,13 +97,9 @@ class _PersonInfoPageState extends State<PersonInfoPage>
                 labelColor: Colors.black,
                 indicatorWeight: 3,
                 indicatorSize: TabBarIndicatorSize.label,
-                labelStyle: TextStyle(
-                    fontSize: 17,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w500),
+                labelStyle: TextStyle(fontSize: 17, color: Colors.black, fontWeight: FontWeight.w500),
                 unselectedLabelColor: Color(0xff999999),
-                unselectedLabelStyle:
-                    TextStyle(fontSize: 15, color: Colors.black),
+                unselectedLabelStyle: TextStyle(fontSize: 15, color: Colors.black),
               ),
             )
           ],
@@ -150,16 +134,17 @@ class _PersonInfoPageState extends State<PersonInfoPage>
         new Flexible(
           child: InkWell(
             onTap: () {
-              Routes.navigateTo(context, Routes.chatPage,
-                  transition: TransitionType.fadeIn);
+              Routes.navigateTo(
+                context,
+                Routes.chatPage,
+              );
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Container(
-                  child: Text('聊天',
-                      style: TextStyle(color: Colors.black, fontSize: 14)),
+                  child: Text('聊天', style: TextStyle(color: Colors.black, fontSize: 14)),
                 ),
               ],
             ),
@@ -194,13 +179,11 @@ class _PersonInfoPageState extends State<PersonInfoPage>
         margin: EdgeInsets.only(right: 15),
         child: InkWell(
           child: Container(
-              padding: new EdgeInsets.only(
-                  top: 4.0, bottom: 4.0, left: 6.0, right: 6.0),
+              padding: new EdgeInsets.only(top: 4.0, bottom: 4.0, left: 6.0, right: 6.0),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  Text("已关注",
-                      style: TextStyle(color: Color(0xff333333), fontSize: 14)),
+                  Text("已关注", style: TextStyle(color: Color(0xff333333), fontSize: 14)),
                 ],
               )),
           onTap: () {
@@ -213,18 +196,15 @@ class _PersonInfoPageState extends State<PersonInfoPage>
         margin: EdgeInsets.only(right: 15),
         child: InkWell(
           child: Container(
-            padding: new EdgeInsets.only(
-                top: 4.0, bottom: 4.0, left: 6.0, right: 6.0),
-            child: Text("+ 关注",
-                style: TextStyle(color: Colors.black, fontSize: 14)),
+            padding: new EdgeInsets.only(top: 4.0, bottom: 4.0, left: 6.0, right: 6.0),
+            child: Text("+ 关注", style: TextStyle(color: Colors.black, fontSize: 14)),
           ),
           onTap: () {
             FormData params = FormData.fromMap({
               'userid': UserUtil.getUserInfo().id,
               'otheruserid': mUser.id,
             });
-            DioManager.getInstance().post(ServiceUrl.followOther, params,
-                (data) {
+            DioManager.getInstance().post(ServiceUrl.followOther, params, (data) {
               int mRelation = data['data']['relation'];
               mUser.relation = mRelation;
               setState(() {});
@@ -239,8 +219,7 @@ class _PersonInfoPageState extends State<PersonInfoPage>
         margin: EdgeInsets.only(right: 15),
         child: InkWell(
           child: Container(
-              padding: new EdgeInsets.only(
-                  top: 4.0, bottom: 4.0, left: 6.0, right: 6.0),
+              padding: new EdgeInsets.only(top: 4.0, bottom: 4.0, left: 6.0, right: 6.0),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
@@ -249,8 +228,7 @@ class _PersonInfoPageState extends State<PersonInfoPage>
                     width: 10,
                     height: 10,
                   ),
-                  Text("互相关注",
-                      style: TextStyle(color: Color(0xff333333), fontSize: 14)),
+                  Text("互相关注", style: TextStyle(color: Color(0xff333333), fontSize: 14)),
                 ],
               )),
           onTap: () {
@@ -291,8 +269,7 @@ class _PersonInfoPageState extends State<PersonInfoPage>
                     'userid': UserUtil.getUserInfo().id,
                     'otheruserid': mUser.id,
                   });
-                  DioManager.getInstance()
-                      .post(ServiceUrl.followCancelOther, params, (data) {
+                  DioManager.getInstance().post(ServiceUrl.followCancelOther, params, (data) {
                     Navigator.of(context).pop();
                     int mRelation = data['data']['relation'];
                     mUser.relation = mRelation;
@@ -309,282 +286,246 @@ class _PersonInfoPageState extends State<PersonInfoPage>
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-        //  color: Colors.white,
-        child: Scaffold(
-      backgroundColor: Colors.white,
-      body: Stack(children: [
-        NotificationListener(
-            onNotification: (scrollNotification) {
-              if (scrollNotification is ScrollUpdateNotification &&
-                  scrollNotification.depth == 0) {
-                //滚动并且是列表滚动的时候
-                _onScroll(scrollNotification.metrics.pixels);
-              }
-            },
-            child: Stack(
-              children: <Widget>[
-                NestedScrollView(
-                  headerSliverBuilder:
-                      (BuildContext context, bool innerBoxIsScrolled) {
-                    // These are the slivers that show up in the "outer" scroll view.
-                    return <Widget>[
-                      SliverOverlapAbsorber(
-                        handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
-                            context),
-                        sliver: SliverAppBar(
-                          leading: new Container(
-                            margin: EdgeInsets.only(top: 20, bottom: 10),
-                            child: isShowBlackTitle
-                                ? Image.asset(
-                                    Constant.ASSETS_IMG +
-                                        'userinfo_icon_back_black.png',
-                                    fit: BoxFit.fitHeight,
-                                  )
-                                : Image.asset(
-                                    Constant.ASSETS_IMG +
-                                        'userinfo_icon_back_white.png',
-                                    fit: BoxFit.fitHeight,
-                                  ),
-                          ),
-                          title: isShowBlackTitle ? Text(mUser.nick) : Text(''),
-                          centerTitle: true,
-                          pinned: true,
-                          floating: false,
-                          snap: false,
-                          primary: true,
-                          expandedHeight: 210.0,
-                          backgroundColor: Color(0xffF8F8F8),
-                          elevation: 0,
-                          //是否显示阴影，直接取值innerBoxIsScrolled，展开不显示阴影，合并后会显示
-                          forceElevated: innerBoxIsScrolled,
-                          actions: <Widget>[
-                            new Container(
-                              margin: EdgeInsets.only(
-                                  right: 10, top: 20, bottom: 10),
-                              child: isShowBlackTitle
-                                  ? Image.asset(
-                                      Constant.ASSETS_IMG +
-                                          'userinfo_search_black.png',
-                                      width: 30,
-                                      height: 30,
-                                      fit: BoxFit.cover,
-                                    )
-                                  : Image.asset(
-                                      Constant.ASSETS_IMG +
-                                          'userinfo_search_white.png',
-                                      width: 30,
-                                      height: 30,
-                                      fit: BoxFit.cover,
-                                    ),
-                            ),
-                            new Container(
-                              margin: EdgeInsets.only(
-                                  right: 10, top: 20, bottom: 10),
-                              child: isShowBlackTitle
-                                  ? Image.asset(
-                                      Constant.ASSETS_IMG +
-                                          'userinfo_more_black.png',
-                                      width: 30,
-                                      height: 30,
-                                      fit: BoxFit.cover,
-                                    )
-                                  : Image.asset(
-                                      Constant.ASSETS_IMG +
-                                          'userinfo_more_white.png',
-                                      width: 30,
-                                      height: 30,
-                                      fit: BoxFit.cover,
-                                    ),
-                            ),
-                          ],
-
-                          flexibleSpace: FlexibleSpaceBar(
-                            collapseMode: CollapseMode.pin,
-                            background: new Column(
-                              children: <Widget>[
+    return Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          //  color: Colors.white,
+          child: Stack(children: [
+            NotificationListener(
+                onNotification: (scrollNotification) {
+                  if (scrollNotification is ScrollUpdateNotification && scrollNotification.depth == 0) {
+                    //滚动并且是列表滚动的时候
+                    _onScroll(scrollNotification.metrics.pixels);
+                  }
+                },
+                child: Stack(
+                  children: <Widget>[
+                    NestedScrollView(
+                      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+                        // These are the slivers that show up in the "outer" scroll view.
+                        return <Widget>[
+                          SliverOverlapAbsorber(
+                            handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+                            sliver: SliverAppBar(
+                              leading: new Container(
+                                margin: EdgeInsets.only(top: 20, bottom: 10),
+                                child: isShowBlackTitle
+                                    ? Image.asset(
+                                        Constant.ASSETS_IMG + 'userinfo_icon_back_black.png',
+                                        fit: BoxFit.fitHeight,
+                                      )
+                                    : Image.asset(
+                                        Constant.ASSETS_IMG + 'userinfo_icon_back_white.png',
+                                        fit: BoxFit.fitHeight,
+                                      ),
+                              ),
+                              title: isShowBlackTitle ? Text(mUser.nick) : Text(''),
+                              centerTitle: true,
+                              pinned: true,
+                              floating: false,
+                              snap: false,
+                              primary: true,
+                              expandedHeight: 210.0,
+                              backgroundColor: Color(0xffF8F8F8),
+                              elevation: 0,
+                              //是否显示阴影，直接取值innerBoxIsScrolled，展开不显示阴影，合并后会显示
+                              forceElevated: innerBoxIsScrolled,
+                              actions: <Widget>[
                                 new Container(
-                                  height: 210,
-                                  decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                      image: AssetImage(
-                                        Constant.ASSETS_IMG +
-                                            'ic_personinfo_bg4.png',
-                                      ),
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                  child: new Column(
-                                    children: <Widget>[
-                                      Container(
-                                        margin: EdgeInsets.only(top: 25),
-                                        child: new Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: <Widget>[
-                                            Expanded(
-                                              child: Container(
-                                                alignment: Alignment.center,
-                                                child: new CircleAvatar(
-                                                  backgroundImage:
-                                                      new NetworkImage(
-                                                          mUser.headurl == null
-                                                              ? ""
-                                                              : mUser.headurl),
-                                                  radius: 33.0,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
+                                  margin: EdgeInsets.only(right: 10, top: 20, bottom: 10),
+                                  child: isShowBlackTitle
+                                      ? Image.asset(
+                                          Constant.ASSETS_IMG + 'userinfo_search_black.png',
+                                          width: 30,
+                                          height: 30,
+                                          fit: BoxFit.cover,
+                                        )
+                                      : Image.asset(
+                                          Constant.ASSETS_IMG + 'userinfo_search_white.png',
+                                          width: 30,
+                                          height: 30,
+                                          fit: BoxFit.cover,
                                         ),
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: <Widget>[
-                                          Container(
-                                            margin: EdgeInsets.only(top: 15),
-                                            child: Text(
-                                              mUser.nick,
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 17),
-                                            ),
-                                          ),
-                                          Container(
-                                            margin: EdgeInsets.only(
-                                                top: 15, left: 5),
-                                            child: mUser.gender == "1"
-                                                ? new Container(
-                                                    child: Image.asset(
-                                                      Constant.ASSETS_IMG +
-                                                          'mine_male.webp',
-                                                      width: 15,
-                                                      height: 15,
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                  )
-                                                : new Container(
-                                                    child: Image.asset(
-                                                      Constant.ASSETS_IMG +
-                                                          'mine_female.png',
-                                                      width: 15,
-                                                      height: 15,
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                  ),
-                                          ),
-                                          Container(
-                                            margin: EdgeInsets.only(top: 15),
-                                            child: mUser.ismember == 0
-                                                ? new Container(
-                                                    margin: EdgeInsets.only(
-                                                        left: 5),
-                                                    child: Image.asset(
-                                                      Constant.ASSETS_IMG +
-                                                          'mine_openmember.webp',
-                                                      width: 40.0,
-                                                      height: 25.0,
-                                                    ),
-                                                  )
-                                                : Container(
-                                                    margin: EdgeInsets.only(
-                                                        left: 5),
-                                                    child: Image.asset(
-                                                      Constant.ASSETS_IMG +
-                                                          'home_memeber.webp',
-                                                      width: 15.0,
-                                                      height: 13.0,
-                                                    ),
-                                                  ),
-                                          )
-                                        ],
-                                      ),
-                                      Container(
-                                        margin: EdgeInsets.only(top: 10),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: <Widget>[
-                                            Container(
-                                              child: Text(
-                                                "关注  " + mUser.followCount,
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 14),
-                                              ),
-                                            ),
-                                            Container(
-                                              color: Colors.white,
-                                              height: 10,
-                                              width: 1,
-                                              margin: EdgeInsets.only(
-                                                  left: 15, right: 15),
-                                            ),
-                                            Container(
-                                              child: Text(
-                                                "粉丝 " + mUser.fanCount,
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 14),
-                                              ),
-                                            ),
-                                          ],
+                                ),
+                                new Container(
+                                  margin: EdgeInsets.only(right: 10, top: 20, bottom: 10),
+                                  child: isShowBlackTitle
+                                      ? Image.asset(
+                                          Constant.ASSETS_IMG + 'userinfo_more_black.png',
+                                          width: 30,
+                                          height: 30,
+                                          fit: BoxFit.cover,
+                                        )
+                                      : Image.asset(
+                                          Constant.ASSETS_IMG + 'userinfo_more_white.png',
+                                          width: 30,
+                                          height: 30,
+                                          fit: BoxFit.cover,
                                         ),
-                                      ),
-                                      Container(
-                                        margin: EdgeInsets.only(top: 10),
-                                        child: Text(
-                                          "简介: " + mUser.decs,
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 14),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
                                 ),
                               ],
-                            ),
-                          ),
 
-                          /* bottom: TabBar(
+                              flexibleSpace: FlexibleSpaceBar(
+                                collapseMode: CollapseMode.pin,
+                                background: new Column(
+                                  children: <Widget>[
+                                    new Container(
+                                      height: 210,
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          image: AssetImage(
+                                            Constant.ASSETS_IMG + 'ic_personinfo_bg4.png',
+                                          ),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                      child: new Column(
+                                        children: <Widget>[
+                                          Container(
+                                            margin: EdgeInsets.only(top: 25),
+                                            child: new Row(
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              children: <Widget>[
+                                                Expanded(
+                                                  child: Container(
+                                                    alignment: Alignment.center,
+                                                    child: new CircleAvatar(
+                                                      backgroundImage: new NetworkImage(mUser.headurl == null ? "" : mUser.headurl),
+                                                      radius: 33.0,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: <Widget>[
+                                              Container(
+                                                margin: EdgeInsets.only(top: 15),
+                                                child: Text(
+                                                  mUser.nick,
+                                                  style: TextStyle(color: Colors.white, fontSize: 17),
+                                                ),
+                                              ),
+                                              Container(
+                                                margin: EdgeInsets.only(top: 15, left: 5),
+                                                child: mUser.gender == "1"
+                                                    ? new Container(
+                                                        child: Image.asset(
+                                                          Constant.ASSETS_IMG + 'mine_male.webp',
+                                                          width: 15,
+                                                          height: 15,
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      )
+                                                    : new Container(
+                                                        child: Image.asset(
+                                                          Constant.ASSETS_IMG + 'mine_female.png',
+                                                          width: 15,
+                                                          height: 15,
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      ),
+                                              ),
+                                              Container(
+                                                margin: EdgeInsets.only(top: 15),
+                                                child: mUser.ismember == 0
+                                                    ? new Container(
+                                                        margin: EdgeInsets.only(left: 5),
+                                                        child: Image.asset(
+                                                          Constant.ASSETS_IMG + 'mine_openmember.webp',
+                                                          width: 40.0,
+                                                          height: 25.0,
+                                                        ),
+                                                      )
+                                                    : Container(
+                                                        margin: EdgeInsets.only(left: 5),
+                                                        child: Image.asset(
+                                                          Constant.ASSETS_IMG + 'home_memeber.webp',
+                                                          width: 15.0,
+                                                          height: 13.0,
+                                                        ),
+                                                      ),
+                                              )
+                                            ],
+                                          ),
+                                          Container(
+                                            margin: EdgeInsets.only(top: 10),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: <Widget>[
+                                                Container(
+                                                  child: Text(
+                                                    "关注  " + mUser.followCount,
+                                                    style: TextStyle(color: Colors.white, fontSize: 14),
+                                                  ),
+                                                ),
+                                                Container(
+                                                  color: Colors.white,
+                                                  height: 10,
+                                                  width: 1,
+                                                  margin: EdgeInsets.only(left: 15, right: 15),
+                                                ),
+                                                Container(
+                                                  child: Text(
+                                                    "粉丝 " + mUser.fanCount,
+                                                    style: TextStyle(color: Colors.white, fontSize: 14),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Container(
+                                            margin: EdgeInsets.only(top: 10),
+                                            child: Text(
+                                              "简介: " + mUser.decs,
+                                              style: TextStyle(color: Colors.white, fontSize: 14),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              /* bottom: TabBar(
                         tabs: _tabs.map((String name) => Tab(text: name)).toList(),
                       ),*/
-                        ),
+                            ),
+                          ),
+                          SliverPersistentHeader(
+                            delegate: _SliverAppBarDelegate2(_timeSelection()),
+                            pinned: true,
+                          ),
+                        ];
+                      },
+                      body: TabBarView(
+                        controller: _tabController,
+                        // These are the contents of the tab views, below the tabs.
+                        children: [
+                          PersonInfoHomeHome(mUser.nick, mUser.decs, mUser.createtime, mUser.gender),
+                          PageInfoWeiBo(),
+                          PageInfoPic(),
+                        ],
                       ),
-                      SliverPersistentHeader(
-                        delegate: _SliverAppBarDelegate2(_timeSelection()),
-                        pinned: true,
-                      ),
-                    ];
-                  },
-                  body: TabBarView(
-                    controller: _tabController,
-                    // These are the contents of the tab views, below the tabs.
-                    children: [
-                      PersonInfoHomeHome(mUser.nick, mUser.decs,
-                          mUser.createtime, mUser.gender),
-                      PageInfoWeiBo(),
-                      PageInfoPic(),
-                    ],
-                  ),
-                ),
-                UserUtil.getUserInfo().id == widget.mOtherUserId
-                    ? new Container()
-                    : Align(
-                        //对齐底部
-                        alignment: Alignment.bottomCenter,
-                        child: Container(
+                    ),
+                    UserUtil.getUserInfo().id == widget.mOtherUserId
+                        ? new Container()
+                        : Align(
+                            //对齐底部
+                            alignment: Alignment.bottomCenter,
                             child: Container(
-                          color: Colors.white,
-                          child: _detailBottom(),
-                          height: 50,
-                        ))),
-              ],
-            )),
-      ]),
-    ));
+                                child: Container(
+                              color: Colors.white,
+                              child: _detailBottom(),
+                              height: 50,
+                            ))),
+                  ],
+                )),
+          ]),
+        ));
   }
 }
 
@@ -594,8 +535,7 @@ class _SliverAppBarDelegate2 extends SliverPersistentHeaderDelegate {
   final Column _tabBar;
 
   @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     return _tabBar;
   }
 

@@ -99,10 +99,10 @@ class _WeiBoCommentDetailPageState extends State<WeiBoCommentDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-        child: Scaffold(
+    return  Scaffold(
       backgroundColor: Colors.white,
-      body: Column(
+      body: SafeArea(
+        child:Column(
         children: <Widget>[
           Container(child: WdHeadWidget("评论详情"), color: Colors.white),
           Expanded(

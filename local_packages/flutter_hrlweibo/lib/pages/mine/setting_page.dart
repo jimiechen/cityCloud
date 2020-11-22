@@ -33,16 +33,13 @@ class SettingHead extends StatelessWidget {
                       new Expanded(
                         child: new Container(
                           margin: const EdgeInsets.only(left: 20.0),
-                          child: Text('头像管理',
-                              style:
-                                  TextStyle(fontSize: 14, color: Colors.black)),
+                          child: Text('头像管理', style: TextStyle(fontSize: 14, color: Colors.black)),
                         ),
                       ),
                       new Container(
                         margin: new EdgeInsets.symmetric(horizontal: 5.0),
                         child: new CircleAvatar(
-                          backgroundImage:
-                              new NetworkImage(UserUtil.getUserInfo().headurl),
+                          backgroundImage: new NetworkImage(UserUtil.getUserInfo().headurl),
                           radius: 20.0,
                         ),
                       ),
@@ -101,16 +98,12 @@ class SettingCommon extends StatelessWidget {
                       new Expanded(
                         child: new Container(
                           margin: const EdgeInsets.only(left: 20.0),
-                          child: Text(title,
-                              style:
-                                  TextStyle(fontSize: 14, color: Colors.black)),
+                          child: Text(title, style: TextStyle(fontSize: 14, color: Colors.black)),
                         ),
                       ),
                       new Container(
                         margin: new EdgeInsets.symmetric(horizontal: 5.0),
-                        child: Text(content,
-                            style:
-                                TextStyle(fontSize: 14, color: Colors.black)),
+                        child: Text(content, style: TextStyle(fontSize: 14, color: Colors.black)),
                       ),
                       new Container(
                         margin: const EdgeInsets.only(left: 5.0, right: 15),
@@ -167,14 +160,9 @@ class _SettingPageState extends State<SettingPage> {
                 showModalBottomSheet(
                     context: context,
                     builder: (context) {
-                      return HeadChooseWidget(
-                          chooseImgCallBack: (File mHeadFile) {
-                        FormData formData = FormData.fromMap({
-                          "userId": UserUtil.getUserInfo().id,
-                          "headFile": MultipartFile.fromFileSync(mHeadFile.path)
-                        });
-                        request(ServiceUrl.updateHead, formData: formData)
-                            .then((val) {
+                      return HeadChooseWidget(chooseImgCallBack: (File mHeadFile) {
+                        FormData formData = FormData.fromMap({"userId": UserUtil.getUserInfo().id, "headFile": MultipartFile.fromFileSync(mHeadFile.path)});
+                        request(ServiceUrl.updateHead, formData: formData).then((val) {
                           int code = val['status'];
                           if (code == 200) {
                             String mUrl = val['data'];
@@ -251,9 +239,10 @@ class _SettingPageState extends State<SettingPage> {
                                   UserUtil.loginout();
                                   Navigator.of(context).pop();
                                   Routes.navigateTo(
-                                      context, '${Routes.loginPage}',
-                                      clearStack: true,
-                                      transition: TransitionType.fadeIn);
+                                    context,
+                                    '${Routes.loginPage}',
+                                    clearStack: true,
+                                  );
                                 },
                               ),
                               FlatButton(
@@ -266,8 +255,7 @@ class _SettingPageState extends State<SettingPage> {
                             backgroundColor: Colors.white,
                             elevation: 20,
                             // 设置成 圆角
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                           );
                         },
                       );
@@ -277,8 +265,7 @@ class _SettingPageState extends State<SettingPage> {
                         vertical: 15.0,
                       ),
                       child: Center(
-                        child: Text('退出微博',
-                            style: TextStyle(fontSize: 14, color: Colors.red)),
+                        child: Text('退出微博', style: TextStyle(fontSize: 14, color: Colors.red)),
                       ),
                     )),
               ),

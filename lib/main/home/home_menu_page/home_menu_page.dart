@@ -1,11 +1,15 @@
 import 'dart:async';
 
+import 'package:cityCloud/router/router.dart';
 import 'package:cityCloud/styles/color_helper.dart';
 import 'package:cityCloud/widgets/hit_test_manager_widget.dart';
 import 'package:flame/position.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_hrlweibo/pages/home/weibo_follow_page.dart';
+import 'package:flutter_hrlweibo/pages/home/weibo_publish_page.dart';
+import 'package:flutter_hrlweibo/pages/vedio/video_recommend_page.dart';
 
 import '../cubit/home_page_cubit.dart';
 import 'cubit/home_menu_page_cubit.dart';
@@ -29,6 +33,12 @@ class _HomeMenuPageState extends State<HomeMenuPage> with TickerProviderStateMix
   // HomeMenuPageCubit _pageCubit = HomeMenuPageCubit();
 
   List<String> _tabsTitle = ['地区', '推荐', '关注'];
+
+  ///推荐页面
+  VideoRecommendPage _videoRecommendPage = VideoRecommendPage();
+
+  ///关注页面
+  WeiBoFollowPage _weiBoFollowPage = WeiBoFollowPage();
   TabController _tabController;
   PageController _pageController = PageController(initialPage: 0);
   @override
@@ -41,6 +51,11 @@ class _HomeMenuPageState extends State<HomeMenuPage> with TickerProviderStateMix
     );
     _tabController.addListener(() {
       setState(() {});
+      if (_tabController.index == 0) {
+        homePageCubit.add(HomePageCubitStartGame());
+      } else {
+        homePageCubit.add(HomePageCubitStopGame());
+      }
     });
     _scrollController.addListener(() {
       if (_scrollController.offset > _topSpaceHeight - _topBarHeight - 10) {
@@ -124,14 +139,19 @@ class _HomeMenuPageState extends State<HomeMenuPage> with TickerProviderStateMix
             child: Text('当前35481人在线'),
           ),
           SizedBox(height: 12),
-          Container(
-            height: 50,
-            decoration: BoxDecoration(
-              color: ColorHelper.BGColor,
-              borderRadius: BorderRadius.circular(8),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(context, RouterManager.routeForPage(page: WeiBoPublishPage()));
+            },
+            child: Container(
+              height: 50,
+              decoration: BoxDecoration(
+                color: ColorHelper.BGColor,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              alignment: Alignment.center,
+              child: Text('记录今天有趣的事情'),
             ),
-            alignment: Alignment.center,
-            child: Text('记录今天有趣的事情'),
           ),
         ],
       ),
@@ -283,6 +303,7 @@ class _HomeMenuPageState extends State<HomeMenuPage> with TickerProviderStateMix
                 ),
                 ignoreWidgetBuilder: (child) {
                   return PageView(
+                    key: ValueKey('PageView'),
                     controller: _pageController,
                     onPageChanged: (index) {
                       if (index != _tabController.index) {
@@ -291,8 +312,14 @@ class _HomeMenuPageState extends State<HomeMenuPage> with TickerProviderStateMix
                     },
                     children: [
                       child,
-                      Container(color: Colors.white),
-                      Container(color: Colors.white),
+                      Padding(
+                        padding: EdgeInsets.only(top: _topBarHeight),
+                        child: _videoRecommendPage,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: _topBarHeight),
+                        child: _weiBoFollowPage,
+                      ),
                     ],
                   );
                 },

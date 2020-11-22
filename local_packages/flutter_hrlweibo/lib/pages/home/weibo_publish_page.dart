@@ -78,32 +78,32 @@ class _WeiBoPublishPageState extends State<WeiBoPublishPage> {
     }
     mSelectedImageFile = null;
 
-    return SafeArea(
-        child: WillPopScope(
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        backgroundColor: Colors.white,
-        body: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: <Widget>[
-            _retweettitle(),
-            _retweettosay(),
-            buildBottom(),
-          ],
-        ),
-      ),
-      onWillPop: () {
-        print("点击返回键");
-        if (mBottomLayoutShow) {
-          setState(() {
-            mBottomLayoutShow = false;
-            mEmojiLayoutShow = false;
-          });
-        } else {
-          Navigator.pop(context);
-        }
-      },
-    ));
+    return WillPopScope(
+        onWillPop: () {
+          print("点击返回键");
+          if (mBottomLayoutShow) {
+            setState(() {
+              mBottomLayoutShow = false;
+              mEmojiLayoutShow = false;
+            });
+          } else {
+            Navigator.pop(context);
+          }
+        },
+        child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          backgroundColor: Colors.white,
+          body: SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                _retweettitle(),
+                _retweettosay(),
+                buildBottom(),
+              ],
+            ),
+          ),
+        ));
   }
 
   Widget _retweettitle() {

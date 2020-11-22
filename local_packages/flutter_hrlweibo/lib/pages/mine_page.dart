@@ -26,20 +26,19 @@ class _MinePageState extends State<MinePage> {
   }
 
   //TODO
-   @override
+  @override
   void deactivate() {
     super.deactivate();
-     var isTopRoute = ModalRoute.of(context).isCurrent;
+    var isTopRoute = ModalRoute.of(context).isCurrent;
     if (isTopRoute) {
-       if (UserUtil.isLogin()) {
+      if (UserUtil.isLogin()) {
         FormData params = FormData.fromMap({
           'muserId': UserUtil.getUserInfo().id,
           'otheruserId': UserUtil.getUserInfo().id,
         });
         DioManager.getInstance().post(ServiceUrl.getUserInfo, params, (data) {
           UserUtil.saveUserInfo(data['data']);
-          SchedulerBinding.instance
-              .addPostFrameCallback((_) => setState(() {}));
+          SchedulerBinding.instance.addPostFrameCallback((_) => setState(() {}));
         }, (error) {});
       }
     }
@@ -135,14 +134,12 @@ class _MinePageState extends State<MinePage> {
   }
 
   Widget mHeadWidget() {
-    return (UserUtil.getUserInfo() == null ||
-            UserUtil.getUserInfo().headurl == null)
+    return (UserUtil.getUserInfo() == null || UserUtil.getUserInfo().headurl == null)
         ? CircleAvatar(
             //头像半径
             radius: 25,
             //头像图片 -> NetworkImage网络图片，AssetImage项目资源包图片, FileImage本地存储图片
-            backgroundImage:
-                AssetImage(Constant.ASSETS_IMG + "ic_avatar_default.png"),
+            backgroundImage: AssetImage(Constant.ASSETS_IMG + "ic_avatar_default.png"),
           )
         : ClipRRect(
             borderRadius: BorderRadius.circular(25),
@@ -184,12 +181,7 @@ class _MinePageState extends State<MinePage> {
                                       bottom: 0,
                                       child: Container(
                                         child: Image.asset(
-                                          (UserUtil.getUserInfo().isvertify ==
-                                                  1)
-                                              ? Constant.ASSETS_IMG +
-                                                  'home_vertify.webp'
-                                              : Constant.ASSETS_IMG +
-                                                  'home_vertify2.webp',
+                                          (UserUtil.getUserInfo().isvertify == 1) ? Constant.ASSETS_IMG + 'home_vertify.webp' : Constant.ASSETS_IMG + 'home_vertify2.webp',
                                           width: 16.0,
                                           height: 16.0,
                                         ),
@@ -205,16 +197,9 @@ class _MinePageState extends State<MinePage> {
                               children: <Widget>[
                                 Center(
                                   child: Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          0.0, 0.0, 0.0, 0.0),
+                                      padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
                                       child: Text(UserUtil.getUserInfo().nick,
-                                          style: TextStyle(
-                                              fontSize: 15.0,
-                                              color: UserUtil.getUserInfo()
-                                                          .ismember ==
-                                                      0
-                                                  ? Colors.black
-                                                  : Color(0xffF86119)))),
+                                          style: TextStyle(fontSize: 15.0, color: UserUtil.getUserInfo().ismember == 0 ? Colors.black : Color(0xffF86119)))),
                                 ),
                                 Center(
                                   child: UserUtil.getUserInfo().ismember == 0
@@ -222,8 +207,7 @@ class _MinePageState extends State<MinePage> {
                                       : Container(
                                           margin: EdgeInsets.only(left: 5),
                                           child: Image.asset(
-                                            Constant.ASSETS_IMG +
-                                                'home_memeber.webp',
+                                            Constant.ASSETS_IMG + 'home_memeber.webp',
                                             width: 15.0,
                                             height: 13.0,
                                           ),
@@ -235,14 +219,8 @@ class _MinePageState extends State<MinePage> {
                           Container(
                             margin: EdgeInsets.only(top: 5),
                             child: Text(
-                              (UserUtil.getUserInfo() == null ||
-                                      UserUtil.getUserInfo().decs == null)
-                                  ? ""
-                                  : UserUtil.getUserInfo().decs,
-                              style: TextStyle(
-                                  letterSpacing: 0,
-                                  color: Colors.grey,
-                                  fontSize: 12),
+                              (UserUtil.getUserInfo() == null || UserUtil.getUserInfo().decs == null) ? "" : UserUtil.getUserInfo().decs,
+                              style: TextStyle(letterSpacing: 0, color: Colors.grey, fontSize: 12),
                             ),
                           )
                         ],
@@ -328,8 +306,10 @@ class _MinePageState extends State<MinePage> {
                     ),
                     onTap: () {
                       print("点击关注");
-                      Routes.navigateTo(context, Routes.personMyFollowPage,
-                          transition: TransitionType.fadeIn);
+                      Routes.navigateTo(
+                        context,
+                        Routes.personMyFollowPage,
+                      );
                     },
                   ),
                 ),
@@ -359,8 +339,10 @@ class _MinePageState extends State<MinePage> {
                       ],
                     ),
                     onTap: () {
-                      Routes.navigateTo(context, Routes.personFanPage,
-                          transition: TransitionType.fadeIn);
+                      Routes.navigateTo(
+                        context,
+                        Routes.personFanPage,
+                      );
                     },
                   ),
                 ),
@@ -402,8 +384,7 @@ class _MinePageState extends State<MinePage> {
                             margin: EdgeInsets.only(bottom: 10, top: 10),
                             child: Text(
                               '我的相册',
-                              style:
-                                  TextStyle(fontSize: 12, color: Colors.black),
+                              style: TextStyle(fontSize: 12, color: Colors.black),
                             ),
                           ),
                         ],
@@ -434,8 +415,7 @@ class _MinePageState extends State<MinePage> {
                             margin: EdgeInsets.only(bottom: 10, top: 10),
                             child: Text(
                               '我的故事',
-                              style:
-                                  TextStyle(fontSize: 12, color: Colors.black),
+                              style: TextStyle(fontSize: 12, color: Colors.black),
                             ),
                           ),
                         ],
@@ -466,8 +446,7 @@ class _MinePageState extends State<MinePage> {
                             margin: EdgeInsets.only(bottom: 10, top: 10),
                             child: Text(
                               '我的赞',
-                              style:
-                                  TextStyle(fontSize: 12, color: Colors.black),
+                              style: TextStyle(fontSize: 12, color: Colors.black),
                             ),
                           ),
                         ],
@@ -498,15 +477,16 @@ class _MinePageState extends State<MinePage> {
                             margin: EdgeInsets.only(bottom: 10, top: 10),
                             child: Text(
                               '我的粉丝',
-                              style:
-                                  TextStyle(fontSize: 12, color: Colors.black),
+                              style: TextStyle(fontSize: 12, color: Colors.black),
                             ),
                           ),
                         ],
                       ),
                       onTap: () {
-                        Routes.navigateTo(context, Routes.personFanPage,
-                            transition: TransitionType.fadeIn);
+                        Routes.navigateTo(
+                          context,
+                          Routes.personFanPage,
+                        );
                       },
                     ),
                   ),
@@ -535,8 +515,7 @@ class _MinePageState extends State<MinePage> {
                             margin: EdgeInsets.only(bottom: 10, top: 10),
                             child: Text(
                               '微博钱包',
-                              style:
-                                  TextStyle(fontSize: 12, color: Colors.black),
+                              style: TextStyle(fontSize: 12, color: Colors.black),
                             ),
                           ),
                         ],
@@ -567,8 +546,7 @@ class _MinePageState extends State<MinePage> {
                             margin: EdgeInsets.only(bottom: 10, top: 10),
                             child: Text(
                               '微博优选',
-                              style:
-                                  TextStyle(fontSize: 12, color: Colors.black),
+                              style: TextStyle(fontSize: 12, color: Colors.black),
                             ),
                           ),
                         ],
@@ -599,8 +577,7 @@ class _MinePageState extends State<MinePage> {
                             margin: EdgeInsets.only(bottom: 10, top: 10),
                             child: Text(
                               '粉丝头条',
-                              style:
-                                  TextStyle(fontSize: 12, color: Colors.black),
+                              style: TextStyle(fontSize: 12, color: Colors.black),
                             ),
                           ),
                         ],
@@ -622,8 +599,7 @@ class _MinePageState extends State<MinePage> {
                           Container(
                             margin: EdgeInsets.only(top: 20),
                             child: Image.asset(
-                              Constant.ASSETS_IMG +
-                                  "icon_mine_customservice.png",
+                              Constant.ASSETS_IMG + "icon_mine_customservice.png",
                               width: 30,
                               height: 30,
                             ),
@@ -632,8 +608,7 @@ class _MinePageState extends State<MinePage> {
                             margin: EdgeInsets.only(bottom: 10, top: 10),
                             child: Text(
                               '客服中心',
-                              style:
-                                  TextStyle(fontSize: 12, color: Colors.black),
+                              style: TextStyle(fontSize: 12, color: Colors.black),
                             ),
                           ),
                         ],
@@ -673,8 +648,7 @@ class _MinePageState extends State<MinePage> {
                               padding: EdgeInsets.only(left: 10),
                               child: Text(
                                 '免流量',
-                                style: TextStyle(
-                                    color: Colors.black, fontSize: 14),
+                                style: TextStyle(color: Colors.black, fontSize: 14),
                               ))),
                       Image.asset(
                         Constant.ASSETS_IMG + "icon_right_arrow.png",
@@ -708,8 +682,7 @@ class _MinePageState extends State<MinePage> {
                               padding: EdgeInsets.only(left: 10),
                               child: Text(
                                 '微博运动',
-                                style: TextStyle(
-                                    color: Colors.black, fontSize: 14),
+                                style: TextStyle(color: Colors.black, fontSize: 14),
                               ))),
                       Image.asset(
                         Constant.ASSETS_IMG + "icon_right_arrow.png",
@@ -743,8 +716,7 @@ class _MinePageState extends State<MinePage> {
                               padding: EdgeInsets.only(left: 10),
                               child: Text(
                                 '草稿箱',
-                                style: TextStyle(
-                                    color: Colors.black, fontSize: 14),
+                                style: TextStyle(color: Colors.black, fontSize: 14),
                               ))),
                       Image.asset(
                         Constant.ASSETS_IMG + "icon_right_arrow.png",

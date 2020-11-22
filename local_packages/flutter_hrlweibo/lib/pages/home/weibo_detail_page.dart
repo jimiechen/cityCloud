@@ -76,10 +76,8 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
   }
 
   Future getCommentDataLoadMore(int page, String weiboId) async {
-    FormData formData = FormData.fromMap(
-        {"pageNum": page, "pageSize": Constant.PAGE_SIZE, "weiboid": weiboId});
-    DioManager.getInstance().post(ServiceUrl.getWeiBoDetailComment, formData,
-        (data) {
+    FormData formData = FormData.fromMap({"pageNum": page, "pageSize": Constant.PAGE_SIZE, "weiboid": weiboId});
+    DioManager.getInstance().post(ServiceUrl.getWeiBoDetailComment, formData, (data) {
       CommentList mComment = CommentList.fromJson(data['data']);
       setState(() {
         mCommentList.addAll(mComment.list);
@@ -95,10 +93,8 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
   }
 
   Future getForwardDataLoadMore(int page, String weiboId) async {
-    FormData formData = FormData.fromMap(
-        {"pageNum": page, "pageSize": Constant.PAGE_SIZE, "weiboid": weiboId});
-    DioManager.getInstance().post(ServiceUrl.getWeiBoDetailForward, formData,
-        (data) {
+    FormData formData = FormData.fromMap({"pageNum": page, "pageSize": Constant.PAGE_SIZE, "weiboid": weiboId});
+    DioManager.getInstance().post(ServiceUrl.getWeiBoDetailForward, formData, (data) {
       ForwardList mComment = ForwardList.fromJson(data['data']);
       setState(() {
         mForwardList.addAll(mComment.list);
@@ -156,112 +152,89 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-        child: Scaffold(
-            backgroundColor: Colors.white,
-            body: Column(
-              children: <Widget>[
-                Container(child: WdHeadWidget("微博正文"), color: Colors.white),
-                Expanded(
-                  child: new NestedScrollView(
-                    //controller: mCommentScrollController,
-                    headerSliverBuilder: (context, bool) {
-                      return [
-                        SliverToBoxAdapter(
-                          child: Container(height: 8, color: Color(0xffEFEFEF)),
-                        ),
-                        SliverToBoxAdapter(
+    return Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+            child: Column(
+          children: <Widget>[
+            Container(child: WdHeadWidget("微博正文"), color: Colors.white),
+            Expanded(
+              child: new NestedScrollView(
+                //controller: mCommentScrollController,
+                headerSliverBuilder: (context, bool) {
+                  return [
+                    SliverToBoxAdapter(
+                      child: Container(height: 8, color: Color(0xffEFEFEF)),
+                    ),
+                    SliverToBoxAdapter(
+                      child: Container(
+                        color: Colors.white,
+                        child: WeiBoDetailTopWidget(mModel: mWeiboTopData),
+                      ),
+                    ),
+                    SliverPersistentHeader(
+                      pinned: true,
+                      floating: true,
+                      delegate: _SliverAppBarDelegate(
+                          minHeight: 51.0,
+                          maxHeight: 51.0,
                           child: Container(
                             color: Colors.white,
-                            child: WeiBoDetailTopWidget(mModel: mWeiboTopData),
-                          ),
-                        ),
-                        SliverPersistentHeader(
-                          pinned: true,
-                          floating: true,
-                          delegate: _SliverAppBarDelegate(
-                              minHeight: 51.0,
-                              maxHeight: 51.0,
-                              child: Container(
-                                color: Colors.white,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Row(
                                   children: <Widget>[
-                                    Row(
-                                      children: <Widget>[
-                                        Container(
-                                          height: 50,
-                                          color: Colors.white,
-                                          child: TabBar(
-                                              isScrollable: true,
-                                              indicatorColor: Color(0xffFF3700),
-                                              indicator: UnderlineTabIndicator(
-                                                  borderSide: BorderSide(
-                                                      color: Color(0xffFF3700),
-                                                      width: 2),
-                                                  insets: EdgeInsets.only(
-                                                      left: 10,
-                                                      right: 10,
-                                                      bottom: 7)),
-                                              labelColor: Color(0xff333333),
-                                              unselectedLabelColor:
-                                                  Color(0xff666666),
-                                              labelStyle: TextStyle(
-                                                  fontSize: 14.0,
-                                                  fontWeight: FontWeight.w700),
-                                              unselectedLabelStyle:
-                                                  TextStyle(fontSize: 14.0),
-                                              indicatorSize:
-                                                  TabBarIndicatorSize.label,
-                                              controller: _controller,
-                                              tabs: [
-                                                new Tab(
-                                                  text: _tabValues[0] +
-                                                      widget.mModel.zhuanfaNum
-                                                          .toString(),
-                                                ),
-                                                new Tab(
-                                                  text: _tabValues[1] +
-                                                      widget.mModel.commentNum
-                                                          .toString(),
-                                                ),
-                                              ]),
-                                        ),
-                                        Spacer(),
-                                        Container(
-                                          child: Row(
-                                            children: <Widget>[
-                                              Text("赞",
-                                                  style: TextStyle(
-                                                      color: Color(0xff949494),
-                                                      fontSize: 14)),
-                                              Text(
-                                                  widget.mModel.likeNum
-                                                      .toString(),
-                                                  style: TextStyle(
-                                                      color: Color(0xff949494),
-                                                      fontSize: 14)),
-                                            ],
-                                          ),
-                                          margin: EdgeInsets.only(right: 15),
-                                        )
-                                      ],
-                                    ),
                                     Container(
-                                      height: 0.5,
-                                      color: Color(0xffE6E4E3),
+                                      height: 50,
+                                      color: Colors.white,
+                                      child: TabBar(
+                                          isScrollable: true,
+                                          indicatorColor: Color(0xffFF3700),
+                                          indicator: UnderlineTabIndicator(
+                                              borderSide: BorderSide(color: Color(0xffFF3700), width: 2), insets: EdgeInsets.only(left: 10, right: 10, bottom: 7)),
+                                          labelColor: Color(0xff333333),
+                                          unselectedLabelColor: Color(0xff666666),
+                                          labelStyle: TextStyle(fontSize: 14.0, fontWeight: FontWeight.w700),
+                                          unselectedLabelStyle: TextStyle(fontSize: 14.0),
+                                          indicatorSize: TabBarIndicatorSize.label,
+                                          controller: _controller,
+                                          tabs: [
+                                            new Tab(
+                                              text: _tabValues[0] + widget.mModel.zhuanfaNum.toString(),
+                                            ),
+                                            new Tab(
+                                              text: _tabValues[1] + widget.mModel.commentNum.toString(),
+                                            ),
+                                          ]),
+                                    ),
+                                    Spacer(),
+                                    Container(
+                                      child: Row(
+                                        children: <Widget>[
+                                          Text("赞", style: TextStyle(color: Color(0xff949494), fontSize: 14)),
+                                          Text(widget.mModel.likeNum.toString(), style: TextStyle(color: Color(0xff949494), fontSize: 14)),
+                                        ],
+                                      ),
+                                      margin: EdgeInsets.only(right: 15),
                                     )
                                   ],
                                 ),
-                              )),
-                        ),
-                      ];
-                    },
-                    body: TabBarView(
-                      controller: _controller,
-                      children: <Widget>[
-                        /*      new ListView.builder(
+                                Container(
+                                  height: 0.5,
+                                  color: Color(0xffE6E4E3),
+                                )
+                              ],
+                            ),
+                          )),
+                    ),
+                  ];
+                },
+                body: TabBarView(
+                  controller: _controller,
+                  children: <Widget>[
+                    /*      new ListView.builder(
                           padding: new EdgeInsets.all(5.0),
                           itemExtent: 50.0,
                           itemBuilder: (BuildContext context, int index) {
@@ -269,19 +242,19 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
                           },
                           itemCount: 50,
                         ),*/
-                        mForwardWidget(),
-                        mCommentWidget(),
-                      ],
-                    ),
-                  ),
+                    mForwardWidget(),
+                    mCommentWidget(),
+                  ],
                 ),
-                Container(
-                  height: 40,
-                  child: _detailBottom(context, mWeiboTopData),
-                  color: Color(0xffF9F9F9),
-                )
-              ],
-            )));
+              ),
+            ),
+            Container(
+              height: 40,
+              child: _detailBottom(context, mWeiboTopData),
+              color: Color(0xffF9F9F9),
+            )
+          ],
+        )));
   }
 
   Widget mForwardWidget() {
@@ -296,8 +269,7 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
         itemCount: mForwardList.length + 1,
         //  controller: mCommentScrollController,
       ),
-      onNotification: (ScrollNotification scrollInfo) =>
-          _onScrollNotification(scrollInfo),
+      onNotification: (ScrollNotification scrollInfo) => _onScrollNotification(scrollInfo),
     );
   }
 
@@ -335,8 +307,7 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
         itemCount: mCommentList.length == 0 ? 1 : mCommentList.length + 2,
         //controller: mCommentScrollController,
       ),
-      onNotification: (ScrollNotification scrollInfo) =>
-          _onScrollNotification2(scrollInfo),
+      onNotification: (ScrollNotification scrollInfo) => _onScrollNotification2(scrollInfo),
     );
   }
 
@@ -384,10 +355,7 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color: Colors.transparent,
-                            image: DecorationImage(
-                                image:
-                                    NetworkImage(mForwardList[index].fromhead),
-                                fit: BoxFit.cover),
+                            image: DecorationImage(image: NetworkImage(mForwardList[index].fromhead), fit: BoxFit.cover),
                           ))
                       : Stack(
                           children: <Widget>[
@@ -397,21 +365,14 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   color: Colors.transparent,
-                                  image: DecorationImage(
-                                      image: NetworkImage(
-                                          mForwardList[index].fromhead),
-                                      fit: BoxFit.cover),
+                                  image: DecorationImage(image: NetworkImage(mForwardList[index].fromhead), fit: BoxFit.cover),
                                 )),
                             Positioned(
                               right: 0,
                               bottom: 0,
                               child: Container(
                                 child: Image.asset(
-                                  (mForwardList[index].fromuserisvertify == 1)
-                                      ? Constant.ASSETS_IMG +
-                                          'home_vertify.webp'
-                                      : Constant.ASSETS_IMG +
-                                          'home_vertify2.webp',
+                                  (mForwardList[index].fromuserisvertify == 1) ? Constant.ASSETS_IMG + 'home_vertify.webp' : Constant.ASSETS_IMG + 'home_vertify2.webp',
                                   width: 15.0,
                                   height: 15.0,
                                 ),
@@ -432,15 +393,9 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
                   children: <Widget>[
                     Center(
                       child: Padding(
-                          padding:
-                              const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+                          padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
                           child: Text(mForwardList[index].fromuname,
-                              style: TextStyle(
-                                  fontSize: 11.0,
-                                  color:
-                                      mForwardList[index].fromuserismember == 0
-                                          ? Color(0xff636363)
-                                          : Color(0xffF86119)))),
+                              style: TextStyle(fontSize: 11.0, color: mForwardList[index].fromuserismember == 0 ? Color(0xff636363) : Color(0xffF86119)))),
                     ),
                     Center(
                       child: mForwardList[index].fromuserismember == 0
@@ -470,12 +425,8 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
                     children: <Widget>[
                       Container(
                         child: Text(
-                          DateUtil.getFormatTime2(
-                                  DateTime.fromMillisecondsSinceEpoch(
-                                      mForwardList[index].createtime))
-                              .toString(),
-                          style:
-                              TextStyle(color: Color(0xff909090), fontSize: 10),
+                          DateUtil.getFormatTime2(DateTime.fromMillisecondsSinceEpoch(mForwardList[index].createtime)).toString(),
+                          style: TextStyle(color: Color(0xff909090), fontSize: 10),
                         ),
                       ),
                     ],
@@ -510,8 +461,7 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
                   height: 17.0,
                 ),
                 Container(
-                  child: Text('按热度',
-                      style: TextStyle(color: Color(0xff596D86), fontSize: 12)),
+                  child: Text('按热度', style: TextStyle(color: Color(0xff596D86), fontSize: 12)),
                   margin: EdgeInsets.only(left: 5.0),
                 ),
               ],
@@ -531,15 +481,12 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
       mCommentReplyWidget = new Container(
         padding: EdgeInsets.all(5),
         child: RichText(
-            text: TextSpan(
-                text: mCommentList[index - 1].commentreply[0].fromuname + ": ",
-                style: TextStyle(fontSize: 12.0, color: Color(0xff45587E)),
-                children: <TextSpan>[
-              TextSpan(
-                text: mCommentList[index - 1].commentreply[0].content,
-                style: TextStyle(fontSize: 12.0, color: Color(0xff333333)),
-              )
-            ])),
+            text: TextSpan(text: mCommentList[index - 1].commentreply[0].fromuname + ": ", style: TextStyle(fontSize: 12.0, color: Color(0xff45587E)), children: <TextSpan>[
+          TextSpan(
+            text: mCommentList[index - 1].commentreply[0].content,
+            style: TextStyle(fontSize: 12.0, color: Color(0xff333333)),
+          )
+        ])),
       );
     } else if (mCommentList[index - 1].commentreplynum == 2) {
       mCommentReplyWidget = new Container(
@@ -550,37 +497,23 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
               Container(
                   //margin: EdgeInsets.only(top: 2),
                   child: RichText(
-                      text: TextSpan(
-                          text: mCommentList[index - 1]
-                                  .commentreply[0]
-                                  .fromuname +
-                              ": ",
-                          style: TextStyle(
-                              fontSize: 12.0, color: Color(0xff45587E)),
-                          children: <TextSpan>[
-                    TextSpan(
-                      text: mCommentList[index - 1].commentreply[0].content,
-                      style:
-                          TextStyle(fontSize: 12.0, color: Color(0xff333333)),
-                    )
-                  ]))),
+                      text:
+                          TextSpan(text: mCommentList[index - 1].commentreply[0].fromuname + ": ", style: TextStyle(fontSize: 12.0, color: Color(0xff45587E)), children: <TextSpan>[
+                TextSpan(
+                  text: mCommentList[index - 1].commentreply[0].content,
+                  style: TextStyle(fontSize: 12.0, color: Color(0xff333333)),
+                )
+              ]))),
               Container(
                   margin: EdgeInsets.only(top: 3),
                   child: RichText(
-                      text: TextSpan(
-                          text: mCommentList[index - 1]
-                                  .commentreply[1]
-                                  .fromuname +
-                              ": ",
-                          style: TextStyle(
-                              fontSize: 12.0, color: Color(0xff45587E)),
-                          children: <TextSpan>[
-                        TextSpan(
-                          text: mCommentList[index - 1].commentreply[1].content,
-                          style: TextStyle(
-                              fontSize: 12.0, color: Color(0xff333333)),
-                        )
-                      ]))),
+                      text:
+                          TextSpan(text: mCommentList[index - 1].commentreply[1].fromuname + ": ", style: TextStyle(fontSize: 12.0, color: Color(0xff45587E)), children: <TextSpan>[
+                    TextSpan(
+                      text: mCommentList[index - 1].commentreply[1].content,
+                      style: TextStyle(fontSize: 12.0, color: Color(0xff333333)),
+                    )
+                  ]))),
             ],
           ));
     } else {
@@ -592,42 +525,27 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
             Container(
                 //margin: EdgeInsets.only(top: 2),
                 child: RichText(
-                    text: TextSpan(
-                        text:
-                            mCommentList[index - 1].commentreply[0].fromuname +
-                                ": ",
-                        style:
-                            TextStyle(fontSize: 12.0, color: Color(0xff45587E)),
-                        children: <TextSpan>[
-                  TextSpan(
-                    text: mCommentList[index - 1].commentreply[0].content,
-                    style: TextStyle(fontSize: 12.0, color: Color(0xff333333)),
-                  )
-                ]))),
+                    text: TextSpan(text: mCommentList[index - 1].commentreply[0].fromuname + ": ", style: TextStyle(fontSize: 12.0, color: Color(0xff45587E)), children: <TextSpan>[
+              TextSpan(
+                text: mCommentList[index - 1].commentreply[0].content,
+                style: TextStyle(fontSize: 12.0, color: Color(0xff333333)),
+              )
+            ]))),
             Container(
                 margin: EdgeInsets.only(top: 3),
                 child: RichText(
-                    text: TextSpan(
-                        text:
-                            mCommentList[index - 1].commentreply[1].fromuname +
-                                ": ",
-                        style:
-                            TextStyle(fontSize: 12.0, color: Color(0xff45587E)),
-                        children: <TextSpan>[
-                      TextSpan(
-                        text: mCommentList[index - 1].commentreply[1].content,
-                        style:
-                            TextStyle(fontSize: 12.0, color: Color(0xff333333)),
-                      )
-                    ]))),
+                    text: TextSpan(text: mCommentList[index - 1].commentreply[1].fromuname + ": ", style: TextStyle(fontSize: 12.0, color: Color(0xff45587E)), children: <TextSpan>[
+                  TextSpan(
+                    text: mCommentList[index - 1].commentreply[1].content,
+                    style: TextStyle(fontSize: 12.0, color: Color(0xff333333)),
+                  )
+                ]))),
             Container(
               margin: EdgeInsets.only(top: 2),
               child: Row(
                 children: <Widget>[
                   Text(
-                    "共" +
-                        mCommentList[index - 1].commentreplynum.toString() +
-                        "条回复 >",
+                    "共" + mCommentList[index - 1].commentreplynum.toString() + "条回复 >",
                     style: TextStyle(color: Color(0xff45587E), fontSize: 12),
                   ),
                 ],
@@ -655,10 +573,7 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color: Colors.transparent,
-                            image: DecorationImage(
-                                image: NetworkImage(
-                                    mCommentList[index - 1].fromhead),
-                                fit: BoxFit.cover),
+                            image: DecorationImage(image: NetworkImage(mCommentList[index - 1].fromhead), fit: BoxFit.cover),
                           ))
                       : Stack(
                           children: <Widget>[
@@ -668,22 +583,14 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   color: Colors.transparent,
-                                  image: DecorationImage(
-                                      image: NetworkImage(
-                                          mCommentList[index - 1].fromhead),
-                                      fit: BoxFit.cover),
+                                  image: DecorationImage(image: NetworkImage(mCommentList[index - 1].fromhead), fit: BoxFit.cover),
                                 )),
                             Positioned(
                               right: 0,
                               bottom: 0,
                               child: Container(
                                 child: Image.asset(
-                                  (mCommentList[index - 1].fromuserisvertify ==
-                                          1)
-                                      ? Constant.ASSETS_IMG +
-                                          'home_vertify.webp'
-                                      : Constant.ASSETS_IMG +
-                                          'home_vertify2.webp',
+                                  (mCommentList[index - 1].fromuserisvertify == 1) ? Constant.ASSETS_IMG + 'home_vertify.webp' : Constant.ASSETS_IMG + 'home_vertify2.webp',
                                   width: 15.0,
                                   height: 15.0,
                                 ),
@@ -704,16 +611,9 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
                   children: <Widget>[
                     Center(
                       child: Padding(
-                          padding:
-                              const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+                          padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
                           child: Text(mCommentList[index - 1].fromuname,
-                              style: TextStyle(
-                                  fontSize: 11.0,
-                                  color: mCommentList[index - 1]
-                                              .fromuserismember ==
-                                          0
-                                      ? Color(0xff636363)
-                                      : Color(0xffF86119)))),
+                              style: TextStyle(fontSize: 11.0, color: mCommentList[index - 1].fromuserismember == 0 ? Color(0xff636363) : Color(0xffF86119)))),
                     ),
                     Center(
                       child: mCommentList[index - 1].fromuserismember == 0
@@ -732,12 +632,13 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
                 Container(
                   child: InkWell(
                     onTap: () {
-                      Routes.navigateTo(context, Routes.weiboCommentDetailPage,
-                          params: {
-                            'comment':
-                                convert.jsonEncode(mCommentList[index - 1]),
-                          },
-                          transition: TransitionType.fadeIn);
+                      Routes.navigateTo(
+                        context,
+                        Routes.weiboCommentDetailPage,
+                        params: {
+                          'comment': convert.jsonEncode(mCommentList[index - 1]),
+                        },
+                      );
                     },
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -746,8 +647,7 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
                           margin: EdgeInsets.only(top: 3),
                           child: Text(
                             mCommentList[index - 1].content,
-                            style: TextStyle(
-                                color: Color(0xff333333), fontSize: 13),
+                            style: TextStyle(color: Color(0xff333333), fontSize: 13),
                           ),
                         ),
                         Container(
@@ -756,14 +656,9 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
                             //背景
                             color: Color(0xffF7F7F7),
                             //设置四周圆角 角度
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(4.0)),
+                            borderRadius: BorderRadius.all(Radius.circular(4.0)),
                           ),
-                          margin: EdgeInsets.only(
-                              top: mCommentList[index - 1].commentreplynum == 0
-                                  ? 0
-                                  : 5,
-                              right: 15),
+                          margin: EdgeInsets.only(top: mCommentList[index - 1].commentreplynum == 0 ? 0 : 5, right: 15),
                           child: mCommentReplyWidget,
                         ),
                       ],
@@ -777,12 +672,8 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
                     children: <Widget>[
                       Container(
                         child: Text(
-                          DateUtil.getFormatTime2(
-                                  DateTime.fromMillisecondsSinceEpoch(
-                                      mCommentList[index - 1].createtime))
-                              .toString(),
-                          style:
-                              TextStyle(color: Color(0xff909090), fontSize: 11),
+                          DateUtil.getFormatTime2(DateTime.fromMillisecondsSinceEpoch(mCommentList[index - 1].createtime)).toString(),
+                          style: TextStyle(color: Color(0xff909090), fontSize: 11),
                         ),
                       ),
                       Spacer(),
@@ -934,8 +825,7 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
                   height: 20.0,
                 ),
                 Container(
-                  child: Text('转发',
-                      style: TextStyle(color: Colors.black, fontSize: 13)),
+                  child: Text('转发', style: TextStyle(color: Colors.black, fontSize: 13)),
                   margin: EdgeInsets.only(left: 5.0),
                 ),
               ],
@@ -956,9 +846,7 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
                   pageBuilder: (context, animation, secondaryAnimation) {
                     return CommentDialogPage(weiboItem.weiboId, true, () {
                       //评论成功从新获取数据
-                      mCommentScrollController.animateTo(.0,
-                          duration: Duration(milliseconds: 100),
-                          curve: Curves.ease);
+                      mCommentScrollController.animateTo(.0, duration: Duration(milliseconds: 100), curve: Curves.ease);
                       getWeiBoDeatilData();
                     });
                   }));
@@ -973,8 +861,7 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
                   height: 20.0,
                 ),
                 Container(
-                  child: Text('评论',
-                      style: TextStyle(color: Colors.black, fontSize: 13)),
+                  child: Text('评论', style: TextStyle(color: Colors.black, fontSize: 13)),
                   margin: EdgeInsets.only(left: 5.0),
                 ),
               ],
@@ -994,8 +881,7 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
               return onLikeButtonTapped(isLiked, weiboItem);
             },
             size: 21,
-            circleColor:
-                CircleColor(start: Colors.orange, end: Colors.deepOrange),
+            circleColor: CircleColor(start: Colors.orange, end: Colors.deepOrange),
             bubblesColor: BubblesColor(
               dotPrimaryColor: Colors.orange,
               dotSecondaryColor: Colors.deepOrange,
@@ -1007,9 +893,7 @@ class _WeiBoDetailState extends State<WeiBoDetailPage> {
                     size: 20,
                   )*/
                   Image.asset(
-                isLiked
-                    ? Constant.ASSETS_IMG + 'ic_home_liked.webp'
-                    : Constant.ASSETS_IMG + 'ic_home_like.webp',
+                isLiked ? Constant.ASSETS_IMG + 'ic_home_liked.webp' : Constant.ASSETS_IMG + 'ic_home_like.webp',
                 width: 21.0,
                 height: 21.0,
               );
@@ -1056,15 +940,12 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   double get maxExtent => math.max(maxHeight, minHeight);
 
   @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     return new SizedBox.expand(child: child);
   }
 
   @override
   bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
-    return maxHeight != oldDelegate.maxHeight ||
-        minHeight != oldDelegate.minHeight ||
-        child != oldDelegate.child;
+    return maxHeight != oldDelegate.maxHeight || minHeight != oldDelegate.minHeight || child != oldDelegate.child;
   }
 }

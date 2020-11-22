@@ -49,13 +49,10 @@ class _VideoDetailCommentPageState extends State<VideoDetailCommentPage> {
                       onTap: () {
                         Navigator.of(context).push(PageRouteBuilder(
                             opaque: false,
-                            pageBuilder:
-                                (context, animation, secondaryAnimation) {
+                            pageBuilder: (context, animation, secondaryAnimation) {
                               return CommentDialogPage("1", true, () {
                                 //评论成功从新获取数据
-                                mCommentScrollController.animateTo(.0,
-                                    duration: Duration(milliseconds: 100),
-                                    curve: Curves.ease);
+                                mCommentScrollController.animateTo(.0, duration: Duration(milliseconds: 100), curve: Curves.ease);
                                 getCommentDataLoadMore(mCommentCurPage, "1");
                               });
                             }));
@@ -80,8 +77,7 @@ class _VideoDetailCommentPageState extends State<VideoDetailCommentPage> {
                                   "说点什么",
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                      fontSize: 14, color: Color(0xffee565656)),
+                                  style: TextStyle(fontSize: 14, color: Color(0xffee565656)),
                                 ),
                               ],
                             ),
@@ -98,8 +94,7 @@ class _VideoDetailCommentPageState extends State<VideoDetailCommentPage> {
     // TODO: implement initState
     super.initState();
     mCommentScrollController.addListener(() {
-      if (mCommentScrollController.position.pixels ==
-          mCommentScrollController.position.maxScrollExtent) {
+      if (mCommentScrollController.position.pixels == mCommentScrollController.position.maxScrollExtent) {
         if (!isCommentloadingMore) {
           if (isCommenthasMore) {
             setState(() {
@@ -121,10 +116,8 @@ class _VideoDetailCommentPageState extends State<VideoDetailCommentPage> {
   }
 
   Future getCommentDataLoadMore(int page, String weiboId) async {
-    FormData formData = FormData.fromMap(
-        {"pageNum": page, "pageSize": Constant.PAGE_SIZE, "weiboid": weiboId});
-    DioManager.getInstance().post(ServiceUrl.getWeiBoDetailComment, formData,
-        (data) {
+    FormData formData = FormData.fromMap({"pageNum": page, "pageSize": Constant.PAGE_SIZE, "weiboid": weiboId});
+    DioManager.getInstance().post(ServiceUrl.getWeiBoDetailComment, formData, (data) {
       CommentList mComment = CommentList.fromJson(data['data']);
       setState(() {
         mCommentList.addAll(mComment.list);
@@ -156,8 +149,7 @@ Widget mCommentItem(BuildContext context, int index) {
                 height: 17.0,
               ),
               Container(
-                child: Text('按热度',
-                    style: TextStyle(color: Color(0xff596D86), fontSize: 12)),
+                child: Text('按热度', style: TextStyle(color: Color(0xff596D86), fontSize: 12)),
                 margin: EdgeInsets.only(left: 5.0),
               ),
             ],
@@ -177,15 +169,12 @@ Widget mCommentItem(BuildContext context, int index) {
     mCommentReplyWidget = new Container(
       padding: EdgeInsets.all(5),
       child: RichText(
-          text: TextSpan(
-              text: mCommentList[index - 1].commentreply[0].fromuname + ": ",
-              style: TextStyle(fontSize: 12.0, color: Color(0xff45587E)),
-              children: <TextSpan>[
-            TextSpan(
-              text: mCommentList[index - 1].commentreply[0].content,
-              style: TextStyle(fontSize: 12.0, color: Color(0xff333333)),
-            )
-          ])),
+          text: TextSpan(text: mCommentList[index - 1].commentreply[0].fromuname + ": ", style: TextStyle(fontSize: 12.0, color: Color(0xff45587E)), children: <TextSpan>[
+        TextSpan(
+          text: mCommentList[index - 1].commentreply[0].content,
+          style: TextStyle(fontSize: 12.0, color: Color(0xff333333)),
+        )
+      ])),
     );
   } else if (mCommentList[index - 1].commentreplynum == 2) {
     mCommentReplyWidget = new Container(
@@ -196,34 +185,21 @@ Widget mCommentItem(BuildContext context, int index) {
             Container(
                 //margin: EdgeInsets.only(top: 2),
                 child: RichText(
-                    text: TextSpan(
-                        text:
-                            mCommentList[index - 1].commentreply[0].fromuname +
-                                ": ",
-                        style:
-                            TextStyle(fontSize: 12.0, color: Color(0xff45587E)),
-                        children: <TextSpan>[
-                  TextSpan(
-                    text: mCommentList[index - 1].commentreply[0].content,
-                    style: TextStyle(fontSize: 12.0, color: Color(0xff333333)),
-                  )
-                ]))),
+                    text: TextSpan(text: mCommentList[index - 1].commentreply[0].fromuname + ": ", style: TextStyle(fontSize: 12.0, color: Color(0xff45587E)), children: <TextSpan>[
+              TextSpan(
+                text: mCommentList[index - 1].commentreply[0].content,
+                style: TextStyle(fontSize: 12.0, color: Color(0xff333333)),
+              )
+            ]))),
             Container(
                 margin: EdgeInsets.only(top: 3),
                 child: RichText(
-                    text: TextSpan(
-                        text:
-                            mCommentList[index - 1].commentreply[1].fromuname +
-                                ": ",
-                        style:
-                            TextStyle(fontSize: 12.0, color: Color(0xff45587E)),
-                        children: <TextSpan>[
-                      TextSpan(
-                        text: mCommentList[index - 1].commentreply[1].content,
-                        style:
-                            TextStyle(fontSize: 12.0, color: Color(0xff333333)),
-                      )
-                    ]))),
+                    text: TextSpan(text: mCommentList[index - 1].commentreply[1].fromuname + ": ", style: TextStyle(fontSize: 12.0, color: Color(0xff45587E)), children: <TextSpan>[
+                  TextSpan(
+                    text: mCommentList[index - 1].commentreply[1].content,
+                    style: TextStyle(fontSize: 12.0, color: Color(0xff333333)),
+                  )
+                ]))),
           ],
         ));
   } else {
@@ -235,40 +211,27 @@ Widget mCommentItem(BuildContext context, int index) {
           Container(
               //margin: EdgeInsets.only(top: 2),
               child: RichText(
-                  text: TextSpan(
-                      text: mCommentList[index - 1].commentreply[0].fromuname +
-                          ": ",
-                      style:
-                          TextStyle(fontSize: 12.0, color: Color(0xff45587E)),
-                      children: <TextSpan>[
-                TextSpan(
-                  text: mCommentList[index - 1].commentreply[0].content,
-                  style: TextStyle(fontSize: 12.0, color: Color(0xff333333)),
-                )
-              ]))),
+                  text: TextSpan(text: mCommentList[index - 1].commentreply[0].fromuname + ": ", style: TextStyle(fontSize: 12.0, color: Color(0xff45587E)), children: <TextSpan>[
+            TextSpan(
+              text: mCommentList[index - 1].commentreply[0].content,
+              style: TextStyle(fontSize: 12.0, color: Color(0xff333333)),
+            )
+          ]))),
           Container(
               margin: EdgeInsets.only(top: 3),
               child: RichText(
-                  text: TextSpan(
-                      text: mCommentList[index - 1].commentreply[1].fromuname +
-                          ": ",
-                      style:
-                          TextStyle(fontSize: 12.0, color: Color(0xff45587E)),
-                      children: <TextSpan>[
-                    TextSpan(
-                      text: mCommentList[index - 1].commentreply[1].content,
-                      style:
-                          TextStyle(fontSize: 12.0, color: Color(0xff333333)),
-                    )
-                  ]))),
+                  text: TextSpan(text: mCommentList[index - 1].commentreply[1].fromuname + ": ", style: TextStyle(fontSize: 12.0, color: Color(0xff45587E)), children: <TextSpan>[
+                TextSpan(
+                  text: mCommentList[index - 1].commentreply[1].content,
+                  style: TextStyle(fontSize: 12.0, color: Color(0xff333333)),
+                )
+              ]))),
           Container(
             margin: EdgeInsets.only(top: 2),
             child: Row(
               children: <Widget>[
                 Text(
-                  "共" +
-                      mCommentList[index - 1].commentreplynum.toString() +
-                      "条回复 >",
+                  "共" + mCommentList[index - 1].commentreplynum.toString() + "条回复 >",
                   style: TextStyle(color: Color(0xff45587E), fontSize: 12),
                 ),
               ],
@@ -296,10 +259,7 @@ Widget mCommentItem(BuildContext context, int index) {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: Colors.transparent,
-                          image: DecorationImage(
-                              image: NetworkImage(
-                                  mCommentList[index - 1].fromhead),
-                              fit: BoxFit.cover),
+                          image: DecorationImage(image: NetworkImage(mCommentList[index - 1].fromhead), fit: BoxFit.cover),
                         ))
                     : Stack(
                         children: <Widget>[
@@ -309,20 +269,14 @@ Widget mCommentItem(BuildContext context, int index) {
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: Colors.transparent,
-                                image: DecorationImage(
-                                    image: NetworkImage(
-                                        mCommentList[index - 1].fromhead),
-                                    fit: BoxFit.cover),
+                                image: DecorationImage(image: NetworkImage(mCommentList[index - 1].fromhead), fit: BoxFit.cover),
                               )),
                           Positioned(
                             right: 0,
                             bottom: 0,
                             child: Container(
                               child: Image.asset(
-                                (mCommentList[index - 1].fromuserisvertify == 1)
-                                    ? Constant.ASSETS_IMG + 'home_vertify.webp'
-                                    : Constant.ASSETS_IMG +
-                                        'home_vertify2.webp',
+                                (mCommentList[index - 1].fromuserisvertify == 1) ? Constant.ASSETS_IMG + 'home_vertify.webp' : Constant.ASSETS_IMG + 'home_vertify2.webp',
                                 width: 15.0,
                                 height: 15.0,
                               ),
@@ -345,13 +299,7 @@ Widget mCommentItem(BuildContext context, int index) {
                     child: Padding(
                         padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
                         child: Text(mCommentList[index - 1].fromuname,
-                            style: TextStyle(
-                                fontSize: 11.0,
-                                color:
-                                    mCommentList[index - 1].fromuserismember ==
-                                            0
-                                        ? Color(0xff636363)
-                                        : Color(0xffF86119)))),
+                            style: TextStyle(fontSize: 11.0, color: mCommentList[index - 1].fromuserismember == 0 ? Color(0xff636363) : Color(0xffF86119)))),
                   ),
                   Center(
                     child: mCommentList[index - 1].fromuserismember == 0
@@ -370,12 +318,13 @@ Widget mCommentItem(BuildContext context, int index) {
               Container(
                 child: InkWell(
                   onTap: () {
-                    Routes.navigateTo(context, Routes.weiboCommentDetailPage,
-                        params: {
-                          'comment':
-                              convert.jsonEncode(mCommentList[index - 1]),
-                        },
-                        transition: TransitionType.fadeIn);
+                    Routes.navigateTo(
+                      context,
+                      Routes.weiboCommentDetailPage,
+                      params: {
+                        'comment': convert.jsonEncode(mCommentList[index - 1]),
+                      },
+                    );
                   },
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -384,8 +333,7 @@ Widget mCommentItem(BuildContext context, int index) {
                         margin: EdgeInsets.only(top: 3),
                         child: Text(
                           mCommentList[index - 1].content,
-                          style:
-                              TextStyle(color: Color(0xff333333), fontSize: 13),
+                          style: TextStyle(color: Color(0xff333333), fontSize: 13),
                         ),
                       ),
                       Container(
@@ -396,11 +344,7 @@ Widget mCommentItem(BuildContext context, int index) {
                           //设置四周圆角 角度
                           borderRadius: BorderRadius.all(Radius.circular(4.0)),
                         ),
-                        margin: EdgeInsets.only(
-                            top: mCommentList[index - 1].commentreplynum == 0
-                                ? 0
-                                : 5,
-                            right: 15),
+                        margin: EdgeInsets.only(top: mCommentList[index - 1].commentreplynum == 0 ? 0 : 5, right: 15),
                         child: mCommentReplyWidget,
                       ),
                     ],
@@ -414,12 +358,8 @@ Widget mCommentItem(BuildContext context, int index) {
                   children: <Widget>[
                     Container(
                       child: Text(
-                        DateUtil.getFormatTime2(
-                                DateTime.fromMillisecondsSinceEpoch(
-                                    mCommentList[index - 1].createtime))
-                            .toString(),
-                        style:
-                            TextStyle(color: Color(0xff909090), fontSize: 11),
+                        DateUtil.getFormatTime2(DateTime.fromMillisecondsSinceEpoch(mCommentList[index - 1].createtime)).toString(),
+                        style: TextStyle(color: Color(0xff909090), fontSize: 11),
                       ),
                     ),
                     Spacer(),

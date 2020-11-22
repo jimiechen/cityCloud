@@ -32,8 +32,19 @@ class _RetWeetPageState extends State<RetWeetPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: WillPopScope(
+    return WillPopScope(
+      onWillPop: () {
+        print("点击返回键");
+        if (mBottomLayoutShow) {
+          setState(() {
+            mBottomLayoutShow = false;
+            mEmojiLayoutShow = false;
+          });
+        } else {
+          Navigator.pop(context);
+        }
+      },
+      child: SafeArea(
         child: Scaffold(
           resizeToAvoidBottomInset: false,
           backgroundColor: Colors.white,
@@ -51,17 +62,6 @@ class _RetWeetPageState extends State<RetWeetPage> {
             ],
           ),
         ),
-        onWillPop: () {
-          print("点击返回键");
-          if (mBottomLayoutShow) {
-            setState(() {
-              mBottomLayoutShow = false;
-              mEmojiLayoutShow = false;
-            });
-          } else {
-            Navigator.pop(context);
-          }
-        },
       ),
     );
   }
@@ -71,7 +71,8 @@ class _RetWeetPageState extends State<RetWeetPage> {
     // TODO: implement initState
     super.initState();
 
-    KeyboardVisibility.onChange.listen((bool visible) {
+    KeyboardVisibility.onChange.listen(
+      (bool visible) {
         final keyHeight = MediaQuery.of(context).viewInsets.bottom;
         if (keyHeight != 0) {
           SpUtil.putDouble(Constant.SP_KEYBOARD_HEGIHT, keyHeight);
@@ -105,8 +106,7 @@ class _RetWeetPageState extends State<RetWeetPage> {
               alignment: Alignment.centerLeft,
               child: Container(
                 margin: EdgeInsets.only(left: 15.0),
-                child: Text('取消',
-                    style: TextStyle(fontSize: 15, color: Colors.black)),
+                child: Text('取消', style: TextStyle(fontSize: 15, color: Colors.black)),
               )),
           Align(
             alignment: Alignment.center,
@@ -114,10 +114,8 @@ class _RetWeetPageState extends State<RetWeetPage> {
               margin: EdgeInsets.only(top: 5, bottom: 5),
               child: Column(
                 children: <Widget>[
-                  Text('转发微博',
-                      style: TextStyle(fontSize: 16, color: Colors.black)),
-                  Text(UserUtil.getUserInfo().nick,
-                      style: TextStyle(fontSize: 12, color: Colors.grey))
+                  Text('转发微博', style: TextStyle(fontSize: 16, color: Colors.black)),
+                  Text(UserUtil.getUserInfo().nick, style: TextStyle(fontSize: 12, color: Colors.grey))
                 ],
               ),
             ),
@@ -130,13 +128,8 @@ class _RetWeetPageState extends State<RetWeetPage> {
                     ToastUtil.show("内容不能为空!");
                     return;
                   }
-                  FormData formData = FormData.fromMap({
-                    "userId": UserUtil.getUserInfo().id,
-                    "zfContent": mEtController.text,
-                    "zfWeiBoId": widget.mModel.weiboId
-                  });
-                  DioManager.getInstance()
-                      .post(ServiceUrl.forwardWeiBo, formData, (data) {
+                  FormData formData = FormData.fromMap({"userId": UserUtil.getUserInfo().id, "zfContent": mEtController.text, "zfWeiBoId": widget.mModel.weiboId});
+                  DioManager.getInstance().post(ServiceUrl.forwardWeiBo, formData, (data) {
                     ToastUtil.show('提交成功!');
                     setState(() {
                       mEtController.clear();
@@ -147,13 +140,9 @@ class _RetWeetPageState extends State<RetWeetPage> {
                 },
                 child: Container(
                   margin: EdgeInsets.only(right: 15.0),
-                  padding: EdgeInsets.only(
-                      left: 8.0, right: 8.0, top: 3.0, bottom: 3.0),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                      color: Color(0xFFFF8200)),
-                  child: Text('发送',
-                      style: TextStyle(fontSize: 15, color: Colors.white)),
+                  padding: EdgeInsets.only(left: 8.0, right: 8.0, top: 3.0, bottom: 3.0),
+                  decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(10.0)), color: Color(0xFFFF8200)),
+                  child: Text('发送', style: TextStyle(fontSize: 15, color: Colors.white)),
                 ),
               )),
         ],
@@ -171,9 +160,7 @@ class _RetWeetPageState extends State<RetWeetPage> {
         maxLines: 5,
         focusNode: mfocusNode,
         style: TextStyle(color: Colors.black, fontSize: 15),
-        decoration: InputDecoration.collapsed(
-            hintText: "说说分享心得",
-            hintStyle: TextStyle(color: Color(0xff919191), fontSize: 15)),
+        decoration: InputDecoration.collapsed(hintText: "说说分享心得", hintStyle: TextStyle(color: Color(0xff919191), fontSize: 15)),
       ),
     );
   }
@@ -187,13 +174,7 @@ class _RetWeetPageState extends State<RetWeetPage> {
           child: Row(
             children: <Widget>[
               new Container(
-                child: Image.network(
-                    widget.mModel.picurl.length == 0
-                        ? widget.mModel.userInfo.headurl
-                        : widget.mModel.picurl[0],
-                    fit: BoxFit.fill,
-                    width: 90,
-                    height: 90),
+                child: Image.network(widget.mModel.picurl.length == 0 ? widget.mModel.userInfo.headurl : widget.mModel.picurl[0], fit: BoxFit.fill, width: 90, height: 90),
               ),
               new Container(
                 margin: EdgeInsets.only(left: 10.0),
@@ -217,8 +198,7 @@ class _RetWeetPageState extends State<RetWeetPage> {
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           text: widget.mModel.content,
-                          style: TextStyle(
-                              height: 1.5, fontSize: 13, color: Colors.grey),
+                          style: TextStyle(height: 1.5, fontSize: 13, color: Colors.grey),
                           parse: <MatchText>[
                             MatchText(
                                 pattern: r"\[(@[^:]+):([^\]]+)\]",
@@ -227,16 +207,12 @@ class _RetWeetPageState extends State<RetWeetPage> {
                                   fontSize: 13,
                                 ),
                                 renderText: ({String str, String pattern}) {
-                                  Map<String, String> map =
-                                      Map<String, String>();
+                                  Map<String, String> map = Map<String, String>();
                                   RegExp customRegExp = RegExp(pattern);
                                   Match match = customRegExp.firstMatch(str);
                                   map['display'] = match.group(1);
                                   map['value'] = match.group(2);
-                                  print("正则:" +
-                                      match.group(1) +
-                                      "---" +
-                                      match.group(2));
+                                  print("正则:" + match.group(1) + "---" + match.group(2));
                                   return map;
                                 },
                                 onTap: (url) {
@@ -267,8 +243,7 @@ class _RetWeetPageState extends State<RetWeetPage> {
                                   fontSize: 13,
                                 ),
                                 renderText: ({String str, String pattern}) {
-                                  Map<String, String> map =
-                                      Map<String, String>();
+                                  Map<String, String> map = Map<String, String>();
                                   //  RegExp customRegExp = RegExp(pattern);
                                   //#fskljflsk:12#
                                   // Match match = customRegExp.firstMatch(str);
@@ -276,13 +251,8 @@ class _RetWeetPageState extends State<RetWeetPage> {
                                   /*  String idStr =str.substring(str.indexOf(";"),
                      (str.lastIndexOf("#")-1));*/
 
-                                  String idStr = str.substring(
-                                      str.indexOf(":") + 1,
-                                      str.lastIndexOf("#"));
-                                  String showStr = str
-                                      .substring(str.indexOf("#"),
-                                          str.lastIndexOf("#") + 1)
-                                      .replaceAll(":" + idStr, "");
+                                  String idStr = str.substring(str.indexOf(":") + 1, str.lastIndexOf("#"));
+                                  String showStr = str.substring(str.indexOf("#"), str.lastIndexOf("#") + 1).replaceAll(":" + idStr, "");
                                   map['display'] = showStr;
                                   map['value'] = idStr;
                                   //   print("正则:"+str+"---"+idStr+"--"+startIndex.toString()+"--"+str.lastIndexOf("#").toString());
@@ -321,8 +291,7 @@ class _RetWeetPageState extends State<RetWeetPage> {
                                 print("表情的正则:" + str);
                                 String mEmoji2 = "";
                                 try {
-                                  String mEmoji = str.replaceAll(
-                                      RegExp('(\\[/)|(\\])'), "");
+                                  String mEmoji = str.replaceAll(RegExp('(\\[/)|(\\])'), "");
                                   int mEmojiNew = int.parse(mEmoji);
                                   mEmoji2 = String.fromCharCode(mEmojiNew);
                                 } on Exception catch (_) {
@@ -342,8 +311,7 @@ class _RetWeetPageState extends State<RetWeetPage> {
                                   fontSize: 15,
                                 ),
                                 renderText: ({String str, String pattern}) {
-                                  Map<String, String> map =
-                                      Map<String, String>();
+                                  Map<String, String> map = Map<String, String>();
                                   map['display'] = '全文';
                                   map['value'] = '全文';
                                   return map;
@@ -409,24 +377,12 @@ class _RetWeetPageState extends State<RetWeetPage> {
                       height: 25.0,
                     ),
                     onTap: () {
-                      Routes.navigateTo(
-                              context, '${Routes.weiboPublishAtUsrPage}')
-                          .then((result) {
+                      Routes.navigateTo(context, '${Routes.weiboPublishAtUsrPage}').then((result) {
                         WeiboAtUser mAtUser = result as WeiboAtUser;
                         if (mAtUser != null) {
-                          mWeiBoSubmitText = mWeiBoSubmitText +
-                              "[@" +
-                              mAtUser.nick +
-                              ":" +
-                              mAtUser.id +
-                              "]";
+                          mWeiBoSubmitText = mWeiBoSubmitText + "[@" + mAtUser.nick + ":" + mAtUser.id + "]";
 
-                          mEtController.text = mEtController.text +
-                              "[@" +
-                              mAtUser.nick +
-                              ":" +
-                              mAtUser.id +
-                              "]";
+                          mEtController.text = mEtController.text + "[@" + mAtUser.nick + ":" + mAtUser.id + "]";
                           //   _mEtController.buildTextSpan()
                           // _mEtController.text=_mEtController.text+"#aaaa#" ;
                         }
@@ -443,20 +399,13 @@ class _RetWeetPageState extends State<RetWeetPage> {
                       height: 25.0,
                     ),
                     onTap: () {
-                      Routes.navigateTo(
-                              context, '${Routes.weiboPublishTopicPage}')
-                          .then((result) {
+                      Routes.navigateTo(context, '${Routes.weiboPublishTopicPage}').then((result) {
                         WeiBoTopic mTopic = result;
 
                         if (mTopic != null) {
                           // _mEtController.text = _mEtController.text +  "#" +   mTopic.topicdesc +  "#"+"";
 
-                          mEtController.text = mEtController.text +
-                              "#" +
-                              mTopic.topicdesc +
-                              ":" +
-                              mTopic.topicid +
-                              "#";
+                          mEtController.text = mEtController.text + "#" + mTopic.topicdesc + ":" + mTopic.topicid + "#";
 
                           //   _mEtController.buildTextSpan()
                           // _mEtController.text=_mEtController.text+"#aaaa#" ;
@@ -531,8 +480,7 @@ class _RetWeetPageState extends State<RetWeetPage> {
                 if (value == 0) {
                   mEtController.clear();
                 } else {
-                  mEtController.text =
-                      mEtController.text + "[/" + value.toString() + "]";
+                  mEtController.text = mEtController.text + "[/" + value.toString() + "]";
                 }
               }),
             ),

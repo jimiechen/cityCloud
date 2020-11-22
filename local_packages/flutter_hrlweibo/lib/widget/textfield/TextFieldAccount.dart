@@ -6,12 +6,14 @@ typedef void ITextFieldCallBack(String content);
 //登陆注册界面edittext输入框
 class AccountEditText extends StatefulWidget {
   final ITextFieldCallBack contentStrCallBack;
+  final String defaultAccount;
 
 /* AccountEditText({Key key, this.contentStrCallBack}) : super(key: key);*/
 
   AccountEditText({
     Key key,
     this.contentStrCallBack,
+    this.defaultAccount,
   }) : super(key: key);
 
   @override
@@ -22,6 +24,15 @@ String _inputAccount = "";
 bool _isShowDelete = false;
 
 class _AccountEditTextState extends State<AccountEditText> {
+
+  @override
+  void initState() {
+    if(widget.defaultAccount != null){
+      _inputAccount = widget.defaultAccount;
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     TextEditingController _controller = new TextEditingController.fromValue(

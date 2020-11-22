@@ -27,6 +27,12 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>App需要您的同意,才能访问相机</string>
+	<key>NSContactsUsageDescription</key>
+	<string>App需要您的同意,才能通讯录</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>App需要您的同意,才能访问相册</string>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>该标识符将用于向您投放个性化广告</string>
 	<key>SKAdNetworkItems</key>

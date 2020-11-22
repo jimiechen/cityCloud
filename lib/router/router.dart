@@ -1,6 +1,7 @@
 import 'package:cityCloud/main/home/home_page.dart';
 import 'package:cityCloud/main/launch/privacy_policy.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hrlweibo/pages/mine/login_page.dart';
 
 typedef PageWrapBuilder = Widget Function(Widget child, BuildContext context);
 typedef RouteBuilder = Route<dynamic> Function(WidgetBuilder pageBuilder, RouteSettings setting);
@@ -11,7 +12,14 @@ class RouterManager {
   List<String> _routesName = [];
 
   static String root = "/";
-  static get rootPageBuilder => (_) => PrivacyPolicyPage();
+  // PrivacyPolicyPage();
+  static get rootPageBuilder => (_) => LoginPage(
+        defaultAccount: 'test2',
+        defaultpwd: '123',
+        loginSuccess: (ctx) {
+          Navigator.pushAndRemoveUntil(ctx, RouterManager.routeForPage(page: PrivacyPolicyPage()), (route) => false);
+        },
+      );
 
   static String _routeNameForPage(Type page) => page.toString();
 

@@ -12,24 +12,21 @@ class VideoRecommendPage extends StatefulWidget {
   _VideoRecommendPageState createState() => _VideoRecommendPageState();
 }
 
-class _VideoRecommendPageState extends State<VideoRecommendPage> {
+class _VideoRecommendPageState extends State<VideoRecommendPage> with AutomaticKeepAliveClientMixin{
   bool isloadingMore = false; //是否显示加载中
   bool ishasMore = true; //是否还有更多
   num mCurPage = 1;
   ScrollController mScrollController = new ScrollController();
   List<VideoModel> mVideoList = [];
 
-  VideoRecommendPageState() {}
 
   Future getVideoList(bool isRefresh) {
     if (isRefresh) {
       isloadingMore = false;
       ishasMore = true;
       mCurPage = 1;
-      FormData params =
-          FormData.fromMap({'pageNum': "$mCurPage", 'pageSize': "10"});
-      DioManager.getInstance().post(ServiceUrl.getVideoRecommendList, params,
-          (data) {
+      FormData params = FormData.fromMap({'pageNum': "$mCurPage", 'pageSize': "10"});
+      DioManager.getInstance().post(ServiceUrl.getVideoRecommendList, params, (data) {
         List<VideoModel> list = List();
         data['data']['list'].forEach((data) {
           list.add(VideoModel.fromJson(data));
@@ -39,10 +36,8 @@ class _VideoRecommendPageState extends State<VideoRecommendPage> {
         setState(() {});
       }, (error) {});
     } else {
-      FormData params =
-          FormData.fromMap({'pageNum': "$mCurPage", 'pageSize': "10"});
-      DioManager.getInstance().post(ServiceUrl.getVideoRecommendList, params,
-          (data) {
+      FormData params = FormData.fromMap({'pageNum': "$mCurPage", 'pageSize': "10"});
+      DioManager.getInstance().post(ServiceUrl.getVideoRecommendList, params, (data) {
         List<VideoModel> list = List();
         data['data']['list'].forEach((data) {
           list.add(VideoModel.fromJson(data));
@@ -100,11 +95,15 @@ class _VideoRecommendPageState extends State<VideoRecommendPage> {
     return InkResponse(
       highlightColor: Colors.transparent,
       onTap: () {
-        Routes.navigateTo(context, Routes.videoDetailPage,
-            params: {
-              'video': convert.jsonEncode(mModel),
-            },
-            transition: TransitionType.fadeIn);
+        // Navigator.push(context, MaterialPageRoute(builder: (_)=> VideoDetailPage(mModel)));
+        Routes.navigateTo(
+          context,
+          Routes.videoDetailPage,
+          params: {
+            'video': convert.jsonEncode(mModel),
+          },
+          transition: TransitionType.native,
+        );
       },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,8 +120,7 @@ class _VideoRecommendPageState extends State<VideoRecommendPage> {
                     borderRadius: BorderRadius.circular(5),
                     child: FadeInImage(
                       fit: BoxFit.cover,
-                      placeholder:
-                          AssetImage(Constant.ASSETS_IMG + 'img_default2.png'),
+                      placeholder: AssetImage(Constant.ASSETS_IMG + 'img_default2.png'),
                       image: NetworkImage(
                         mModel.coverimg,
                       ),
@@ -148,17 +146,11 @@ class _VideoRecommendPageState extends State<VideoRecommendPage> {
                             height: 15.0,
                           ),
                         ),
-                        Text(mModel.playnum.toString(),
-                            style:
-                                TextStyle(fontSize: 14.0, color: Colors.white)),
+                        Text(mModel.playnum.toString(), style: TextStyle(fontSize: 14.0, color: Colors.white)),
                         Spacer(),
                         Container(
                           margin: EdgeInsets.only(right: 5),
-                          child: Text(
-                              DateUtil.getFormatTime4(mModel.videotime)
-                                  .toString(),
-                              style: TextStyle(
-                                  fontSize: 14.0, color: Colors.white)),
+                          child: Text(DateUtil.getFormatTime4(mModel.videotime).toString(), style: TextStyle(fontSize: 14.0, color: Colors.white)),
                         ),
                       ],
                     ),
@@ -170,10 +162,7 @@ class _VideoRecommendPageState extends State<VideoRecommendPage> {
           Container(
             height: 40,
             margin: EdgeInsets.only(top: 5),
-            child: Text(mModel.introduce,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 14.0, color: Colors.black)),
+            child: Text(mModel.introduce, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14.0, color: Colors.black)),
             //  margin: EdgeInsets.only(left: 60),
           ),
           Container(
@@ -188,15 +177,13 @@ class _VideoRecommendPageState extends State<VideoRecommendPage> {
                             ? new Container()
                             : Text(
                                 mModel.tag.toString(),
-                                style: TextStyle(
-                                    fontSize: 12, color: Colors.black),
+                                style: TextStyle(fontSize: 12, color: Colors.black),
                               ))
                         : Container(
                             padding: EdgeInsets.all(2),
                             child: Text(
                               mModel.recommengstr,
-                              style:
-                                  TextStyle(fontSize: 11, color: Colors.orange),
+                              style: TextStyle(fontSize: 11, color: Colors.orange),
                             ),
                             decoration: BoxDecoration(
                               shape: BoxShape.rectangle,
@@ -267,29 +254,31 @@ class _VideoRecommendPageState extends State<VideoRecommendPage> {
     final double mGridItemWidth = size.width / 2;
 
     return Container(
+      color: Colors.white,
       padding: EdgeInsets.only(left: 15, right: 15, top: 15),
       child: RefreshIndicator(
         onRefresh: pullToRefresh,
-        child: new CustomScrollView(
-            controller: mScrollController,
-            slivers: <Widget>[
-              new SliverGrid(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  mainAxisSpacing: 10.0,
-                  crossAxisSpacing: 10.0,
-                  childAspectRatio: (mGridItemWidth / mGridItemHeight),
-                  crossAxisCount: 2,
-                ),
-                delegate: SliverChildBuilderDelegate(
-                    (BuildContext context, int index) {
-                  return getContentItem(context, mVideoList[index]);
-                }, childCount: mVideoList.length),
-              ),
-              new SliverToBoxAdapter(
-                child: _buildLoadMore(),
-              ),
-            ]),
+        child: new CustomScrollView(controller: mScrollController, slivers: <Widget>[
+          new SliverGrid(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              mainAxisSpacing: 10.0,
+              crossAxisSpacing: 10.0,
+              childAspectRatio: (mGridItemWidth / mGridItemHeight),
+              crossAxisCount: 2,
+            ),
+            delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
+              return getContentItem(context, mVideoList[index]);
+            }, childCount: mVideoList.length),
+          ),
+          new SliverToBoxAdapter(
+            child: _buildLoadMore(),
+          ),
+        ]),
       ),
     );
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }

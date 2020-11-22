@@ -11,8 +11,7 @@ class TopicDetailPage extends StatefulWidget {
   String mDiscussCount;
   String mHost;
 
-  TopicDetailPage(
-      this.mTitle, this.mImg, this.mReadCount, this.mDiscussCount, this.mHost);
+  TopicDetailPage(this.mTitle, this.mImg, this.mReadCount, this.mDiscussCount, this.mHost);
 
   @override
   _TopicDetailPageState createState() => _TopicDetailPageState();
@@ -31,9 +30,9 @@ final List<String> _tabs = [
 class _TopicDetailPageState extends State<TopicDetailPage> {
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-        child: Scaffold(
-      body: Column(
+    return Scaffold(
+        body: SafeArea(
+      child: Column(
         children: <Widget>[
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -55,8 +54,7 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
                     child: Center(
                   child: Container(
                       width: MediaQuery.of(context).size.width,
-                      margin: EdgeInsets.only(
-                          left: 10, top: 10, bottom: 10, right: 15),
+                      margin: EdgeInsets.only(left: 10, top: 10, bottom: 10, right: 15),
                       padding: EdgeInsets.only(top: 8, bottom: 8),
                       decoration: BoxDecoration(
                         color: Color(0xffE4E2E8),
@@ -70,8 +68,7 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
                             Container(
-                              margin:
-                                  EdgeInsets.only(right: 10, top: 2, left: 10),
+                              margin: EdgeInsets.only(right: 10, top: 2, left: 10),
                               child: Image.asset(
                                 Constant.ASSETS_IMG + 'find_top_search.png',
                                 width: 16.0,
@@ -82,8 +79,7 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
                               "#" + widget.mTitle + "#",
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                  fontSize: 14, color: Color(0xffee565656)),
+                              style: TextStyle(fontSize: 14, color: Color(0xffee565656)),
                             ),
                           ],
                         ),
@@ -96,8 +92,7 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
             child: DefaultTabController(
               length: _tabs.length, // This is the number of tabs.
               child: NestedScrollView(
-                headerSliverBuilder:
-                    (BuildContext context, bool innerBoxIsScrolled) {
+                headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
                   // These are the slivers that show up in the "outer" scroll view.
                   return <Widget>[
                     SliverToBoxAdapter(
@@ -111,8 +106,7 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
                                   Container(
                                     height: 130,
                                     child: Image.asset(
-                                      Constant.ASSETS_IMG +
-                                          'topic_detail_top.webp',
+                                      Constant.ASSETS_IMG + 'topic_detail_top.webp',
                                       fit: BoxFit.fill,
                                     ),
                                   ),
@@ -121,67 +115,46 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
                                     child: Row(
                                       children: <Widget>[
                                         Container(
-                                          margin: EdgeInsets.only(
-                                              top: 10, left: 15, right: 15),
+                                          margin: EdgeInsets.only(top: 10, left: 15, right: 15),
                                           width: 70,
                                           height: 70,
                                           child: Stack(
                                             children: <Widget>[
                                               Container(
                                                   decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              1.0),
+                                                      borderRadius: BorderRadius.circular(1.0),
                                                       shape: BoxShape.rectangle,
-                                                      image: DecorationImage(
-                                                          image: NetworkImage(
-                                                              widget.mImg),
-                                                          fit: BoxFit.cover))),
+                                                      image: DecorationImage(image: NetworkImage(widget.mImg), fit: BoxFit.cover))),
                                             ],
                                           ),
                                         ),
                                         Expanded(
                                           child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
                                             children: <Widget>[
                                               new Text(
                                                 "#" + widget.mTitle + "#",
-                                                style: TextStyle(
-                                                    fontSize: 16,
-                                                    color: Colors.white),
+                                                style: TextStyle(fontSize: 16, color: Colors.white),
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
                                               ),
                                               Container(
                                                 child: new Text(
-                                                  widget.mReadCount +
-                                                      "阅读   " +
-                                                      widget.mDiscussCount +
-                                                      "讨论   详情>",
-                                                  style: TextStyle(
-                                                      fontSize: 12,
-                                                      color: Colors.white),
+                                                  widget.mReadCount + "阅读   " + widget.mDiscussCount + "讨论   详情>",
+                                                  style: TextStyle(fontSize: 12, color: Colors.white),
                                                   maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
+                                                  overflow: TextOverflow.ellipsis,
                                                 ),
-                                                margin: EdgeInsets.only(
-                                                    top: 8, right: 15),
+                                                margin: EdgeInsets.only(top: 8, right: 15),
                                               ),
                                               Container(
-                                                margin: EdgeInsets.only(
-                                                    top: 3, right: 15),
+                                                margin: EdgeInsets.only(top: 3, right: 15),
                                                 child: new Text(
                                                   "主持人:" + widget.mHost,
-                                                  style: TextStyle(
-                                                      fontSize: 12,
-                                                      color: Colors.white),
+                                                  style: TextStyle(fontSize: 12, color: Colors.white),
                                                   maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
+                                                  overflow: TextOverflow.ellipsis,
                                                 ),
                                               ),
                                             ],
@@ -210,20 +183,12 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
                                     child: TabBar(
                                         isScrollable: true,
                                         indicatorColor: Color(0xffFF3700),
-                                        indicator: UnderlineTabIndicator(
-                                            borderSide: BorderSide(
-                                                color: Color(0xffFF3700),
-                                                width: 2),
-                                            insets: EdgeInsets.only(bottom: 7)),
+                                        indicator: UnderlineTabIndicator(borderSide: BorderSide(color: Color(0xffFF3700), width: 2), insets: EdgeInsets.only(bottom: 7)),
                                         labelColor: Color(0xff333333),
                                         unselectedLabelColor: Color(0xff666666),
-                                        labelStyle: TextStyle(
-                                            fontSize: 16.0,
-                                            fontWeight: FontWeight.w700),
-                                        unselectedLabelStyle:
-                                            TextStyle(fontSize: 16.0),
-                                        indicatorSize:
-                                            TabBarIndicatorSize.label,
+                                        labelStyle: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w700),
+                                        unselectedLabelStyle: TextStyle(fontSize: 16.0),
+                                        indicatorSize: TabBarIndicatorSize.label,
                                         tabs: [
                                           new Tab(
                                             text: _tabs[0],
@@ -253,12 +218,10 @@ class _TopicDetailPageState extends State<TopicDetailPage> {
                                     top: 5,
                                     bottom: 5,
                                     child: Container(
-                                      padding: EdgeInsets.only(
-                                          right: 5, top: 5, bottom: 5),
+                                      padding: EdgeInsets.only(right: 5, top: 5, bottom: 5),
                                       color: Colors.white,
                                       child: Image.asset(
-                                        Constant.ASSETS_IMG +
-                                            'topic_detail_add.png',
+                                        Constant.ASSETS_IMG + 'topic_detail_add.png',
                                         width: 20,
                                         height: 20,
                                       ),
@@ -362,15 +325,12 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   double get maxExtent => math.max(maxHeight, minHeight);
 
   @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     return new SizedBox.expand(child: child);
   }
 
   @override
   bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
-    return maxHeight != oldDelegate.maxHeight ||
-        minHeight != oldDelegate.minHeight ||
-        child != oldDelegate.child;
+    return maxHeight != oldDelegate.maxHeight || minHeight != oldDelegate.minHeight || child != oldDelegate.child;
   }
 }

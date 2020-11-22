@@ -1,6 +1,7 @@
 import "package:dio/dio.dart";
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hrlweibo/constant/constant.dart';
 import 'package:flutter_hrlweibo/http/service_method.dart';
 import 'package:flutter_hrlweibo/public.dart';
@@ -11,6 +12,11 @@ import '../../widget/textfield/TextFieldAccount.dart';
 import '../../widget/textfield/TextFieldPwd.dart';
 
 class LoginPage extends StatefulWidget {
+  final ValueChanged<BuildContext> loginSuccess;
+  final String defaultAccount;
+  final String defaultpwd;
+
+  const LoginPage({Key key, this.loginSuccess, this.defaultAccount, this.defaultpwd}) : super(key: key);
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -19,6 +25,35 @@ String _inputAccount = "";
 String _inputPwd = "";
 
 class _LoginPageState extends State<LoginPage> {
+  @override
+  void initState() {
+    // App启动时读取Sp数据，需要异步等待Sp初始化完成。
+    SpUtil.getInstance();
+    // if (Platform.isAndroid) {
+    //   SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(
+    //     systemNavigationBarColor: Color(0xffffffff),
+    //     systemNavigationBarIconBrightness: Brightness.dark,
+    //     systemNavigationBarDividerColor: Color(0xffffffff),
+    //     statusBarColor: Colors.black,
+    //     statusBarIconBrightness: Brightness.light,
+    //     statusBarBrightness: Brightness.light,
+    //   );
+    //   SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
+    // }
+    super.initState();
+    final router = FluroRouter();
+    Routes.configureRoutes(router);
+    Routes.router = router;
+
+    if (widget.defaultAccount != null) {
+      _inputAccount = widget.defaultAccount;
+    }
+
+    if (widget.defaultpwd != null) {
+      _inputPwd = widget.defaultpwd;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     //登录时保存软键盘高度,在聊天界面第一次弹出底部布局时使用
@@ -37,8 +72,7 @@ class _LoginPageState extends State<LoginPage> {
                 // CupertinoActivityIndicator(),
                 buildTile(),
                 new Container(
-                  margin:
-                      const EdgeInsets.only(left: 20.0, top: 30.0, bottom: 20),
+                  margin: const EdgeInsets.only(left: 20.0, top: 30.0, bottom: 20),
                   child: new Text(
                     "请输入账号密码",
                     style: new TextStyle(fontSize: 24.0, color: Colors.black),
@@ -47,6 +81,7 @@ class _LoginPageState extends State<LoginPage> {
                 new Container(
                   margin: EdgeInsets.only(top: 10, left: 20, right: 20),
                   child: AccountEditText(
+                    defaultAccount: _inputAccount,
                     contentStrCallBack: (content) {
                       _inputAccount = content;
                       setState(() {});
@@ -56,6 +91,7 @@ class _LoginPageState extends State<LoginPage> {
                 new Container(
                   margin: EdgeInsets.only(top: 10, left: 20, right: 20),
                   child: PwdEditText(
+                    defaultpwd: _inputPwd,
                     contentStrCallBack: (content) {
                       _inputPwd = content;
                       setState(() {});
@@ -73,20 +109,21 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget buildTile() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween, //子组件的排列方式为主轴两端对齐
+      // mainAxisAlignment: MainAxisAlignment.spaceBetween, //子组件的排列方式为主轴两端对齐
       children: <Widget>[
-        new InkWell(
-          child: new Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Image.asset(
-                Constant.ASSETS_IMG + 'icon_close.png',
-                width: 20.0,
-                height: 20.0,
-              )),
-          onTap: () {
-            Navigator.pop(context);
-          },
-        ),
+        // new InkWell(
+        //   child: new Padding(
+        //       padding: const EdgeInsets.all(12.0),
+        //       child: Image.asset(
+        //         Constant.ASSETS_IMG + 'icon_close.png',
+        //         width: 20.0,
+        //         height: 20.0,
+        //       )),
+        //   onTap: () {
+        //     Navigator.pop(context);
+        //   },
+        // ),
+        Spacer(),
         new InkWell(
           child: new Padding(
               padding: const EdgeInsets.all(12.0),
@@ -114,13 +151,13 @@ class _LoginPageState extends State<LoginPage> {
         onPressed: (_inputAccount.isEmpty || _inputPwd.isEmpty)
             ? null
             : () {
-                FormData params = FormData.fromMap(
-                    {'username': _inputAccount, 'password': _inputPwd});
+                FormData params = FormData.fromMap({'username': _inputAccount, 'password': _inputPwd});
                 DioManager.getInstance().post(ServiceUrl.login, params, (data) {
                   UserUtil.saveUserInfo(data['data']);
                   ToastUtil.show('登录成功!');
                   Navigator.pop(context);
-                  Routes.navigateTo(context, Routes.indexPage);
+                  // Routes.navigateTo(context, Routes.indexPage);
+                  widget.loginSuccess?.call(context);
                 }, (error) {
                   ToastUtil.show(error);
                 });
@@ -158,8 +195,10 @@ class _LoginPageState extends State<LoginPage> {
                 style: new TextStyle(fontSize: 13.0, color: Color(0xff6B91BB)),
               )),
           onTap: () {
-            Routes.navigateTo(context, Routes.chatPage,
-                transition: TransitionType.fadeIn);
+            Routes.navigateTo(
+              context,
+              Routes.chatPage,
+            );
           },
         ),
       ],
@@ -188,8 +227,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: Center(
                       child: Text(
                         '其他登陆方式',
-                        style:
-                            TextStyle(fontSize: 12, color: Color(0xff999999)),
+                        style: TextStyle(fontSize: 12, color: Color(0xff999999)),
                       ),
                     ),
                   ),
@@ -222,8 +260,7 @@ class _LoginPageState extends State<LoginPage> {
                         margin: EdgeInsets.only(top: 5),
                         child: Text(
                           '微信',
-                          style:
-                              TextStyle(fontSize: 12, color: Color(0xff999999)),
+                          style: TextStyle(fontSize: 12, color: Color(0xff999999)),
                         ),
                       )
                     ],
@@ -242,8 +279,7 @@ class _LoginPageState extends State<LoginPage> {
                         margin: EdgeInsets.only(top: 5),
                         child: Text(
                           'QQ',
-                          style:
-                              TextStyle(fontSize: 12, color: Color(0xff999999)),
+                          style: TextStyle(fontSize: 12, color: Color(0xff999999)),
                         ),
                       )
                     ],

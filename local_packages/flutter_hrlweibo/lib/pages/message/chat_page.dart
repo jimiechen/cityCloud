@@ -47,8 +47,7 @@ class _ChatPageState extends State<ChatPage> {
     final HrlImageMessage mMessgaeImg = new HrlImageMessage();
     mMessgaeImg.msgType = HrlMessageType.image;
     mMessgaeImg.isSend = false;
-    mMessgaeImg.thumbUrl =
-        "https://c-ssl.duitang.com/uploads/item/201208/30/20120830173930_PBfJE.thumb.700_0.jpeg";
+    mMessgaeImg.thumbUrl = "https://c-ssl.duitang.com/uploads/item/201208/30/20120830173930_PBfJE.thumb.700_0.jpeg";
     mHistroyListMessage.add(mMessgaeImg);
     mlistMessage.addAll(mHistroyListMessage);
   }
@@ -67,8 +66,7 @@ class _ChatPageState extends State<ChatPage> {
     super.initState();
     getHistroryMessage();
     listScrollController.addListener(() {
-      if (listScrollController.position.pixels ==
-          listScrollController.position.maxScrollExtent) {
+      if (listScrollController.position.pixels == listScrollController.position.maxScrollExtent) {
         isShowLoading = true;
         setState(() {});
         Future.delayed(Duration(seconds: 2), () {
@@ -82,8 +80,7 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-        child: new WillPopScope(
+    return new WillPopScope(
       onWillPop: () {
         FocusScope.of(context).requestFocus(FocusNode());
         changeNotifier.sink.add(null);
@@ -156,44 +153,33 @@ class _ChatPageState extends State<ChatPage> {
                             SliverList(
                               delegate: SliverChildBuilderDelegate(
                                 (c, i) {
-                                  final GlobalKey<ChatMessageItemState>
-                                      mMessageItemKey = GlobalKey();
-                                  mMessageItemKey.currentState
-                                      ?.methodInChild(false, "");
+                                  final GlobalKey<ChatMessageItemState> mMessageItemKey = GlobalKey();
+                                  mMessageItemKey.currentState?.methodInChild(false, "");
                                   ChatMessageItem mChatItem = ChatMessageItem(
                                     key: mMessageItemKey,
                                     mMessage: mlistMessage[i],
                                     onAudioTap: (String str) {
                                       if (isPalyingAudio) {
                                         isPalyingAudio = false;
-                                        mMessageItemKey.currentState
-                                            ?.methodInChild(
-                                                false, mPalyingPosition);
-                                        mAudioPlayer
-                                            .release(); // manually release when no longer needed
+                                        mMessageItemKey.currentState?.methodInChild(false, mPalyingPosition);
+                                        mAudioPlayer.release(); // manually release when no longer needed
                                         mPalyingPosition = "";
                                         setState(() {});
                                       } else {
-                                        Future<int> result = mAudioPlayer
-                                            .play(str, isLocal: true);
-                                        mAudioPlayer.onPlayerCompletion
-                                            .listen((event) {
-                                          mMessageItemKey.currentState
-                                              ?.methodInChild(
-                                                  false, mPalyingPosition);
+                                        Future<int> result = mAudioPlayer.play(str, isLocal: true);
+                                        mAudioPlayer.onPlayerCompletion.listen((event) {
+                                          mMessageItemKey.currentState?.methodInChild(false, mPalyingPosition);
                                           isPalyingAudio = false;
                                           mPalyingPosition = "";
                                         });
 
                                         isPalyingAudio = true;
                                         mPalyingPosition = mlistMessage[i].uuid;
-                                        mMessageItemKey.currentState
-                                            ?.methodInChild(
-                                                true, mPalyingPosition);
+                                        mMessageItemKey.currentState?.methodInChild(true, mPalyingPosition);
                                       }
                                     },
                                   );
-                                   return mChatItem;
+                                  return mChatItem;
                                 },
                                 childCount: mlistMessage.length,
                               ),
@@ -238,9 +224,7 @@ class _ChatPageState extends State<ChatPage> {
                     mMessgae.isSend = true;
                     mMessgae.state = HrlMessageState.sending;
                     mlistMessage.insert(0, mMessgae);
-                    listScrollController.animateTo(0.00,
-                        duration: Duration(milliseconds: 1),
-                        curve: Curves.easeOut);
+                    listScrollController.animateTo(0.00, duration: Duration(milliseconds: 1), curve: Curves.easeOut);
                     setState(() {});
                     Future.delayed(new Duration(seconds: 1), () {
                       mMessgae.state = HrlMessageState.send_succeed;
@@ -248,10 +232,8 @@ class _ChatPageState extends State<ChatPage> {
                     });
                   },
                   onImageSelectCallBack: (value) {
-                    File image = new File(
-                        value.path); // Or any other way to get a File instance.
-                    Future<ui.Image> decodedImage =
-                        decodeImageFromList(image.readAsBytesSync());
+                    File image = new File(value.path); // Or any other way to get a File instance.
+                    Future<ui.Image> decodedImage = decodeImageFromList(image.readAsBytesSync());
 
                     decodedImage.then((result) {
                       print("图片的宽:" + "${result.width}");
@@ -265,9 +247,7 @@ class _ChatPageState extends State<ChatPage> {
 
                     mMessgae.state = HrlMessageState.sending;
                     mlistMessage.insert(0, mMessgae);
-                    listScrollController.animateTo(0.00,
-                        duration: Duration(milliseconds: 1),
-                        curve: Curves.easeOut);
+                    listScrollController.animateTo(0.00, duration: Duration(milliseconds: 1), curve: Curves.easeOut);
                     setState(() {});
                     Future.delayed(new Duration(seconds: 1), () {
                       mMessgae.state = HrlMessageState.send_succeed;
@@ -283,9 +263,7 @@ class _ChatPageState extends State<ChatPage> {
                     mMessgae.duration = duration;
                     mMessgae.state = HrlMessageState.sending;
                     mlistMessage.insert(0, mMessgae);
-                    listScrollController.animateTo(0.00,
-                        duration: Duration(milliseconds: 1),
-                        curve: Curves.easeOut);
+                    listScrollController.animateTo(0.00, duration: Duration(milliseconds: 1), curve: Curves.easeOut);
                     setState(() {});
                     Future.delayed(new Duration(seconds: 1), () {
                       mMessgae.state = HrlMessageState.send_succeed;
@@ -296,14 +274,13 @@ class _ChatPageState extends State<ChatPage> {
           ),
         ),
       ),
-    ));
+    );
   }
 }
 
 class MyBehavior extends ScrollBehavior {
   @override
-  Widget buildViewportChrome(
-      BuildContext context, Widget child, AxisDirection axisDirection) {
+  Widget buildViewportChrome(BuildContext context, Widget child, AxisDirection axisDirection) {
     if (Platform.isAndroid || Platform.isFuchsia) {
       return child;
     } else {

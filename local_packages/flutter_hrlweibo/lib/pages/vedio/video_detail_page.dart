@@ -16,7 +16,7 @@ class VideoDetailPage extends StatefulWidget {
   _VideoDetailPageState createState() => _VideoDetailPageState();
 }
 
-class _VideoDetailPageState extends State<VideoDetailPage> {
+class _VideoDetailPageState extends State<VideoDetailPage> with TickerProviderStateMixin{
   List<String> mTabList = ["简介", "评论"];
   TabController mTabController;
   VideoPlayerController videoPlayerController;
@@ -24,13 +24,12 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
 
   @override
   void initState() {
-     super.initState();
+    super.initState();
     mTabController = TabController(
       length: mTabList.length,
-      vsync: ScrollableState(), //动画效果的异步处理
+      vsync: this, //动画效果的异步处理
     );
-    videoPlayerController =
-        VideoPlayerController.network(Constant.baseUrl + "file/weibo3.mp4");
+    videoPlayerController = VideoPlayerController.network(Constant.baseUrl + "file/weibo3.mp4");
     chewieController = ChewieController(
       videoPlayerController: videoPlayerController,
       aspectRatio: 4 / 2,
@@ -48,9 +47,9 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: Column(
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
           children: <Widget>[
             new Container(
               height: 200,
@@ -64,14 +63,10 @@ class _VideoDetailPageState extends State<VideoDetailPage> {
               child: TabBar(
                   isScrollable: true,
                   indicatorColor: Color(0xffFF3700),
-                  indicator: UnderlineTabIndicator(
-                      borderSide:
-                          BorderSide(color: Color(0xffFF3700), width: 2),
-                      insets: EdgeInsets.only(bottom: 7)),
+                  indicator: UnderlineTabIndicator(borderSide: BorderSide(color: Color(0xffFF3700), width: 2), insets: EdgeInsets.only(bottom: 7)),
                   labelColor: Color(0xff333333),
                   unselectedLabelColor: Color(0xff666666),
-                  labelStyle:
-                      TextStyle(fontSize: 14.0, fontWeight: FontWeight.w700),
+                  labelStyle: TextStyle(fontSize: 14.0, fontWeight: FontWeight.w700),
                   unselectedLabelStyle: TextStyle(fontSize: 13.0),
                   indicatorSize: TabBarIndicatorSize.label,
                   controller: mTabController,

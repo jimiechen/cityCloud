@@ -114,8 +114,7 @@ class _WeiBoPublishAtUserPageState extends State<WeiBoPublishAtUserPage> {
                 Container(
                   child: Text(
                     '${mModel.nick}',
-                    style: TextStyle(
-                        letterSpacing: 0, color: Colors.black, fontSize: 14),
+                    style: TextStyle(letterSpacing: 0, color: Colors.black, fontSize: 14),
                   ),
                 ),
               ],
@@ -132,83 +131,81 @@ class _WeiBoPublishAtUserPageState extends State<WeiBoPublishAtUserPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-        child: Scaffold(
-      appBar: PreferredSize(
-          child: AppBar(
-            backgroundColor: Color(0xffffffff),
-            leading: IconButton(
-                iconSize: 30,
-                icon: Image.asset(
-                  Constant.ASSETS_IMG + 'icon_back.png',
-                  width: 23.0,
-                  height: 23.0,
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                }),
-            title: Text(
-              '联系人',
-              style: TextStyle(fontSize: 16, color: Colors.black),
+    return Scaffold(
+        appBar: PreferredSize(
+            child: AppBar(
+              backgroundColor: Color(0xffffffff),
+              leading: IconButton(
+                  iconSize: 30,
+                  icon: Image.asset(
+                    Constant.ASSETS_IMG + 'icon_back.png',
+                    width: 23.0,
+                    height: 23.0,
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  }),
+              title: Text(
+                '联系人',
+                style: TextStyle(fontSize: 16, color: Colors.black),
+              ),
+              elevation: 0,
+              centerTitle: true,
             ),
-            elevation: 0,
-            centerTitle: true,
-          ),
-          preferredSize: Size.fromHeight(50)),
-      body: Column(
-        children: <Widget>[
-          Container(
-              child: Center(
-            child: Container(
-                width: MediaQuery.of(context).size.width,
-                margin:
-                    EdgeInsets.only(left: 10, top: 15, right: 10, bottom: 10),
-                padding: EdgeInsets.only(top: 8, bottom: 8),
-                decoration: BoxDecoration(
-                  color: Color(0xffE4E2E8),
-                  borderRadius: BorderRadius.all(
-                    //圆角
-                    Radius.circular(5.0),
-                  ),
-                ),
-                child: Center(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Container(
-                        margin: EdgeInsets.only(right: 5, top: 2),
-                        child: Image.asset(
-                          Constant.ASSETS_IMG + 'find_top_search.png',
-                          width: 12.0,
-                          height: 15.0,
-                        ),
+            preferredSize: Size.fromHeight(50)),
+        body: SafeArea(
+          child: Column(
+            children: <Widget>[
+              Container(
+                  child: Center(
+                child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    margin: EdgeInsets.only(left: 10, top: 15, right: 10, bottom: 10),
+                    padding: EdgeInsets.only(top: 8, bottom: 8),
+                    decoration: BoxDecoration(
+                      color: Color(0xffE4E2E8),
+                      borderRadius: BorderRadius.all(
+                        //圆角
+                        Radius.circular(5.0),
                       ),
-                      Text(
-                        "搜索",
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style:
-                            TextStyle(fontSize: 14, color: Color(0xffee565656)),
+                    ),
+                    child: Center(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Container(
+                            margin: EdgeInsets.only(right: 5, top: 2),
+                            child: Image.asset(
+                              Constant.ASSETS_IMG + 'find_top_search.png',
+                              width: 12.0,
+                              height: 15.0,
+                            ),
+                          ),
+                          Text(
+                            "搜索",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(fontSize: 14, color: Color(0xffee565656)),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                )),
-          )),
-          Expanded(
-              flex: 1,
-              child: AzListView(
-                data: mNormalList,
-                topData: mRecommendList,
-                itemBuilder: (context, model) => _buildListItem(model),
-                suspensionWidget: _buildSusWidget(_suspensionTag),
-                isUseRealIndex: true,
-                itemHeight: _itemHeight,
-                suspensionHeight: _suspensionHeight,
-                onSusTagChanged: _onSusTagChanged,
-                //showCenterTip: false,
+                    )),
               )),
-        ],
-      ),
-    ));
+              Expanded(
+                  flex: 1,
+                  child: AzListView(
+                    data: mNormalList,
+                    topData: mRecommendList,
+                    itemBuilder: (context, model) => _buildListItem(model),
+                    suspensionWidget: _buildSusWidget(_suspensionTag),
+                    isUseRealIndex: true,
+                    itemHeight: _itemHeight,
+                    suspensionHeight: _suspensionHeight,
+                    onSusTagChanged: _onSusTagChanged,
+                    //showCenterTip: false,
+                  )),
+            ],
+          ),
+        ));
   }
 }
