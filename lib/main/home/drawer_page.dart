@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'dart:math';
 
+import 'package:cityCloud/dart_class/class/commond_cubit.dart';
 import 'package:cityCloud/r.dart';
 import 'package:cityCloud/styles/color_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DrawerPage extends StatefulWidget {
   @override
@@ -18,6 +21,10 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
     '设置',
   ];
   AnimationController _animationController;
+  double opacityValueForAnimation() {
+    return _animationController.value > 0.5 ? 0 : (1 - _animationController.value * 2);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -72,38 +79,53 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
                   ],
                 ),
                 AnimatedBuilder(
-                    animation: _animationController,
-                    builder: (_, __) {
-                      return Positioned(
-                        top: 25 - _animationController.value * 10,
-                        height: 50,
-                        child: Row(
-                          children: [
-                            Image.asset(
-                              R.assetsImagesPeopleHair5,
-                              width: 40,
-                              height: 40,
-                            ),
-                            Text('吉祥鸟'),
-                          ],
-                        ),
-                      );
-                    }),
-                Container(
-                  margin: EdgeInsets.only(top: 80, left: 16, right: 16),
-                  height: 58,
-                  decoration: BoxDecoration(
-                    color: Colors.yellow[600],
-                    borderRadius: BorderRadius.circular(6),
-                  ),
+                  animation: _animationController,
+                  builder: (_, __) {
+                    return Positioned(
+                      top: 25 - _animationController.value * 20,
+                      left: _animationController.value * 108,
+                      height: 50,
+                      child: Row(
+                        children: [
+                          Image.asset(
+                            R.assetsImagesPeopleHair5,
+                            width: 40,
+                            height: 40,
+                          ),
+                          Opacity(
+                            opacity: opacityValueForAnimation(),
+                            child: Text('吉祥鸟'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
-                Container(
-                  margin: EdgeInsets.only(top: 115, left: 16, right: 16),
-                  height: 58,
-                  decoration: BoxDecoration(
-                    color: Colors.blueGrey[900],
-                    borderRadius: BorderRadius.circular(6),
-                  ),
+                AnimatedBuilder(
+                  animation: _animationController,
+                  builder: (_, __) {
+                    return Container(
+                      margin: EdgeInsets.only(top: 80 - _animationController.value * 12, left: 16, right: 16),
+                      height: 58,
+                      decoration: BoxDecoration(
+                        color: Colors.yellow[600].withOpacity(opacityValueForAnimation()),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                    );
+                  },
+                ),
+                AnimatedBuilder(
+                  animation: _animationController,
+                  builder: (_, __) {
+                    return Container(
+                      margin: EdgeInsets.only(top: 115 - _animationController.value * 12, left: 16, right: 16),
+                      height: 58,
+                      decoration: BoxDecoration(
+                        color: Colors.blueGrey[900].withOpacity(opacityValueForAnimation()),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                    );
+                  },
                 ),
                 Padding(
                   padding: EdgeInsets.only(top: 50, bottom: 46),
@@ -157,44 +179,54 @@ class __GridContentState extends State<_GridContent> with TickerProviderStateMix
     '暂时空',
   ];
   ScrollController _scrollController = ScrollController();
-  double _scrollStartOffset = 0;
+  CommondCubit<bool> _topSpaceOpenCubit = CommondCubit<bool>(true);
+  bool _gridViewIsOpenWhenStartScroll = false;
+
+  ///是否代码控制滚动的
+  bool _isCodeControlScroll = false;
 
   void scrollTo(double offset) {
     Timer.run(() {
-      _scrollController.animateTo(offset, duration: Duration(milliseconds: 100), curve: Curves.linear);
+      _isCodeControlScroll = true;
+      _scrollController.animateTo(offset, duration: Duration(milliseconds: 200), curve: Curves.linear).whenComplete(() => _isCodeControlScroll = false);
     });
+  }
+
+  void reset(double topSpace) {
+    if (_isCodeControlScroll) return;
+    if (_topSpaceOpenCubit.state && _scrollController.offset < topSpace && _scrollController.offset > 0) {
+      if (_gridViewIsOpenWhenStartScroll) {
+        scrollTo(0);
+      } else {
+        scrollTo(topSpace);
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (_, boxconstraints) {
-      double topSpace = boxconstraints.maxHeight - 190;
+      double topSpace = boxconstraints.maxHeight - 170;
       return NotificationListener(
         onNotification: (notification) {
           print(notification);
           if (notification is ScrollStartNotification) {
-            _scrollStartOffset = _scrollController.offset;
+            _gridViewIsOpenWhenStartScroll = !_topSpaceOpenCubit.state || _scrollController.offset >= topSpace;
           } else if (notification is ScrollUpdateNotification) {
+            if (_topSpaceOpenCubit.state && _scrollController.offset < topSpace && _scrollController.offset > 0) {
+              widget.animationController.value = _scrollController.offset / topSpace;
+            }
             if (notification.dragDetails == null) {
-              if (_scrollController.offset < topSpace && _scrollController.offset > 0) {
-                if ((_scrollStartOffset - topSpace).abs() < 1) {
-                  widget.animationController?.reverse();
-                  scrollTo(0);
-                } else if (_scrollStartOffset.abs() < 1) {
-                  widget.animationController?.forward();
-                  scrollTo(topSpace);
-                }
-              }
+              reset(topSpace);
             }
           } else if (notification is ScrollEndNotification) {
-            if (_scrollController.offset < topSpace && _scrollController.offset > 0) {
-              if (_scrollStartOffset > topSpace) {
-                widget.animationController?.reverse();
-                scrollTo(0);
-              } else {
-                widget.animationController?.forward();
-                scrollTo(topSpace);
-              }
+            reset(topSpace);
+            if (_topSpaceOpenCubit.state && _scrollController.offset > topSpace) {
+              _topSpaceOpenCubit.addState(false);
+              _scrollController.jumpTo(_scrollController.offset - topSpace);
+            } else if (!_topSpaceOpenCubit.state && _scrollController.offset.abs() < 0.1) {
+              _topSpaceOpenCubit.addState(true);
+              _scrollController.jumpTo(_scrollController.offset + topSpace);
             }
           }
           return true;
@@ -203,9 +235,13 @@ class __GridContentState extends State<_GridContent> with TickerProviderStateMix
           controller: _scrollController,
           slivers: [
             SliverToBoxAdapter(
-              child: SizedBox(
-                height: topSpace,
-              ),
+              child: BlocBuilder(
+                  cubit: _topSpaceOpenCubit,
+                  builder: (_, currentState) {
+                    return SizedBox(
+                      height: currentState == true ? topSpace : 0,
+                    );
+                  }),
             ),
             SliverToBoxAdapter(
               child: GestureDetector(
@@ -223,6 +259,7 @@ class __GridContentState extends State<_GridContent> with TickerProviderStateMix
             ),
             SliverGrid.count(
               crossAxisCount: 3,
+              childAspectRatio: 1.2,
               children: _titleList
                   .map(
                     (e) => Container(
