@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:cityCloud/router/router.dart';
 import 'package:cityCloud/styles/color_helper.dart';
 import 'package:cityCloud/widgets/hit_test_manager_widget.dart';
-import 'package:flame/position.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,7 +11,9 @@ import 'package:flutter_hrlweibo/pages/home/weibo_publish_page.dart';
 import 'package:flutter_hrlweibo/pages/vedio/video_recommend_page.dart';
 
 import '../cubit/home_page_cubit.dart';
-import 'cubit/home_menu_page_cubit.dart';
+
+const double TopContentHeight = 90;
+const double TopDownArrowHeight = 45;
 
 class HomeMenuPage extends StatefulWidget {
   @override
@@ -85,7 +86,8 @@ class _HomeMenuPageState extends State<HomeMenuPage> with TickerProviderStateMix
         }
       } else if (_scrollController.offset < _pageViewHeight) {
         if (!_downArrowAnimationController.isAnimating) {
-          _downArrowAnimationController.animateTo((_scrollController.offset - start) / (_pageViewHeight - start), duration: Duration.zero);
+          _downArrowAnimationController.animateTo((_scrollController.offset - start) / (_pageViewHeight - start),
+              duration: Duration.zero);
         }
       } else if (_scrollController.offset >= _pageViewHeight) {
         if (!_downArrowAnimationController.isAnimating && !_downArrowAnimationController.isCompleted) {
@@ -130,7 +132,7 @@ class _HomeMenuPageState extends State<HomeMenuPage> with TickerProviderStateMix
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            height: 20,
+            height: 24,
             padding: EdgeInsets.all(2),
             decoration: BoxDecoration(
               color: ColorHelper.DividerColor,
@@ -199,7 +201,7 @@ class _HomeMenuPageState extends State<HomeMenuPage> with TickerProviderStateMix
 
   Widget topBar() {
     double topPadding = MediaQuery.of(context).padding.top;
-    _topBarHeight = topPadding + 45;
+    _topBarHeight = topPadding + TopContentHeight;
     return AnimatedBuilder(
       animation: _tabBarAnimationController,
       builder: (_, __) {
@@ -212,22 +214,64 @@ class _HomeMenuPageState extends State<HomeMenuPage> with TickerProviderStateMix
             width: BoxConstraints.expand().maxWidth,
             padding: EdgeInsets.only(top: topPadding),
             color: Colors.white,
-            child: TabBar(
-              tabs: _tabsTitle.map((e) => Text(e)).toList(),
-              controller: _tabController,
-              isScrollable: true,
-              indicatorColor: Colors.transparent,
-              labelColor: ColorHelper.Black51,
-              unselectedLabelColor: ColorHelper.Black153,
-              unselectedLabelStyle: TextStyle(color: ColorHelper.Black153, fontSize: 13),
-              labelStyle: TextStyle(color: ColorHelper.Black51, fontSize: 16, fontWeight: FontWeight.bold),
-              onTap: (index) {
-                _pageController.animateToPage(
-                  index,
-                  duration: Duration(milliseconds: 20),
-                  curve: Curves.linear,
-                );
-              },
+            child: Column(
+              children: [
+                Container(
+                  height: 45,
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.person),
+                        onPressed: (){
+                          Scaffold.of(context).openDrawer();
+                        },
+                      ),
+                      Text('佛山市'),
+                      Spacer(),
+                      IconButton(
+                        icon: Icon(Icons.message),
+                        onPressed: (){
+
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.qr_code_scanner),
+                        onPressed: (){
+
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  child: TabBar(
+                    tabs: _tabsTitle
+                        .map(
+                          (e) => Container(
+                            height: 42,
+                            alignment: Alignment.center,
+                            child: Text(e),
+                          ),
+                        )
+                        .toList(),
+                    controller: _tabController,
+                    isScrollable: true,
+                    indicatorColor: Colors.transparent,
+                    labelColor: ColorHelper.Black51,
+                    unselectedLabelColor: ColorHelper.Black153,
+                    unselectedLabelStyle: TextStyle(color: ColorHelper.Black153, fontSize: 13),
+                    labelStyle: TextStyle(color: ColorHelper.Black51, fontSize: 16, fontWeight: FontWeight.bold),
+                    onTap: (index) {
+                      _pageController.animateToPage(
+                        index,
+                        duration: Duration(milliseconds: 20),
+                        curve: Curves.linear,
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
         );
@@ -241,7 +285,7 @@ class _HomeMenuPageState extends State<HomeMenuPage> with TickerProviderStateMix
       animation: _downArrowAnimationController,
       builder: (_, __) {
         return Container(
-          height: _topBarHeight,
+          height: TopDownArrowHeight + topPadding,
           color: Colors.white.withOpacity(_downArrowAnimationController.value),
           padding: EdgeInsets.only(top: topPadding),
           alignment: Alignment.centerLeft,
@@ -277,10 +321,14 @@ class _HomeMenuPageState extends State<HomeMenuPage> with TickerProviderStateMix
                 hitestChild: Listener(
                   onPointerMove: (_) {},
                   onPointerUp: (_) {
-                    if (_scrollController.offset > manualMoveHeight && _scrollController.offset < _topSpaceHeight - _topBarHeight) {
-                      _scrollController.animateTo(manualMoveHeight, duration: Duration(milliseconds: 200), curve: Curves.linear);
-                    } else if (_scrollController.offset >= _topSpaceHeight - _topBarHeight && _scrollController.offset < _pageViewHeight) {
-                      _scrollController.animateTo(_pageViewHeight, duration: Duration(milliseconds: 200), curve: Curves.linear);
+                    if (_scrollController.offset > manualMoveHeight &&
+                        _scrollController.offset < _topSpaceHeight - _topBarHeight) {
+                      _scrollController.animateTo(manualMoveHeight,
+                          duration: Duration(milliseconds: 200), curve: Curves.linear);
+                    } else if (_scrollController.offset >= _topSpaceHeight - _topBarHeight &&
+                        _scrollController.offset < _pageViewHeight) {
+                      _scrollController.animateTo(_pageViewHeight,
+                          duration: Duration(milliseconds: 200), curve: Curves.linear);
                     }
                   },
                   child: HitTestCheckWidget(
@@ -295,7 +343,11 @@ class _HomeMenuPageState extends State<HomeMenuPage> with TickerProviderStateMix
                         ...taskCenterContent(),
                         Container(
                           color: Colors.yellow,
-                          height: 800,
+                          height: MediaQuery.of(context).size.height,
+                        ),
+                        Container(
+                          height: 30,
+                          color: Colors.red,
                         ),
                       ],
                     ),
@@ -331,16 +383,6 @@ class _HomeMenuPageState extends State<HomeMenuPage> with TickerProviderStateMix
         );
       },
     );
-
-    // Column(
-    //   mainAxisAlignment: MainAxisAlignment.end,
-    //   children: [
-
-    //     // Expanded(
-    //     //   child:
-    //     // ),
-    //   ],
-    // );
   }
 
   @override
