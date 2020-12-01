@@ -35,6 +35,7 @@ class _HomeStatusPageState extends State<HomeStatusPage> with SingleTickerProvid
   @override
   void dispose() {
     _streamSubscription?.cancel();
+    _animationController.dispose();
     super.dispose();
   }
 

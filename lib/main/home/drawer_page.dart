@@ -39,6 +39,12 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
   }
 
   @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       width: 240,
@@ -280,6 +286,12 @@ class __GridContentState extends State<_GridContent> with TickerProviderStateMix
         scrollTo(topSpace);
       }
     }
+  }
+
+  @override
+  void dispose() {
+    _topSpaceOpenCubit.close();
+    super.dispose();
   }
 
   @override

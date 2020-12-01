@@ -42,6 +42,7 @@ class _HomeMenuPageState extends State<HomeMenuPage> with TickerProviderStateMix
   WeiBoFollowPage _weiBoFollowPage = WeiBoFollowPage();
   TabController _tabController;
   PageController _pageController = PageController(initialPage: 0);
+
   @override
   void initState() {
     super.initState();
@@ -115,6 +116,14 @@ class _HomeMenuPageState extends State<HomeMenuPage> with TickerProviderStateMix
         print(currentState);
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _tabBarAnimationController.dispose();
+    _downArrowAnimationController.dispose();
+    _streamSubscription?.cancel();
+    super.dispose();
   }
 
   ///任务中心
@@ -383,11 +392,5 @@ class _HomeMenuPageState extends State<HomeMenuPage> with TickerProviderStateMix
         );
       },
     );
-  }
-
-  @override
-  void dispose() {
-    _streamSubscription?.cancel();
-    super.dispose();
   }
 }
