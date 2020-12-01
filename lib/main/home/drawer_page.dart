@@ -4,6 +4,8 @@ import 'dart:math';
 import 'package:cityCloud/dart_class/class/commond_cubit.dart';
 import 'package:cityCloud/r.dart';
 import 'package:cityCloud/styles/color_helper.dart';
+import 'package:cityCloud/widgets/custom_viewport_sliver.dart';
+import 'package:cityCloud/widgets/hit_test_manager_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -56,7 +58,7 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
                           print('tap on:$e');
                         },
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           height: 48,
                           color: Colors.white,
                           child: Row(
@@ -74,7 +76,10 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
                     Container(
                       height: 45,
                       alignment: Alignment.center,
-                      child: Text('法律条款与平台规则 >'),
+                      child: Text(
+                        '法律条款与平台规则 >',
+                        style: TextStyle(fontSize: 13, color: ColorHelper.Black153),
+                      ),
                     ),
                   ],
                 ),
@@ -83,7 +88,7 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
                   builder: (_, __) {
                     return Positioned(
                       top: 25 - _animationController.value * 20,
-                      left: _animationController.value * 108,
+                      left: 16 + _animationController.value * 85,
                       height: 50,
                       child: Row(
                         children: [
@@ -104,12 +109,49 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
                 AnimatedBuilder(
                   animation: _animationController,
                   builder: (_, __) {
-                    return Container(
-                      margin: EdgeInsets.only(top: 80 - _animationController.value * 12, left: 16, right: 16),
-                      height: 58,
-                      decoration: BoxDecoration(
-                        color: Colors.yellow[600].withOpacity(opacityValueForAnimation()),
-                        borderRadius: BorderRadius.circular(6),
+                    return Opacity(
+                      opacity: opacityValueForAnimation(),
+                      child: Container(
+                        margin: EdgeInsets.only(top: 80 - _animationController.value * 12, left: 16, right: 16),
+                        padding: const EdgeInsets.all(10),
+                        height: 58,
+                        decoration: BoxDecoration(
+                          color: ColorHelper.ThemeColor,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  '白银会员',
+                                  style: TextStyle(fontSize: 13, color: ColorHelper.Black33),
+                                ),
+                                Container(
+                                  height: 16,
+                                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    // color: Colors.yellow[300],
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(color: ColorHelper.Black153),
+                                  ),
+                                  child: Text(
+                                    '查看权益 >',
+                                    style: TextStyle(fontSize: 11, color: ColorHelper.Black51),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Text(
+                              '享24元快车券、快速通道、行程险等权益',
+                              style: TextStyle(fontSize: 10, color: ColorHelper.ThemeBlack),
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   },
@@ -117,12 +159,48 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
                 AnimatedBuilder(
                   animation: _animationController,
                   builder: (_, __) {
-                    return Container(
-                      margin: EdgeInsets.only(top: 115 - _animationController.value * 12, left: 16, right: 16),
-                      height: 58,
-                      decoration: BoxDecoration(
-                        color: Colors.blueGrey[900].withOpacity(opacityValueForAnimation()),
-                        borderRadius: BorderRadius.circular(6),
+                    return Opacity(
+                      opacity: opacityValueForAnimation(),
+                      child: Container(
+                        margin: EdgeInsets.only(top: 115 - _animationController.value * 12, left: 16, right: 16),
+                        padding: const EdgeInsets.all(10),
+                        height: 58,
+                        decoration: BoxDecoration(
+                          color: Colors.blueGrey[900],
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  '超级会员',
+                                  style: TextStyle(fontSize: 13, color: ColorHelper.ThemeColor),
+                                ),
+                                Container(
+                                  height: 16,
+                                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: Colors.yellow[300],
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text(
+                                    '立即开通 >',
+                                    style: TextStyle(fontSize: 11, color: ColorHelper.ThemeColor),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Text(
+                              '享24元快车券、快速通道、行程险等权益',
+                              style: TextStyle(fontSize: 10, color: ColorHelper.ThemeColor),
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   },
@@ -188,11 +266,12 @@ class __GridContentState extends State<_GridContent> with TickerProviderStateMix
   void scrollTo(double offset) {
     Timer.run(() {
       _isCodeControlScroll = true;
-      _scrollController.animateTo(offset, duration: Duration(milliseconds: 200), curve: Curves.linear).whenComplete(() => _isCodeControlScroll = false);
+      _scrollController.animateTo(offset, duration: Duration(milliseconds: 200), curve: Curves.linear);
     });
   }
 
   void reset(double topSpace) {
+    ///如果是代码控制的滚动，那就没必要重新矫正CustomScrollView的offset了
     if (_isCodeControlScroll) return;
     if (_topSpaceOpenCubit.state && _scrollController.offset < topSpace && _scrollController.offset > 0) {
       if (_gridViewIsOpenWhenStartScroll) {
@@ -209,11 +288,13 @@ class __GridContentState extends State<_GridContent> with TickerProviderStateMix
       double topSpace = boxconstraints.maxHeight - 170;
       return NotificationListener(
         onNotification: (notification) {
-          print(notification);
           if (notification is ScrollStartNotification) {
+            if (notification.dragDetails != null) {
+              _isCodeControlScroll = false;
+            }
             _gridViewIsOpenWhenStartScroll = !_topSpaceOpenCubit.state || _scrollController.offset >= topSpace;
           } else if (notification is ScrollUpdateNotification) {
-            if (_topSpaceOpenCubit.state && _scrollController.offset < topSpace && _scrollController.offset > 0) {
+            if (_topSpaceOpenCubit.state && _scrollController.offset <= topSpace && _scrollController.offset >= 0) {
               widget.animationController.value = _scrollController.offset / topSpace;
             }
             if (notification.dragDetails == null) {
@@ -221,6 +302,7 @@ class __GridContentState extends State<_GridContent> with TickerProviderStateMix
             }
           } else if (notification is ScrollEndNotification) {
             reset(topSpace);
+            _isCodeControlScroll = false;
             if (_topSpaceOpenCubit.state && _scrollController.offset > topSpace) {
               _topSpaceOpenCubit.addState(false);
               _scrollController.jumpTo(_scrollController.offset - topSpace);
@@ -231,54 +313,83 @@ class __GridContentState extends State<_GridContent> with TickerProviderStateMix
           }
           return true;
         },
-        child: CustomScrollView(
-          controller: _scrollController,
-          slivers: [
-            SliverToBoxAdapter(
-              child: BlocBuilder(
-                  cubit: _topSpaceOpenCubit,
-                  builder: (_, currentState) {
-                    return SizedBox(
-                      height: currentState == true ? topSpace : 0,
-                    );
-                  }),
-            ),
-            SliverToBoxAdapter(
-              child: GestureDetector(
-                onTap: () {
-                  widget.animationController?.forward();
-                  scrollTo(topSpace);
-                },
-                child: Container(
-                  height: 30,
-                  color: Colors.white,
-                  alignment: Alignment.center,
-                  child: Icon(Icons.arrow_drop_up),
+        child: HitTestCheckWidget(
+          checkHitTestPermission: (offset) {
+            return _topSpaceOpenCubit.state ? (offset.dy + _scrollController.offset) > topSpace : true;
+          },
+          child: CustomScrollView(
+            controller: _scrollController,
+            slivers: [
+              SliverToBoxAdapter(
+                child: BlocBuilder(
+                    cubit: _topSpaceOpenCubit,
+                    builder: (_, currentState) {
+                      return SizedBox(
+                        height: currentState == true ? topSpace : 0,
+                      );
+                    }),
+              ),
+              SliverToBoxAdapter(
+                child: GestureDetector(
+                  onTap: () {
+                    if (widget.animationController.isDismissed) {
+                      widget.animationController?.forward();
+                      scrollTo(topSpace);
+                    } else if (widget.animationController.isCompleted) {
+                      widget.animationController?.reverse();
+                      scrollTo(0);
+                    }
+                  },
+                  child: Container(
+                    height: 30,
+                    color: Colors.white,
+                    alignment: Alignment.center,
+                    child: AnimatedBuilder(
+                      animation: widget.animationController,
+                      child: Icon(Icons.arrow_drop_up),
+                      builder: (_, child) {
+                        return Transform.rotate(
+                          angle: widget.animationController.value * pi,
+                          child: child,
+                        );
+                      },
+                    ),
+                  ),
                 ),
               ),
-            ),
-            SliverGrid.count(
-              crossAxisCount: 3,
-              childAspectRatio: 1.2,
-              children: _titleList
-                  .map(
-                    (e) => Container(
-                      color: Colors.white,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Icon(Icons.local_activity),
-                          Text(
-                            e,
-                            style: TextStyle(fontSize: 13, color: ColorHelper.Black153),
-                          ),
-                        ],
+              SliverGrid.count(
+                crossAxisCount: 3,
+                childAspectRatio: 1.2,
+                children: _titleList
+                    .map(
+                      (e) => Container(
+                        color: Colors.white,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Icon(Icons.local_activity),
+                            Text(
+                              e,
+                              style: TextStyle(fontSize: 13, color: ColorHelper.Black153),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  )
-                  .toList(),
-            ),
-          ],
+                    )
+                    .toList(),
+              ),
+              CustomViewportSliver(
+                heightBuilder: (viewportHeight, precedingScrollExtent) {
+                  double preHeight =
+                      _topSpaceOpenCubit.state ? precedingScrollExtent - topSpace : precedingScrollExtent;
+                  return max(0, viewportHeight - preHeight);
+                },
+                child: Container(
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
         ),
       );
     });
