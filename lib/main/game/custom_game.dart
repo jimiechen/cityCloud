@@ -50,7 +50,8 @@ const double MaxScale = 5;
 Position positionAmong({@required Position beginPosition, @required Position endPosition, @required int movePercent}) {
   assert(movePercent != null);
   if (beginPosition == null || endPosition == null) return beginPosition ?? endPosition;
-  return Position(beginPosition.x + (endPosition.x - beginPosition.x) * movePercent / 100, beginPosition.y + (endPosition.y - beginPosition.y) * movePercent / 100);
+  return Position(beginPosition.x + (endPosition.x - beginPosition.x) * movePercent / 100,
+      beginPosition.y + (endPosition.y - beginPosition.y) * movePercent / 100);
 }
 
 class CustomGame extends BaseGame with TapDetector, ScaleDetector {
@@ -339,7 +340,8 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
         next.call();
         tmpTileComponent = _tileComponentLocationMap[TileMapLocation(tileX, tileY)];
       } while (tmpTileComponent != null);
-      int tileColor = _tileComponentLocationMap?.values?.randomItem?.tileInfo?.bgColor ?? ColorHelper.mapTile.randomItem.value;
+      int tileColor =
+          _tileComponentLocationMap?.values?.randomItem?.tileInfo?.bgColor ?? ColorHelper.mapTile.randomItem.value;
       TileComponent toAddComponent = addTile(
         TileInfo(
           tileMapX: tileX,
@@ -380,10 +382,14 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   void addTileComponent(TileComponent tileComponent) {
     assert(tileComponent != null);
     _tileComponentLocationMap[tileComponent.tileMapLocation] = tileComponent;
-    TileComponent topTileComponent = _tileComponentLocationMap[TileMapLocation(tileComponent.tileInfo.tileMapX, tileComponent.tileInfo.tileMapY - 1)];
-    TileComponent leftTileComponent = _tileComponentLocationMap[TileMapLocation(tileComponent.tileInfo.tileMapX - 1, tileComponent.tileInfo.tileMapY)];
-    TileComponent bottomTileComponent = _tileComponentLocationMap[TileMapLocation(tileComponent.tileInfo.tileMapX, tileComponent.tileInfo.tileMapY + 1)];
-    TileComponent rightTileComponent = _tileComponentLocationMap[TileMapLocation(tileComponent.tileInfo.tileMapX + 1, tileComponent.tileInfo.tileMapY)];
+    TileComponent topTileComponent = _tileComponentLocationMap[
+        TileMapLocation(tileComponent.tileInfo.tileMapX, tileComponent.tileInfo.tileMapY - 1)];
+    TileComponent leftTileComponent = _tileComponentLocationMap[
+        TileMapLocation(tileComponent.tileInfo.tileMapX - 1, tileComponent.tileInfo.tileMapY)];
+    TileComponent bottomTileComponent = _tileComponentLocationMap[
+        TileMapLocation(tileComponent.tileInfo.tileMapX, tileComponent.tileInfo.tileMapY + 1)];
+    TileComponent rightTileComponent = _tileComponentLocationMap[
+        TileMapLocation(tileComponent.tileInfo.tileMapX + 1, tileComponent.tileInfo.tileMapY)];
 
     if (topTileComponent != null) {
       tileComponent.linkWithTileComponent(tileComponent: topTileComponent, borderOrientation: BorderOrientation.Top);
@@ -392,10 +398,12 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
       tileComponent.linkWithTileComponent(tileComponent: leftTileComponent, borderOrientation: BorderOrientation.Left);
     }
     if (bottomTileComponent != null) {
-      tileComponent.linkWithTileComponent(tileComponent: bottomTileComponent, borderOrientation: BorderOrientation.Bottom);
+      tileComponent.linkWithTileComponent(
+          tileComponent: bottomTileComponent, borderOrientation: BorderOrientation.Bottom);
     }
     if (rightTileComponent != null) {
-      tileComponent.linkWithTileComponent(tileComponent: rightTileComponent, borderOrientation: BorderOrientation.Right);
+      tileComponent.linkWithTileComponent(
+          tileComponent: rightTileComponent, borderOrientation: BorderOrientation.Right);
     }
   }
 
@@ -471,24 +479,28 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     TileComponent tile = _tileComponentLocationMap?.values?.randomItem;
     tile?.randomPath(({beginNode, endNode}) {
       if (beginNode != null && endNode != null) {
-        Position position = positionAmong(beginPosition: beginNode.position, endPosition: endNode.position, movePercent: Random().nextInt(100));
+        Position position = positionAmong(
+            beginPosition: beginNode.position, endPosition: endNode.position, movePercent: Random().nextInt(100));
         callback?.call(endNode, position);
       }
     });
   }
 
   void jump() {
-    List<PersonSprite> personSprite = List<PersonSprite>.from(_components.where((element) => element.gameComponent is PersonSprite).map((e) => e.gameComponent));
+    List<PersonSprite> personSprite = List<PersonSprite>.from(
+        _components.where((element) => element.gameComponent is PersonSprite).map((e) => e.gameComponent));
     _tileComponentLocationMap.values?.randomItem?.randomPath(({beginNode, endNode}) {
       int movePercent = Random().nextInt(100);
-      Position target = positionAmong(beginPosition: beginNode.position, endPosition: endNode.position, movePercent: movePercent);
+      Position target =
+          positionAmong(beginPosition: beginNode.position, endPosition: endNode.position, movePercent: movePercent);
       personSprite.randomItem?.jumpto(targetEndNode: endNode, targetCenter: target);
     });
   }
 
   void showRemider() {
-    List<PersonSprite> personSprite = List<PersonSprite>.from(_components.where((element) => element is PersonSprite));
-    personSprite.randomItem?.showRemider();
+    List<ComponentLinkedListEntry> personSprite =
+        List<ComponentLinkedListEntry>.from(_components.where((element) => element.gameComponent is PersonSprite));
+    (personSprite.randomItem?.gameComponent as PersonSprite).showRemider();
   }
 
   double showRemiderTimeCount = 0;
@@ -582,8 +594,10 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   @override
   void onTapDown(TapDownDetails details) {
     super.onTapDown(details);
-    _components.where((element) => element is PersonSprite).forEach((element) {
-      (element as PersonSprite).handleTapDown(fromGame(details.localPosition));
+    _components.forEach((element) {
+      if (element.gameComponent is PersonSprite) {
+        (element.gameComponent as PersonSprite).handleTapDown(fromGame(details.localPosition));
+      }
     });
   }
 

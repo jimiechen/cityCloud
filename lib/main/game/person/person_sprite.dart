@@ -77,10 +77,12 @@ class PersonSprite extends PositionComponent {
 
     Color personColor = Color(model.faceColorValue);
     _leftFootSprite = FootSprite(footColor: personColor, footImage: ImageHelper.foots[model.footID]);
-    _rightFootSprite = FootSprite(footColor: personColor, footImage: ImageHelper.foots[model.footID], isLeftHand: false);
+    _rightFootSprite =
+        FootSprite(footColor: personColor, footImage: ImageHelper.foots[model.footID], isLeftHand: false);
     _bodySprite = BodySprite(bodyColor: personColor, bodyImage: ImageHelper.bodys[model.bodyID]);
     _leftHandSprite = HandSprite(handColor: personColor, handImage: ImageHelper.hands[model.handID]);
-    _rightHandSprite = HandSprite(handColor: personColor, handImage: ImageHelper.hands[model.handID], isLeftHand: false);
+    _rightHandSprite =
+        HandSprite(handColor: personColor, handImage: ImageHelper.hands[model.handID], isLeftHand: false);
     _headSprite = HeadSprite(
       eyeImage: ImageHelper.eyes[model.eyeID],
       faceColor: personColor,
@@ -186,12 +188,10 @@ class PersonSprite extends PositionComponent {
 
   ///显示头顶提示
   void showRemider() {
-    _remiderSprite = RemiderSprite.fromSprite(
-      20,
-      20,
-    );
-    _remiderSprite.x = -width / 2;
-    _remiderSprite.y = -height;
+    double radius = 8;
+    _remiderSprite = RemiderSprite.fromSprite(info: RemiderInfo(type: RemiderType.Number),radius: radius);
+    _remiderSprite.x = 0;
+    _remiderSprite.y = -PersonFaceCenterY - PersonFaceHeight / 2 - radius * 1.5 - 4;
   }
 
   @override
@@ -204,6 +204,7 @@ class PersonSprite extends PositionComponent {
    */
   void onTapDown() {
     GlobalCubit().add(GlobalTapOnPersionSpriteRemider());
+    print('tap');
   }
 
   void handleTapDown(Offset o) {
@@ -213,7 +214,10 @@ class PersonSprite extends PositionComponent {
   }
 
   bool checkTapOverlap(Offset o) {
-    return _remiderSprite != null && toRect().contains(o);
+    Offset relativeOffset = o - toPosition().toOffset();
+    return relativeOffset.dx.abs() < PersonFaceWidth / 2 &&
+        relativeOffset.dy < 0 &&
+        relativeOffset.dy > (-PersonFaceCenterY - PersonFaceHeight / 2);
   }
 
   ///改变小人动作，走、跳、立定
@@ -454,7 +458,8 @@ class PersonSprite extends PositionComponent {
     }
 
     ///画脚下阴影
-    canvas.drawOval(Rect.fromCenter(center: Offset(0, 0), width: PersonShadowWidth, height: PersonShadowHeight), _shadowPaint);
+    canvas.drawOval(
+        Rect.fromCenter(center: Offset(0, 0), width: PersonShadowWidth, height: PersonShadowHeight), _shadowPaint);
     _jumpTranslate?.translate(canvas);
     canvas.save();
     _enterEffect?.setEffectToCanvas(canvas);
