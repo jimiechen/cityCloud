@@ -132,16 +132,21 @@ class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
                   Expanded(
                     child: FlatButton(
                       onPressed: () {
-                        Navigator.push(
+                        // Navigator.push(
+                        //   context,
+                        //   RouterManager.routeForPage(
+                        //     page: HomePage(),
+                        //   ),
+                        // );
+                        Navigator.pushAndRemoveUntil(
                           context,
                           RouterManager.routeForPage(
                             page: HomePage(),
                           ),
+                          (route) => false,
                         );
                         // Navigator.push(context, Router.routeForPage(page: AdvertisingPage()));
-                        Pangolin.loadSplashAd(mCodeId: PangolinSplashAdCodeID, debug: false)
-                            .then((value) {})
-                            .whenComplete(() {
+                        Pangolin.loadSplashAd(mCodeId: PangolinSplashAdCodeID, debug: false).then((value) {}).whenComplete(() {
                           print('conplete');
                         });
                       },

@@ -78,19 +78,23 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: DrawerPage(),
-      body: MultiBlocProvider(
-        providers: [
-          BlocProvider.value(value: _bloc),
-          BlocProvider.value(value: _cubit),
-        ],
-        child: Stack(
-          children: [
-            _box2dGame.widget,
-            _homeStatusPage,
-            _homeMenuPage,
+    return WillPopScope(
+      onWillPop: () async =>false,
+      child: Scaffold(
+        drawer: DrawerPage(),
+        drawerEnableOpenDragGesture: false,
+        body: MultiBlocProvider(
+          providers: [
+            BlocProvider.value(value: _bloc),
+            BlocProvider.value(value: _cubit),
           ],
+          child: Stack(
+            children: [
+              _box2dGame.widget,
+              _homeStatusPage,
+              _homeMenuPage,
+            ],
+          ),
         ),
       ),
     );
