@@ -503,7 +503,7 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
     (personSprite.randomItem?.gameComponent as PersonSprite).showRemider();
   }
 
-  double showRemiderTimeCount = 0;
+  // double showRemiderTimeCount = 0;
   double jumpTimeCount = 0;
   @override
   // ignore: must_call_super
@@ -535,11 +535,11 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
       }
     }
     // _components.removeWhere((c) => c.destroy()).forEach((c) => c.onDestroy());
-    showRemiderTimeCount += t;
-    if (showRemiderTimeCount > 5) {
-      showRemiderTimeCount = 0;
-      showRemider();
-    }
+    // showRemiderTimeCount += t;
+    // if (showRemiderTimeCount > 3) {
+    //   showRemiderTimeCount = 0;
+    //   showRemider();
+    // }
 
     jumpTimeCount += t;
     if (jumpTimeCount > 7) {

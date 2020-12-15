@@ -13,6 +13,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'drawer_page.dart';
+import 'widget/person_detail_widget.dart';
+import 'widget/save_person_widget.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -36,28 +38,15 @@ class _HomePageState extends State<HomePage> {
     LogRecorder.addLog(logDescription: '打开首页', logType: LogType.openPage);
     _box2dGame = CustomGame(homePageBloc: _bloc, homePageCubit: _cubit);
     GlobalCubit().listen((cubitState) {
-      if (cubitState is GlobalTapOnPersionSpriteRemider) {
-        ///点击了小人头部提示
+      if (cubitState is GlobalTapOnPersionSprite) {
+        ///点击了小人
         showDialog(
           context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return CupertinoAlertDialog(
-              title: Text('点击了小人头上的提示'),
-              actions: <Widget>[
-                CupertinoDialogAction(
-                  child: Text(
-                    '确定',
-                    style: TextStyle(decoration: TextDecoration.none, fontSize: 16),
-                  ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-            );
-          },
+          child: PersonDetailWidget(),
         );
+      } else if (cubitState is GlobalTapOnPersionSpriteNumberRemider) {
+        ///点击带数字小人
+        showDialog(context: context, child: SavePersonWidget());
       } else if (cubitState is GlobalCubitStateAddPerson) {
         _box2dGame.randomAddPerson(toUpload: true);
       } else if (cubitState is GlobalCubitStateAddCar) {
@@ -71,10 +60,10 @@ class _HomePageState extends State<HomePage> {
         LogRecorder.addLog(logDescription: '点击按钮手动添加小人', logType: LogType.addPerson);
       } else if (currentState is HomePageCubitTapOnMessageCenter) {
         _box2dGame.randomAddCar(toUpload: UserInfo().gameDataSyncServer);
-         LogRecorder.addLog(logDescription: '点击按钮手动添加小车', logType: LogType.addCar);
+        LogRecorder.addLog(logDescription: '点击按钮手动添加小车', logType: LogType.addCar);
       } else if (currentState is HomePageCubitTapOnFriendDynamic) {
         _box2dGame.randomAddTile(toUpload: UserInfo().gameDataSyncServer);
-         LogRecorder.addLog(logDescription: '点击按钮手动添加地图块', logType: LogType.addMapTile);
+        LogRecorder.addLog(logDescription: '点击按钮手动添加地图块', logType: LogType.addMapTile);
       }
     });
   }

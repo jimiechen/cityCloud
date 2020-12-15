@@ -14,12 +14,13 @@ import 'package:cityCloud/dart_class/flame/scale_translate_canvas_effect.dart';
 import 'package:cityCloud/main/game/person/person_effect/hand_rotate_effect.dart';
 import 'package:cityCloud/util/image_helper.dart';
 import 'package:flame/components/component.dart';
-import 'package:flame/effects/effects.dart';
 import 'package:flame/position.dart';
 import 'package:flutter/material.dart';
 import '../map_tile/model/tile_path_node_info.dart';
 import 'person_effect/jump_canvas_translate.dart';
 import 'person_effect/person_move_effect.dart';
+
+const RemiderShowTime = 60;
 
 class PersonSprite extends PositionComponent {
   ///小人面朝向
@@ -27,6 +28,10 @@ class PersonSprite extends PositionComponent {
 
   ///头顶提示sprite
   RemiderSprite _remiderSprite;
+  //计时隐藏_remiderSprite
+  double _remiderHideCount;
+  //计时显示_remiderSprite
+  double _remiderShowCount;
 
   ///运动的终点
   PathNode _endPathNode;
@@ -93,6 +98,9 @@ class PersonSprite extends PositionComponent {
     _currentActionType = PersonActionType.Walk;
     resetMoveEffect();
     walk();
+
+    ///随机显示remider
+    _remiderShowCount = Random().nextInt(RemiderShowTime * 5).toDouble();
   }
 
   ///根据_endPathNode重新设置移动
@@ -189,9 +197,22 @@ class PersonSprite extends PositionComponent {
   ///显示头顶提示
   void showRemider() {
     double radius = 8;
-    _remiderSprite = RemiderSprite.fromSprite(info: RemiderInfo(type: RemiderType.Number),radius: radius);
+    RemiderType type = Random().nextBool() ? RemiderType.Number : RemiderType.Message;
+    _remiderSprite = RemiderSprite.fromSprite(
+      info: RemiderInfo(type: type, number: Random().nextInt(8) + 1),
+      radius: radius,
+    );
     _remiderSprite.x = 0;
     _remiderSprite.y = -PersonFaceCenterY - PersonFaceHeight / 2 - radius * 1.5 - 4;
+    _remiderHideCount = RemiderShowTime.toDouble();
+  }
+
+  ///隐藏头部提示
+  void hideRemider() {
+    _remiderSprite?.dismiss()?.whenComplete(() {
+      _remiderSprite = null;
+      _remiderShowCount = Random().nextInt(RemiderShowTime).toDouble() + RemiderShowTime * 4;
+    });
   }
 
   @override
@@ -200,10 +221,17 @@ class PersonSprite extends PositionComponent {
   }
 
   /**
-   * 四个Tapable相关方法只处理头部弹出的提示的点击
+   * 处理点击事件
    */
   void onTapDown() {
-    GlobalCubit().add(GlobalTapOnPersionSpriteRemider());
+    if (_remiderSprite == null) {
+      GlobalCubit().add(GlobalTapOnPersionSprite(model));
+    } else if (_remiderSprite.info.type == RemiderType.Message) {
+      GlobalCubit().add(GlobalTapOnPersionSpriteMessageRemider(model));
+    } else if (_remiderSprite.info.type == RemiderType.Number) {
+      GlobalCubit().add(GlobalTapOnPersionSpriteNumberRemider(model));
+    }
+
     print('tap');
   }
 
@@ -217,7 +245,10 @@ class PersonSprite extends PositionComponent {
     Offset relativeOffset = o - toPosition().toOffset();
     return relativeOffset.dx.abs() < PersonFaceWidth / 2 &&
         relativeOffset.dy < 0 &&
-        relativeOffset.dy > (-PersonFaceCenterY - PersonFaceHeight / 2);
+        relativeOffset.dy >
+            (_remiderSprite != null
+                ? _remiderSprite.y - _remiderSprite.radius
+                : -PersonFaceCenterY - PersonFaceHeight / 2);
   }
 
   ///改变小人动作，走、跳、立定
@@ -441,7 +472,24 @@ class PersonSprite extends PositionComponent {
     _leftHandSprite?.update(dt);
     _rightHandSprite?.update(dt);
     _headSprite?.update(dt);
-    _remiderSprite?.update(dt);
+    if (_remiderSprite != null) {
+      if (_remiderHideCount != null) {
+        if (_remiderHideCount < 0) {
+          _remiderHideCount = null;
+          hideRemider();
+        } else {
+          _remiderHideCount -= dt;
+        }
+      }
+      _remiderSprite.renderFlipX = renderFlipX;
+      _remiderSprite.update(dt);
+    } else {
+      _remiderShowCount -= dt;
+      if (_remiderShowCount < 0) {
+        showRemider();
+      }
+    }
+
     if (_enterEffect != null || _goOutEffect != null) {
       _enterEffect?.update(dt);
       _goOutEffect?.update(dt);

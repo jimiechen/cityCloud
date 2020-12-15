@@ -1,5 +1,6 @@
 import 'package:cityCloud/const/config.dart';
 import 'package:cityCloud/expanded/umeng_push/umeng_push.dart';
+import 'package:cityCloud/main/game/helper/game_data_downloader.dart';
 import 'package:cityCloud/main/home/home_page.dart';
 import 'package:cityCloud/main/launch/advertising.dart';
 import 'package:cityCloud/main/launch/router_list.dart';
@@ -12,7 +13,21 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pangolin/pangolin.dart' as Pangolin;
 
-class PrivacyPolicyPage extends StatelessWidget {
+class PrivacyPolicyPage extends StatefulWidget {
+  @override
+  _PrivacyPolicyPageState createState() => _PrivacyPolicyPageState();
+}
+
+class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
+  @override
+  void initState() {
+    ///初始化的时候加载游戏初始数据，如果是正式开发移到登陆后加载
+    GameDataDownloader.getGameData().then((value) {
+      UserInfo().gameDataSyncServer = value;
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,8 +42,7 @@ class PrivacyPolicyPage extends StatelessWidget {
               Text(
                 '这里是隐私政策,这里是隐私政策,这里是隐私政策,这里是隐私政策,这里是隐私政策,这里是隐私政策,',
               ),
-
-              SizedBox(height:20),
+              SizedBox(height: 20),
               Text(
                 '下面开关是表示是否上传初始地图和小车小人到服务端的，开关为开则上传',
               ),
@@ -125,7 +139,9 @@ class PrivacyPolicyPage extends StatelessWidget {
                           ),
                         );
                         // Navigator.push(context, Router.routeForPage(page: AdvertisingPage()));
-                        Pangolin.loadSplashAd(mCodeId: PangolinSplashAdCodeID, debug: false).then((value) {}).whenComplete(() {
+                        Pangolin.loadSplashAd(mCodeId: PangolinSplashAdCodeID, debug: false)
+                            .then((value) {})
+                            .whenComplete(() {
                           print('conplete');
                         });
                       },

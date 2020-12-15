@@ -8,7 +8,6 @@ import 'package:cityCloud/router/router.dart';
 import 'package:cityCloud/util/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hrlweibo/flutter_hrlweibo.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 import 'package:pangolin/pangolin.dart' as Pangolin;
 
 enum GeneralRouterType {

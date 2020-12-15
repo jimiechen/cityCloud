@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cityCloud/expanded/global_cubit/global_cubit.dart';
 import 'package:cityCloud/router/router.dart';
 import 'package:cityCloud/styles/color_helper.dart';
 import 'package:cityCloud/widgets/hit_test_manager_widget.dart';
@@ -31,7 +32,7 @@ class _HomeMenuPageState extends State<HomeMenuPage> with TickerProviderStateMix
   AnimationController _tabBarAnimationController;
   AnimationController _downArrowAnimationController;
   StreamSubscription _streamSubscription;
-  // HomeMenuPageCubit _pageCubit = HomeMenuPageCubit();
+  StreamSubscription _globalCubitStreamSubscription;
 
   List<String> _tabsTitle = ['地区', '推荐', '关注'];
 
@@ -107,13 +108,22 @@ class _HomeMenuPageState extends State<HomeMenuPage> with TickerProviderStateMix
       value: 0,
     );
 
-    _streamSubscription = BlocProvider.of<HomePageCubit>(context).listen((currentState) {
-      if (currentState is HomePageCubitTapOnTaskCenter ||
-          currentState is HomePageCubitTapOnMessageCenter ||
-          currentState is HomePageCubitTapOnFriendDynamic ||
-          currentState is HomePageCubitTapOnUserCenter) {
-        // _animationController.forward();
-        print(currentState);
+    // _streamSubscription = BlocProvider.of<HomePageCubit>(context).listen((currentState) {
+    //   if (currentState is HomePageCubitTapOnTaskCenter ||
+    //       currentState is HomePageCubitTapOnMessageCenter ||
+    //       currentState is HomePageCubitTapOnFriendDynamic ||
+    //       currentState is HomePageCubitTapOnUserCenter) {
+    //     // _animationController.forward();
+    //     print(currentState);
+    //   }
+    // });
+
+    _globalCubitStreamSubscription = GlobalCubit().listen((globalCubitState) {
+      if (globalCubitState is GlobalTapOnPersionSpriteMessageRemider) {
+        ///点击带信封小人
+        _weiBoFollowPage = WeiBoFollowPage(personId: globalCubitState.personModel.id,);
+        _tabController.animateTo(2);
+        tabBarIndexChange(2);
       }
     });
   }
@@ -123,7 +133,16 @@ class _HomeMenuPageState extends State<HomeMenuPage> with TickerProviderStateMix
     _tabBarAnimationController.dispose();
     _downArrowAnimationController.dispose();
     _streamSubscription?.cancel();
+    _globalCubitStreamSubscription?.cancel();
     super.dispose();
+  }
+
+  void tabBarIndexChange(index) {
+    _pageController.animateToPage(
+      index,
+      duration: Duration(milliseconds: 20),
+      curve: Curves.linear,
+    );
   }
 
   ///任务中心
@@ -231,7 +250,7 @@ class _HomeMenuPageState extends State<HomeMenuPage> with TickerProviderStateMix
                     children: [
                       IconButton(
                         icon: Icon(Icons.person),
-                        onPressed: (){
+                        onPressed: () {
                           Scaffold.of(context).openDrawer();
                         },
                       ),
@@ -239,15 +258,11 @@ class _HomeMenuPageState extends State<HomeMenuPage> with TickerProviderStateMix
                       Spacer(),
                       IconButton(
                         icon: Icon(Icons.message),
-                        onPressed: (){
-
-                        },
+                        onPressed: () {},
                       ),
                       IconButton(
                         icon: Icon(Icons.qr_code_scanner),
-                        onPressed: (){
-
-                        },
+                        onPressed: () {},
                       ),
                     ],
                   ),
@@ -271,13 +286,7 @@ class _HomeMenuPageState extends State<HomeMenuPage> with TickerProviderStateMix
                     unselectedLabelColor: ColorHelper.Black153,
                     unselectedLabelStyle: TextStyle(color: ColorHelper.Black153, fontSize: 13),
                     labelStyle: TextStyle(color: ColorHelper.Black51, fontSize: 16, fontWeight: FontWeight.bold),
-                    onTap: (index) {
-                      _pageController.animateToPage(
-                        index,
-                        duration: Duration(milliseconds: 20),
-                        curve: Curves.linear,
-                      );
-                    },
+                    onTap: tabBarIndexChange,
                   ),
                 ),
               ],
