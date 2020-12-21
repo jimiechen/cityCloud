@@ -594,10 +594,11 @@ class CustomGame extends BaseGame with TapDetector, ScaleDetector {
   @override
   void onTapDown(TapDownDetails details) {
     super.onTapDown(details);
-    _components.forEach((element) {
+    _components.firstWhere((element) {
       if (element.gameComponent is PersonSprite) {
-        (element.gameComponent as PersonSprite).handleTapDown(fromGame(details.localPosition));
+        return (element.gameComponent as PersonSprite).handleTapDown(fromGame(details.localPosition));
       }
+      return false;
     });
   }
 

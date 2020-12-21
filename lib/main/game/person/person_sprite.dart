@@ -235,10 +235,12 @@ class PersonSprite extends PositionComponent {
     print('tap');
   }
 
-  void handleTapDown(Offset o) {
+  bool handleTapDown(Offset o) {
     if (checkTapOverlap(o)) {
       onTapDown();
+      return true;
     }
+    return false;
   }
 
   bool checkTapOverlap(Offset o) {
