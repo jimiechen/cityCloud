@@ -50,176 +50,176 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
       width: 240,
       color: Colors.white,
       child: SafeArea(
-        child: AnimatedBuilder(
-          animation: _animationController,
-          builder: (_, __) {
-            return Stack(
+        child: Stack(
+          children: [
+            Column(
               children: [
-                Column(
-                  children: [
-                    SizedBox(height: 180),
-                    ..._titleList.map(
-                      (e) => GestureDetector(
-                        onTap: () {
-                          print('tap on:$e');
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          height: 48,
-                          color: Colors.white,
-                          child: Row(
-                            children: [
-                              Icon(Icons.message),
-                              SizedBox(width: 8),
-                              Text(e),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Spacer(),
-                    Divider(height: 1),
-                    Container(
-                      height: 45,
-                      alignment: Alignment.center,
-                      child: Text(
-                        '法律条款与平台规则 >',
-                        style: TextStyle(fontSize: 13, color: ColorHelper.Black153),
-                      ),
-                    ),
-                  ],
-                ),
-                AnimatedBuilder(
-                  animation: _animationController,
-                  builder: (_, __) {
-                    return Positioned(
-                      top: 25 - _animationController.value * 20,
-                      left: 16 + _animationController.value * 85,
-                      height: 50,
+                SizedBox(height: 180),
+                ..._titleList.map(
+                  (e) => GestureDetector(
+                    onTap: () {
+                      print('tap on:$e');
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      height: 48,
+                      color: Colors.white,
                       child: Row(
                         children: [
-                          Image.asset(
-                            R.assetsImagesPeopleHair5,
-                            width: 40,
-                            height: 40,
-                          ),
-                          Opacity(
-                            opacity: opacityValueForAnimation(),
-                            child: Text('吉祥鸟'),
-                          ),
+                          Icon(Icons.message),
+                          SizedBox(width: 8),
+                          Text(e),
                         ],
                       ),
-                    );
-                  },
+                    ),
+                  ),
                 ),
-                AnimatedBuilder(
-                  animation: _animationController,
-                  builder: (_, __) {
-                    return Opacity(
-                      opacity: opacityValueForAnimation(),
-                      child: Container(
-                        margin: EdgeInsets.only(top: 80 - _animationController.value * 12, left: 16, right: 16),
-                        padding: const EdgeInsets.all(10),
-                        height: 58,
-                        decoration: BoxDecoration(
-                          color: ColorHelper.ThemeColor,
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  '白银会员',
-                                  style: TextStyle(fontSize: 13, color: ColorHelper.Black33),
-                                ),
-                                Container(
-                                  height: 16,
-                                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    // color: Colors.yellow[300],
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(color: ColorHelper.Black153),
-                                  ),
-                                  child: Text(
-                                    '查看权益 >',
-                                    style: TextStyle(fontSize: 11, color: ColorHelper.Black51),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Text(
-                              '享24元快车券、快速通道、行程险等权益',
-                              style: TextStyle(fontSize: 10, color: ColorHelper.ThemeBlack),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                AnimatedBuilder(
-                  animation: _animationController,
-                  builder: (_, __) {
-                    return Opacity(
-                      opacity: opacityValueForAnimation(),
-                      child: Container(
-                        margin: EdgeInsets.only(top: 115 - _animationController.value * 12, left: 16, right: 16),
-                        padding: const EdgeInsets.all(10),
-                        height: 58,
-                        decoration: BoxDecoration(
-                          color: Colors.blueGrey[900],
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  '超级会员',
-                                  style: TextStyle(fontSize: 13, color: ColorHelper.ThemeColor),
-                                ),
-                                Container(
-                                  height: 16,
-                                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    color: Colors.yellow[300],
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    '立即开通 >',
-                                    style: TextStyle(fontSize: 11, color: ColorHelper.ThemeColor),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Text(
-                              '享24元快车券、快速通道、行程险等权益',
-                              style: TextStyle(fontSize: 10, color: ColorHelper.ThemeColor),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 50, bottom: 46),
-                  child: _GridContent(
-                    animationController: _animationController,
+                Spacer(),
+                Divider(height: 1),
+                Container(
+                  height: 45,
+                  alignment: Alignment.center,
+                  child: Text(
+                    '法律条款与平台规则 >',
+                    style: TextStyle(fontSize: 13, color: ColorHelper.Black153),
                   ),
                 ),
               ],
-            );
-          },
+            ),
+            AnimatedBuilder(
+              animation: _animationController,
+              builder: (_, __) {
+                return Positioned(
+                  top: 25 - _animationController.value * 20,
+                  left: 16 + _animationController.value * 85,
+                  height: 50,
+                  child: Row(
+                    children: [
+                      Image.asset(
+                        R.assetsImagesPeopleHair5,
+                        width: 40,
+                        height: 40,
+                      ),
+                      AnimatedOpacity(
+                        duration: Duration(milliseconds: 500),
+                        opacity: opacityValueForAnimation(),
+                        child: const Text('吉祥鸟'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+            AnimatedBuilder(
+              animation: _animationController,
+              child: Container(
+                margin: EdgeInsets.only(top: 80 - _animationController.value * 12, left: 16, right: 16),
+                padding: const EdgeInsets.all(10),
+                height: 58,
+                decoration: BoxDecoration(
+                  color: ColorHelper.ThemeColor,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '白银会员',
+                          style: TextStyle(fontSize: 13, color: ColorHelper.Black33),
+                        ),
+                        Container(
+                          height: 16,
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            // color: Colors.yellow[300],
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: ColorHelper.Black153),
+                          ),
+                          child: Text(
+                            '查看权益 >',
+                            style: TextStyle(fontSize: 11, color: ColorHelper.Black51),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      '享24元快车券、快速通道、行程险等权益',
+                      style: TextStyle(fontSize: 10, color: ColorHelper.ThemeBlack),
+                    ),
+                  ],
+                ),
+              ),
+              builder: (_, animatedChild) {
+                return AnimatedOpacity(
+                  opacity: opacityValueForAnimation(),
+                  duration: Duration(milliseconds: 500),
+                  child: animatedChild,
+                );
+              },
+            ),
+            AnimatedBuilder(
+              animation: _animationController,
+              child: Container(
+                margin: EdgeInsets.only(top: 115 - _animationController.value * 12, left: 16, right: 16),
+                padding: const EdgeInsets.all(10),
+                height: 58,
+                decoration: BoxDecoration(
+                  color: Colors.blueGrey[900],
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '超级会员',
+                          style: TextStyle(fontSize: 13, color: ColorHelper.ThemeColor),
+                        ),
+                        Container(
+                          height: 16,
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: Colors.yellow[300],
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            '立即开通 >',
+                            style: TextStyle(fontSize: 11, color: ColorHelper.ThemeColor),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      '享24元快车券、快速通道、行程险等权益',
+                      style: TextStyle(fontSize: 10, color: ColorHelper.ThemeColor),
+                    ),
+                  ],
+                ),
+              ),
+              builder: (_, animatedChild) {
+                return AnimatedOpacity(
+                  duration: Duration(milliseconds: 500),
+                  opacity: opacityValueForAnimation(),
+                  child: animatedChild,
+                );
+              },
+            ),
+            Padding(
+              padding: EdgeInsets.only(top: 50, bottom: 46),
+              child: _GridContent(
+                animationController: _animationController,
+              ),
+            ),
+          ],
         ),
       ),
     );
