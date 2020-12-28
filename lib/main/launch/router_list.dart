@@ -88,6 +88,7 @@ class _RouterListPageState extends State<RouterListPage> {
 
   @override
   Widget build(BuildContext context) {
+    GeneralRouterManager.init(context);
     return Scaffold(
       appBar: DefaultAppBar(
         titleText: '通用路由',
