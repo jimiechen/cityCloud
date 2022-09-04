@@ -1,7 +1,6 @@
-#import "UmengSdkPlugin.h"
-
+#import "UmengCommonSdkPlugin.h"
 #import <UMCommon/UMConfigure.h>
-#import <UMAnalytics/MobClick.h>
+#import <UMCommon/MobClick.h>
 
 @interface UMengflutterpluginForUMCommon : NSObject
 @end
@@ -14,7 +13,7 @@
         NSString* appkey = arguments[1];
         NSString* channel = arguments[2];
         [UMConfigure initWithAppkey:appkey channel:channel];
-        result(@"success");
+        //result(@"success");
     }
     else{
         resultCode = NO;
@@ -75,21 +74,20 @@
 
 @end
 
-@implementation UmengSdkPlugin
+@implementation UmengCommonSdkPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
   FlutterMethodChannel* channel = [FlutterMethodChannel
-      methodChannelWithName:@"umeng_sdk"
+      methodChannelWithName:@"umeng_common_sdk"
             binaryMessenger:[registrar messenger]];
-  UmengSdkPlugin* instance = [[UmengSdkPlugin alloc] init];
+  UmengCommonSdkPlugin* instance = [[UmengCommonSdkPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
   if ([@"getPlatformVersion" isEqualToString:call.method]) {
-      result([@"iOS " stringByAppendingString:[[UIDevice currentDevice] systemVersion]]);
-      return;
+    result([@"iOS " stringByAppendingString:[[UIDevice currentDevice] systemVersion]]);
   } else {
-      //result(FlutterMethodNotImplemented);
+    //result(FlutterMethodNotImplemented);
   }
 
     BOOL resultCode = [UMengflutterpluginForUMCommon handleMethodCall:call result:result];
@@ -99,8 +97,6 @@
     if (resultCode) return;
 
     result(FlutterMethodNotImplemented);
-    
-
 }
 
 @end

@@ -1,14 +1,14 @@
-# umeng_sdk
+# umeng_common_sdk Flutter Plugin
 
-A new flutter plugin project.
+# 安装
 
-## Getting Started
+在工程 pubspec.yaml 中加入 dependencies
 
-This project is a starting point for a Flutter
-[plug-in package](https://flutter.dev/developing-packages/),
-a specialized package that includes platform-specific implementation code for
-Android and/or iOS.
+dependencies:
+  umeng_common_sdk: 1.2.3
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+# 使用
+
+import 'package:umeng_common_sdk/umeng_common_sdk.dart';
+
+**注意** : 需要先调用 UMConfigure.init 来初始化插件（Appkey可在统计后台 “管理->应用管理->应用列表” 页面查看，或在 “我的产品”选择某应用->设置->应用信息 查看Appkey），才能保证其他功能正常工作。
