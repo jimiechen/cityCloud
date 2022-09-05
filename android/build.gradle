@@ -17,7 +17,7 @@ allprojects {
         google()
         jcenter()
         mavenCentral()
-        maven { url 'https://dl.bintray.com/umsdk/release' }
+        maven { url 'https://repol.maven.org/maven2/' }
     }
 }
 

@@ -79,7 +79,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async =>false,
+      onWillPop: () async => false,
       child: Scaffold(
         drawer: DrawerPage(),
         drawerEnableOpenDragGesture: false,
@@ -90,7 +90,9 @@ class _HomePageState extends State<HomePage> {
           ],
           child: Stack(
             children: [
-              _box2dGame.widget,
+              RepaintBoundary(
+                child: _box2dGame.widget,
+              ),
               _homeStatusPage,
               _homeMenuPage,
             ],
