@@ -22,6 +22,8 @@ Trae IDE 是一款基于 VS Code 的智能开发环境，内置了强大的 AI �
 - 集成飞书 CLI 传递任务
 - 实现文件独立权限，确保任务间互不干扰
 - 提供 VS Code 插件设置页面，配置各智能体参数
+- 实现钩子能力，参考 Claude 源码实现任务结束触发代码评审等功能
+- 集成 Trae harness 自动化任务执行触发
 
 ### 1.3 目标用户
 
@@ -48,6 +50,8 @@ Trae IDE 是一款基于 VS Code 的智能开发环境，内置了强大的 AI �
 | 飞书集成 | 集成飞书 CLI 传递任务 | 中 |
 | 文件权限管理 | 实现文件独立权限，确保任务间互不干扰 | 高 |
 | 插件设置 | 提供 VS Code 插件设置页面，配置智能体参数 | 高 |
+| 钩子系统 | 实现任务生命周期钩子，支持任务结束触发代码评审等功能 | 高 |
+| Trae harness 集成 | 集成 Trae harness 自动化任务执行触发 | 高 |
 
 ### 2.2 次要功能
 
@@ -85,6 +89,8 @@ flowchart TD
         FeishuCLI["飞书 CLI 集成模块"]
         FilePermission["文件权限管理模块"]
         SettingsManager["插件设置管理模块"]
+        HookSystem["钩子系统模块"]
+        HarnessIntegration["Trae harness 集成模块"]
     end
 
     subgraph RalphIntegration["Ralph 集成"]
@@ -109,6 +115,10 @@ flowchart TD
     ResultStandardizer --> FeishuCLI
     SandboxManager --> FilePermission
     AgentManager --> SettingsManager
+    WorkflowEngine --> HookSystem
+    ResultStandardizer --> HookSystem
+    HookSystem --> HarnessIntegration
+    HarnessIntegration --> TaskSync
 
     TaskSync --> TaskManager
     TaskManager --> CDP
@@ -127,6 +137,8 @@ flowchart TD
 | Ralph | 任务管理和自动化 | 1.1.2 |
 | Git | 版本管理 | - |
 | 飞书 CLI | 任务传递 | - |
+| Hook System | 任务生命周期钩子 | - |
+| Trae harness | 自动化任务执行触发 | - |
 
 ### 3.3 模块职责
 
@@ -143,6 +155,8 @@ flowchart TD
 | 飞书 CLI 集成模块 | 集成飞书 CLI 传递任务 | 飞书 API |
 | 文件权限管理模块 | 实现文件独立权限 | 操作系统权限管理 |
 | 插件设置管理模块 | 管理插件设置和智能体配置 | VS Code 配置 API |
+| 钩子系统模块 | 实现任务生命周期钩子，支持任务结束触发代码评审等功能 | 参考 Claude 源码实现 |
+| Trae harness 集成模块 | 集成 Trae harness 自动化任务执行触发 | Trae harness API |
 | Ralph 集成 | 利用 Ralph 的任务管理和场景检测 | Ralph SDK 集成 |
 
 ## 4. 核心流程
@@ -222,6 +236,31 @@ sequenceDiagram
     Agent1->>Model: 最终处理
     Model-->>Agent1: 最终结果
     Agent1->>Standardizer: 标准化最终结果
+```
+
+### 4.4 钩子系统和 Trae harness 集成流程
+
+```mermaid
+sequenceDiagram
+    participant User as 用户
+    participant Trae as Trae IDE
+    participant Plugin as 多智能体插件
+    participant Workflow as 工作流引擎
+    participant HookSystem as 钩子系统
+    participant Harness as Trae harness
+    participant CodeReview as 代码评审智能体
+
+    User->>Trae: 创建/更新任务
+    Trae->>Harness: 触发任务执行
+    Harness->>Plugin: 启动任务
+    Plugin->>Workflow: 执行任务
+    Workflow->>HookSystem: 任务完成
+    HookSystem->>CodeReview: 触发代码评审
+    CodeReview->>Plugin: 代码评审结果
+    Plugin->>Trae: 更新任务状态
+    Plugin->>Harness: 任务执行完成
+    Harness->>Trae: 记录任务执行结果
+    Trae->>User: 显示任务完成状态和代码评审结果
 ```
 
 ## 5. 数据结构
@@ -392,6 +431,8 @@ interface TaskResult {
   };
   gitCommit: string;    // Git 提交哈希
   feishuMessageId: string; // 飞书消息 ID
+  codeReviewResult: CodeReviewResult; // 代码评审结果
+  harnessExecutionId: string; // Trae harness 执行 ID
 }
 
 enum ResultStatus {
@@ -409,6 +450,97 @@ enum ResultFormat {
 }
 ```
 
+### 5.6 钩子系统数据结构
+
+```typescript
+interface Hook {
+  id: string;           // 钩子唯一标识
+  name: string;         // 钩子名称
+  event: HookEvent;     // 触发事件
+  command: string;      // 执行命令
+  shell?: string;       // 执行 shell
+  async?: boolean;      // 是否异步执行
+  timeout?: number;     // 超时时间 (秒)
+  enabled: boolean;     // 是否启用
+  createdAt: number;    // 创建时间
+  updatedAt: number;    // 更新时间
+}
+
+enum HookEvent {
+  TASK_CREATED = 'TASK_CREATED',       // 任务创建
+  TASK_STARTED = 'TASK_STARTED',       // 任务开始
+  TASK_COMPLETED = 'TASK_COMPLETED',   // 任务完成
+  TASK_FAILED = 'TASK_FAILED',         // 任务失败
+  CODE_REVIEW = 'CODE_REVIEW',         // 代码评审
+  SESSION_START = 'SESSION_START',     // 会话开始
+  SESSION_END = 'SESSION_END'          // 会话结束
+}
+
+interface CodeReviewResult {
+  id: string;           // 评审结果唯一标识
+  taskId: string;       // 关联的任务 ID
+  reviewerId: string;   // 评审智能体 ID
+  status: ReviewStatus; // 评审状态
+  createdAt: number;    // 创建时间
+  updatedAt: number;    // 更新时间
+  comments: ReviewComment[]; // 评审意见
+  score: number;        // 评审分数
+  summary: string;      // 评审总结
+}
+
+enum ReviewStatus {
+  PENDING = 'PENDING',    // 待评审
+  IN_PROGRESS = 'IN_PROGRESS', // 评审中
+  COMPLETED = 'COMPLETED' // 评审完成
+}
+
+interface ReviewComment {
+  id: string;           // 评论唯一标识
+  line: number;         // 代码行号
+  content: string;      // 评论内容
+  severity: CommentSeverity; // 严重程度
+  suggestion: string;   // 改进建议
+}
+
+enum CommentSeverity {
+  INFO = 'INFO',        // 信息
+  WARNING = 'WARNING',  // 警告
+  ERROR = 'ERROR'       // 错误
+}
+```
+
+### 5.7 Trae harness 数据结构
+
+```typescript
+interface HarnessExecution {
+  id: string;           // 执行唯一标识
+  taskId: string;       // 关联的任务 ID
+  status: HarnessStatus; // 执行状态
+  createdAt: number;    // 创建时间
+  updatedAt: number;    // 更新时间
+  startTime: number;    // 开始时间
+  endTime: number;      // 结束时间
+  duration: number;     // 执行时长 (ms)
+  trigger: HarnessTrigger; // 触发方式
+  metadata: Record<string, any>; // 额外元数据
+}
+
+enum HarnessStatus {
+  PENDING = 'PENDING',    // 待执行
+  RUNNING = 'RUNNING',    // 执行中
+  SUCCESS = 'SUCCESS',    // 执行成功
+  FAILED = 'FAILED',      // 执行失败
+  CANCELLED = 'CANCELLED' // 执行取消
+}
+
+enum HarnessTrigger {
+  MANUAL = 'MANUAL',      // 手动触发
+  SCHEDULED = 'SCHEDULED', // 定时触发
+  WEBHOOK = 'WEBHOOK',    // Webhook 触发
+  API = 'API'             // API 触发
+}
+```
+
 ## 6. 界面设计
 
 ### 6.1 主要界面
@@ -419,10 +551,13 @@ enum ResultFormat {
 | 智能体管理视图 | 管理智能体实例 | 显示智能体状态、资源使用情况、能力配置 |
 | 沙箱管理视图 | 管理沙箱环境 | 显示沙箱状态、资源限制、隔离级别、文件权限 |
 | 工作流编辑器 | 创建和编辑工作流 | 可视化拖拽界面，支持步骤配置 |
-| 任务详情视图 | 显示任务详细信息 | 显示任务描述、进度、智能体执行情况、结果预览 |
+| 任务详情视图 | 显示任务详细信息 | 显示任务描述、进度、智能体执行情况、结果预览、代码评审结果 |
 | 插件设置页面 | 配置插件和智能体参数 | 分类设置界面，支持全局配置和每个智能体的单独配置 |
 | 版本管理视图 | 查看任务结果的版本历史 | Git 提交历史，支持查看不同版本的差异 |
 | 飞书集成视图 | 管理飞书任务传递 | 显示飞书消息历史，支持手动触发消息发送 |
+| 钩子管理视图 | 管理任务生命周期钩子 | 显示钩子列表、触发事件、执行状态，支持创建和编辑钩子 |
+| Trae harness 视图 | 管理自动化任务执行 | 显示执行历史、触发方式、执行状态，支持手动触发任务 |
+| 代码评审视图 | 查看代码评审结果 | 显示评审意见、严重程度、改进建议，支持评审结果过滤 |
 
 ### 6.2 交互设计
 
@@ -435,27 +570,60 @@ enum ResultFormat {
 - **版本管理**：用户可以查看任务结果的版本历史，比较不同版本
 - **飞书集成**：用户可以配置飞书机器人，查看任务传递状态
 - **插件设置**：用户可以在插件设置页面配置全局参数和每个智能体的特定参数
+- **钩子管理**：用户可以创建、编辑和管理任务生命周期钩子，配置触发事件和执行命令
+- **Trae harness 管理**：用户可以配置自动化任务执行触发，查看执行历史和状态
+- **代码评审**：用户可以查看任务完成后的代码评审结果，处理评审意见
+- **自动化触发**：用户可以配置 Trae harness 定时或基于事件触发任务执行
 
 ## 7. 实现计划
 
 ### 7.1 开发阶段
 
+#### 第一期：MVP 版本
+
 | 阶段 | 任务 | 时间估计 |
 |------|------|----------|
 | 阶段 1: 基础架构 | 搭建插件基础架构，集成 Ralph | 1 周 |
 | 阶段 2: 任务同步 | 实现 Trae 任务同步功能 | 1 周 |
-| 阶段 3: 任务拆解 | 实现任务智能拆解功能 | 1 周 |
-| 阶段 4: 沙箱管理 | 实现沙箱创建和管理功能 | 1.5 周 |
-| 阶段 5: 文件权限 | 实现文件独立权限管理 | 1 周 |
-| 阶段 6: 智能体管理 | 实现智能体分配和管理功能 | 1.5 周 |
-| 阶段 7: 工作流引擎 | 实现工作流管理和执行功能 | 2 周 |
-| 阶段 8: 模型适配器 | 实现 Trae 模型调用封装 | 1 周 |
-| 阶段 9: 结果标准化 | 实现结果标准化和格式化 | 1 周 |
-| 阶段 10: Git 集成 | 实现 Git 版本管理功能 | 1 周 |
-| 阶段 11: 飞书集成 | 实现飞书 CLI 集成 | 1 周 |
-| 阶段 12: 插件设置 | 实现插件设置页面 | 1 周 |
-| 阶段 13: 界面开发 | 开发插件 UI 界面 | 1.5 周 |
-| 阶段 14: 测试和优化 | 测试功能并优化性能 | 1.5 周 |
+| 阶段 3: 沙箱管理 | 实现基础沙箱创建和管理功能 | 1 周 |
+| 阶段 4: 智能体管理 | 实现基础智能体分配和管理功能 | 1 周 |
+| 阶段 5: 模型适配器 | 实现 Trae 模型调用封装 | 1 周 |
+| 阶段 6: 结果标准化 | 实现基础结果标准化和格式化 | 1 周 |
+| 阶段 7: 插件设置 | 实现基础插件设置页面 | 1 周 |
+| 阶段 8: 测试和优化 | 测试 MVP 功能并优化性能 | 1 周 |
+
+#### 第二期：核心功能完善
+
+| 阶段 | 任务 | 时间估计 |
+|------|------|----------|
+| 阶段 1: 任务拆解 | 实现任务智能拆解功能 | 1 周 |
+| 阶段 2: 文件权限 | 实现文件独立权限管理 | 1 周 |
+| 阶段 3: 工作流引擎 | 实现工作流管理和执行功能 | 2 周 |
+| 阶段 4: Git 集成 | 实现 Git 版本管理功能 | 1 周 |
+| 阶段 5: 飞书集成 | 实现飞书 CLI 集成 | 1 周 |
+| 阶段 6: 界面开发 | 开发完整的插件 UI 界面 | 1.5 周 |
+| 阶段 7: 测试和优化 | 测试核心功能并优化性能 | 1.5 周 |
+
+#### 第三期：高级功能和集成
+
+| 阶段 | 任务 | 时间估计 |
+|------|------|----------|
+| 阶段 1: 钩子系统 | 实现任务生命周期钩子，支持任务结束触发代码评审等功能 | 2 周 |
+| 阶段 2: Trae harness 集成 | 集成 Trae harness 自动化任务执行触发 | 1.5 周 |
+| 阶段 3: 多智能体协作 | 实现智能体之间的通信和协作 | 2 周 |
+| 阶段 4: 代码评审智能体 | 实现代码评审智能体功能 | 1.5 周 |
+| 阶段 5: 高级界面 | 开发钩子管理、Trae harness 管理和代码评审视图 | 1.5 周 |
+| 阶段 6: 测试和优化 | 测试高级功能并优化性能 | 2 周 |
+
+#### 第四期：优化和扩展
+
+| 阶段 | 任务 | 时间估计 |
+|------|------|----------|
+| 阶段 1: 性能优化 | 优化插件性能和资源使用 | 1.5 周 |
+| 阶段 2: 安全性增强 | 增强插件安全性和权限管理 | 1 周 |
+| 阶段 3: 扩展性改进 | 提高插件的可扩展性和可维护性 | 1.5 周 |
+| 阶段 4: 文档完善 | 完善插件文档和使用指南 | 1 周 |
+| 阶段 5: 最终测试 | 进行全面测试和用户反馈收集 | 1.5 周 |
 
 ### 7.2 技术风险
 
@@ -468,6 +636,10 @@ enum ResultFormat {
 | 文件权限管理 | 可能导致权限冲突 | 实现细粒度的权限控制和冲突检测 |
 | Git 版本管理 | 可能导致合并冲突 | 实现自动合并和冲突解决机制 |
 | 飞书 API 限制 | 可能遇到 API 调用限制 | 实现消息队列和重试机制 |
+| 钩子系统安全 | 可能执行恶意代码 | 实现钩子执行权限控制和安全检查 |
+| 钩子执行性能 | 可能影响任务执行速度 | 实现钩子执行超时机制和异步执行 |
+| Trae harness 集成 | 可能与 Trae 版本不兼容 | 实现版本检测和兼容层 |
+| 自动化触发频率 | 可能导致系统负载过高 | 实现触发频率限制和负载均衡 |
 
 ## 8. 测试计划
 
@@ -497,6 +669,12 @@ enum ResultFormat {
 | 飞书集成 | 测试飞书任务传递 | 任务结果被正确发送到飞书 |
 | 插件设置 | 测试插件设置功能 | 设置能够正确应用到智能体 |
 | 错误处理 | 测试各种错误场景 | 系统能够正确处理错误 |
+| 钩子系统 | 测试任务生命周期钩子 | 钩子在正确的事件触发并执行 |
+| 代码评审触发 | 测试任务结束触发代码评审 | 代码评审智能体正确执行并返回结果 |
+| Trae harness 集成 | 测试 Trae harness 自动化任务执行 | 任务能够被自动触发并执行 |
+| 自动化触发 | 测试定时和事件触发 | 任务按照配置的方式被触发 |
+| 钩子安全 | 测试钩子执行权限控制 | 恶意代码无法执行 |
+| 钩子性能 | 测试钩子执行性能 | 钩子执行不影响任务执行速度 |
 
 ## 9. 部署计划
 
@@ -516,6 +694,10 @@ enum ResultFormat {
 | typescript | ^5.2.2 | TypeScript 编译器 |
 | simple-git | ^3.22.0 | Git 操作 |
 | @larksuiteoapi/node-sdk | ^1.55.0 | 飞书 API |
+| child_process | - | 钩子命令执行 |
+| events | - | 事件处理 |
+| fs | - | 文件系统操作 |
+| path | - | 路径处理 |
 
 ## 10. 结论
 
@@ -533,5 +715,13 @@ enum ResultFormat {
 9. 集成飞书 CLI，实现任务传递和通知
 10. 细粒度的文件权限管理，增强安全性
 11. 灵活的插件设置，满足不同场景需求
+12. 实现钩子能力，支持任务结束触发代码评审等功能
+13. 集成 Trae harness 自动化任务执行触发
 
-通过本项目的实施，Trae IDE 将成为一个更加强大的 AI 辅助开发环境，为用户提供全新的开发体验。
+本项目采用分阶段实现策略，从 MVP 版本开始，逐步添加核心功能和高级特性：
+- **第一期（MVP 版本）**：实现基础架构、任务同步、沙箱管理、智能体管理、模型适配器、基础结果标准化和插件设置
+- **第二期（核心功能完善）**：实现任务拆解、文件权限、工作流引擎、Git 集成、飞书集成和完整的 UI 界面
+- **第三期（高级功能和集成）**：实现钩子系统、Trae harness 集成、多智能体协作、代码评审智能体和高级界面
+- **第四期（优化和扩展）**：进行性能优化、安全性增强、扩展性改进、文档完善和最终测试
+
+通过本项目的实施，Trae IDE 将成为一个更加强大的 AI 辅助开发环境，为用户提供全新的开发体验。插件的分阶段实现策略确保了快速交付可用版本，同时为后续功能的持续迭代和升级预留了空间。
