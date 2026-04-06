@@ -1,0 +1,110 @@
+{
+  "name": "trae-claude-code",
+  "displayName": "Claude Code for Trae",
+  "description": "Claude Code extension for Trae IDE - AI coding assistant",
+  "version": "1.0.0",
+  "publisher": "trae",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other",
+    "AI"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "traeClaude.openTerminal",
+        "title": "Claude: Open Claude Terminal",
+        "icon": "$(terminal)"
+      },
+      {
+        "command": "traeClaude.startSession",
+        "title": "Claude: Start New Session",
+        "icon": "$(comment-add)"
+      },
+      {
+        "command": "traeClaude.openChat",
+        "title": "Claude: Open Chat Panel",
+        "icon": "$(comment-discussion)"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "traeClaude",
+          "title": "Claude Code",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "traeClaude": [
+        {
+          "type": "webview",
+          "id": "traeClaude.chatView",
+          "name": "Chat"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Claude Code",
+      "properties": {
+        "traeClaude.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "Anthropic API Key"
+        },
+        "traeClaude.autoInstall": {
+          "type": "boolean",
+          "default": true,
+          "description": "Auto install Claude Code CLI"
+        },
+        "traeClaude.model": {
+          "type": "string",
+          "default": "claude-3-opus-20240229",
+          "enum": [
+            "claude-3-opus-20240229",
+            "claude-3-sonnet-20240229",
+            "claude-3-haiku-20240307"
+          ],
+          "description": "Default Claude model to use"
+        }
+      }
+    },
+    "keybindings": [
+      {
+        "command": "traeClaude.openChat",
+        "key": "ctrl+shift+c",
+        "mac": "cmd+shift+c",
+        "when": "editorTextFocus"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.80.0",
+    "@types/node": "18.x",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.45.0",
+    "typescript": "^5.2.2",
+    "@vscode/test-cli": "^0.0.9",
+    "@vscode/test-electron": "^2.3.9"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/trae-claude-extension"
+  }
+}
