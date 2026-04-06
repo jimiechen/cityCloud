@@ -24,6 +24,11 @@ Trae IDE 是一款基于 VS Code 的智能开发环境，内置了强大的 AI �
 - 提供 VS Code 插件设置页面，配置各智能体参数
 - 实现钩子能力，参考 Claude 源码实现任务结束触发代码评审等功能
 - 集成 Trae harness 自动化任务执行触发
+- **打造司令台界面**：集中展示所有智能体的工作状态
+- **智能体动画展示**：为每个智能体添加动画人物形象，展示工作状态
+- **24/7 智能体工作**：智能体持续工作，互不干扰
+- **飞书任务管理**：通过飞书查看分配的任务
+- **每日计划和进度汇报**：智能体每天汇报工作进度和计划
 
 ### 1.3 目标用户
 
@@ -52,6 +57,11 @@ Trae IDE 是一款基于 VS Code 的智能开发环境，内置了强大的 AI �
 | 插件设置 | 提供 VS Code 插件设置页面，配置智能体参数 | 高 |
 | 钩子系统 | 实现任务生命周期钩子，支持任务结束触发代码评审等功能 | 高 |
 | Trae harness 集成 | 集成 Trae harness 自动化任务执行触发 | 高 |
+| 司令台界面 | 集中展示所有智能体的工作状态，提供全局监控视图 | 高 |
+| 智能体动画 | 为每个智能体添加动画人物形象，直观展示工作状态 | 高 |
+| 24/7 智能体运行 | 智能体持续工作，后台自动处理任务 | 高 |
+| 飞书任务查看 | 通过飞书查看分配给各智能体的任务 | 高 |
+| 每日进度汇报 | 智能体每天自动汇报工作进度和计划 | 高 |
 
 ### 2.2 次要功能
 
@@ -91,6 +101,10 @@ flowchart TD
         SettingsManager["插件设置管理模块"]
         HookSystem["钩子系统模块"]
         HarnessIntegration["Trae harness 集成模块"]
+        CommandCenter["司令台界面模块"]
+        AgentAnimation["智能体动画模块"]
+        BackgroundRunner["后台运行模块"]
+        DailyReport["每日进度汇报模块"]
     end
 
     subgraph RalphIntegration["Ralph 集成"]
@@ -119,6 +133,12 @@ flowchart TD
     ResultStandardizer --> HookSystem
     HookSystem --> HarnessIntegration
     HarnessIntegration --> TaskSync
+    AgentManager --> CommandCenter
+    AgentManager --> AgentAnimation
+    WorkflowEngine --> BackgroundRunner
+    BackgroundRunner --> FeishuCLI
+    BackgroundRunner --> DailyReport
+    ResultStandardizer --> DailyReport
 
     TaskSync --> TaskManager
     TaskManager --> CDP
@@ -157,6 +177,10 @@ flowchart TD
 | 插件设置管理模块 | 管理插件设置和智能体配置 | VS Code 配置 API |
 | 钩子系统模块 | 实现任务生命周期钩子，支持任务结束触发代码评审等功能 | 参考 Claude 源码实现 |
 | Trae harness 集成模块 | 集成 Trae harness 自动化任务执行触发 | Trae harness API |
+| 司令台界面模块 | 集中展示所有智能体的工作状态，提供全局监控视图 | VS Code Webview |
+| 智能体动画模块 | 为每个智能体添加动画人物形象，直观展示工作状态 | Canvas/SVG 动画 |
+| 后台运行模块 | 智能体持续工作，后台自动处理任务 | Node.js 后台进程 |
+| 每日进度汇报模块 | 智能体每天自动汇报工作进度和计划 | 定时任务 + 飞书 API |
 | Ralph 集成 | 利用 Ralph 的任务管理和场景检测 | Ralph SDK 集成 |
 
 ## 4. 核心流程
@@ -261,6 +285,65 @@ sequenceDiagram
     Plugin->>Harness: 任务执行完成
     Harness->>Trae: 记录任务执行结果
     Trae->>User: 显示任务完成状态和代码评审结果
+```
+
+### 4.5 司令台界面和智能体动画展示流程
+
+```mermaid
+sequenceDiagram
+    participant User as 用户
+    participant Trae as Trae IDE
+    participant CommandCenter as 司令台界面
+    participant AgentAnimation as 智能体动画
+    participant AgentManager as 智能体管理
+    participant Background as 后台运行
+
+    User->>Trae: 打开司令台视图
+    Trae->>CommandCenter: 初始化司令台界面
+    CommandCenter->>AgentManager: 获取所有智能体状态
+    AgentManager-->>CommandCenter: 返回智能体列表
+    CommandCenter->>AgentAnimation: 加载智能体动画资源
+    AgentAnimation-->>CommandCenter: 返回动画资源
+    CommandCenter->>Trae: 显示司令台界面
+    
+    loop 实时更新
+        Background->>AgentManager: 智能体状态变化
+        AgentManager->>CommandCenter: 更新智能体状态
+        CommandCenter->>AgentAnimation: 更新动画状态
+        AgentAnimation-->>CommandCenter: 动画更新完成
+        CommandCenter->>User: 实时显示智能体工作状态
+    end
+```
+
+### 4.6 每日进度汇报和飞书任务管理流程
+
+```mermaid
+sequenceDiagram
+    participant User as 用户
+    participant DailyReport as 每日进度汇报
+    participant Feishu as 飞书
+    participant AgentManager as 智能体管理
+    participant Background as 后台运行
+
+    loop 定时触发
+        Background->>DailyReport: 每日定时触发
+        DailyReport->>AgentManager: 获取所有智能体进度
+        AgentManager-->>DailyReport: 返回智能体进度
+        DailyReport->>DailyReport: 汇总进度和计划
+        DailyReport->>Feishu: 发送每日进度汇报
+        Feishu-->>DailyReport: 发送成功
+        DailyReport->>User: 显示汇报确认
+    end
+    
+    User->>Feishu: 查看任务
+    Feishu->>AgentManager: 请求任务列表
+    AgentManager-->>Feishu: 返回任务列表
+    Feishu->>User: 显示分配的任务
+    
+    User->>Feishu: 分配新任务
+    Feishu->>AgentManager: 接收新任务
+    AgentManager->>Background: 启动任务处理
+    Background-->>User: 任务开始执行通知
 ```
 
 ## 5. 数据结构
@@ -541,6 +624,175 @@ enum HarnessTrigger {
 }
 ```
 
+### 5.8 司令台和智能体动画数据结构
+
+```typescript
+interface CommandCenterState {
+  agents: AgentDisplay[];    // 所有智能体显示信息
+  totalTasks: number;        // 总任务数
+  runningTasks: number;      // 运行中任务数
+  completedTasks: number;    // 已完成任务数
+  systemHealth: SystemHealth; // 系统健康状态
+  lastUpdate: number;        // 最后更新时间
+}
+
+interface AgentDisplay {
+  id: string;               // 智能体 ID
+  name: string;             // 智能体名称
+  status: AgentStatus;      // 智能体状态
+  currentTask: string;      // 当前任务
+  progress: number;         // 任务进度 (0-100)
+  avatar: AgentAvatar;      // 智能体头像/动画
+  lastActive: number;       // 最后活跃时间
+  taskHistory: TaskHistory[]; // 任务历史
+}
+
+interface AgentAvatar {
+  id: string;               // 头像 ID
+  type: AvatarType;         // 头像类型
+  animation: AnimationState; // 动画状态
+  resources: AvatarResources; // 头像资源
+}
+
+enum AvatarType {
+  CHARACTER = 'CHARACTER',  // 人物角色
+  ROBOT = 'ROBOT',         // 机器人
+  ICON = 'ICON',           // 图标
+  CUSTOM = 'CUSTOM'        // 自定义
+}
+
+interface AnimationState {
+  current: string;          // 当前动画
+  available: string[];      // 可用动画列表
+  speed: number;           // 动画速度
+  loop: boolean;           // 是否循环
+}
+
+interface AvatarResources {
+  idle: string;            // 空闲状态资源
+  working: string;         // 工作状态资源
+  thinking: string;        // 思考状态资源
+  success: string;         // 成功状态资源
+  error: string;           // 错误状态资源
+}
+
+interface SystemHealth {
+  overall: HealthStatus;    // 整体健康状态
+  components: ComponentHealth[]; // 各组件健康状态
+  warnings: HealthWarning[]; // 警告信息
+  errors: HealthError[];   // 错误信息
+}
+
+enum HealthStatus {
+  HEALTHY = 'HEALTHY',     // 健康
+  WARNING = 'WARNING',     // 警告
+  ERROR = 'ERROR'          // 错误
+}
+
+interface ComponentHealth {
+  name: string;            // 组件名称
+  status: HealthStatus;    // 健康状态
+  lastCheck: number;       // 最后检查时间
+  details: string;         // 详情
+}
+
+interface HealthWarning {
+  id: string;             // 警告 ID
+  timestamp: number;      // 时间戳
+  component: string;      // 组件
+  message: string;        // 警告消息
+  level: WarningLevel;    // 警告级别
+}
+
+enum WarningLevel {
+  LOW = 'LOW',            // 低
+  MEDIUM = 'MEDIUM',      // 中
+  HIGH = 'HIGH'           // 高
+}
+
+interface HealthError {
+  id: string;             // 错误 ID
+  timestamp: number;      // 时间戳
+  component: string;      // 组件
+  message: string;        // 错误消息
+  stack: string;          // 错误堆栈
+}
+
+interface TaskHistory {
+  id: string;             // 任务 ID
+  title: string;           // 任务标题
+  status: TaskStatus;     // 任务状态
+  startTime: number;      // 开始时间
+  endTime: number;        // 结束时间
+  duration: number;       // 持续时间
+}
+```
+
+### 5.9 每日进度汇报数据结构
+
+```typescript
+interface DailyReport {
+  id: string;             // 汇报 ID
+  date: string;           // 日期 (YYYY-MM-DD)
+  agents: AgentDailyReport[]; // 各智能体汇报
+  summary: string;         // 总体总结
+  createdAt: number;       // 创建时间
+  sentToFeishu: boolean;   // 是否已发送到飞书
+}
+
+interface AgentDailyReport {
+  agentId: string;         // 智能体 ID
+  agentName: string;       // 智能体名称
+  completedTasks: TaskSummary[]; // 已完成任务
+  inProgressTasks: TaskSummary[]; // 进行中任务
+  tomorrowPlan: PlanItem[]; // 明天计划
+  issues: Issue[];         // 遇到的问题
+  achievements: string[];   // 成就
+}
+
+interface TaskSummary {
+  id: string;             // 任务 ID
+  title: string;           // 任务标题
+  description: string;     // 任务描述
+  progress: number;        // 进度
+  startTime: number;       // 开始时间
+  endTime?: number;        // 结束时间
+  result: string;          // 结果
+}
+
+interface PlanItem {
+  id: string;             // 计划项 ID
+  title: string;           // 计划标题
+  description: string;     // 计划描述
+  priority: number;        // 优先级
+  estimatedTime: number;   // 预计时间
+  dependencies: string[];  // 依赖任务
+}
+
+interface Issue {
+  id: string;             // 问题 ID
+  title: string;           // 问题标题
+  description: string;     // 问题描述
+  severity: IssueSeverity; // 严重程度
+  status: IssueStatus;     // 状态
+  solution?: string;       // 解决方案
+}
+
+enum IssueSeverity {
+  MINOR = 'MINOR',         // 轻微
+  MODERATE = 'MODERATE',   // 中等
+  MAJOR = 'MAJOR',         // 严重
+  CRITICAL = 'CRITICAL'    // 危急
+}
+
+enum IssueStatus {
+  OPEN = 'OPEN',           // 未解决
+  IN_PROGRESS = 'IN_PROGRESS', // 处理中
+  RESOLVED = 'RESOLVED',   // 已解决
+  CLOSED = 'CLOSED'        // 已关闭
+}
+```
+
 ## 6. 界面设计
 
 ### 6.1 主要界面
@@ -558,6 +810,10 @@ enum HarnessTrigger {
 | 钩子管理视图 | 管理任务生命周期钩子 | 显示钩子列表、触发事件、执行状态，支持创建和编辑钩子 |
 | Trae harness 视图 | 管理自动化任务执行 | 显示执行历史、触发方式、执行状态，支持手动触发任务 |
 | 代码评审视图 | 查看代码评审结果 | 显示评审意见、严重程度、改进建议，支持评审结果过滤 |
+| 司令台视图 | 集中展示所有智能体的工作状态 | 全局监控视图，显示智能体动画、任务统计、系统健康状态 |
+| 智能体动画界面 | 为每个智能体添加动画人物形象 | 可视化展示智能体工作状态，支持不同动画状态切换 |
+| 每日进度汇报视图 | 查看和管理每日进度汇报 | 显示各智能体的工作进度、明天计划、遇到的问题 |
+| 飞书任务管理视图 | 通过飞书查看和分配任务 | 显示分配给各智能体的任务，支持任务分配和查看 |
 
 ### 6.2 交互设计
 
@@ -574,6 +830,11 @@ enum HarnessTrigger {
 - **Trae harness 管理**：用户可以配置自动化任务执行触发，查看执行历史和状态
 - **代码评审**：用户可以查看任务完成后的代码评审结果，处理评审意见
 - **自动化触发**：用户可以配置 Trae harness 定时或基于事件触发任务执行
+- **司令台监控**：用户可以通过司令台视图实时查看所有智能体的工作状态和动画
+- **智能体交互**：用户可以点击智能体动画查看详细信息，与智能体进行交互
+- **每日进度查看**：用户可以查看每天的进度汇报，了解各智能体的工作成果
+- **飞书任务分配**：用户可以通过飞书查看分配的任务，也可以直接在飞书中分配新任务
+- **系统健康监控**：用户可以查看系统健康状态，及时发现和处理问题
 
 ## 7. 实现计划
 
